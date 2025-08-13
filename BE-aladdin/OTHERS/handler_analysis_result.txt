@@ -1,0 +1,11 @@
+﻿=== STORED PROCEDURES AND HANDLERS ANALYSIS ===
+
+Total stored procedures: 4407
+Total handlers: 210
+Stored procedures with handlers: 0
+Stored procedures missing handlers: 0
+Handlers not in SP list: 0
+
+=== STORED PROCEDURES WITH HANDLERS ===
+=== STORED PROCEDURES MISSING HANDLERS ===
+=== HANDLERS NOT IN SP LIST ===
