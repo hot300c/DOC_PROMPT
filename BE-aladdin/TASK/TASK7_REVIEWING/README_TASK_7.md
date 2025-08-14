@@ -1,17 +1,29 @@
-# Task : Convert Stored Procedure
+# Task : Convert Stored Procedure ws_INV_ProductTemp_Proccessing_Vaccine
 
-## GIT FLOW
-git checkout main
-git pull
-git checkout -b feat/ws_Vaccine_KiemTraDongPhacDo
-git add -p
-git commit
-git push origin feat/ws_Vaccine_KiemTraDongPhacDo
+## 📋 Thông tin chung
 
-Những lần sau sẽ commit:
-git add -p
-git commit --amend
-git push origin -f
+- **Ticket**: https://rm.vnvc.info/issues/137323
+- **Mục tiêu**: Convert stored procedure `ws_INV_ProductTemp_Proccessing_Vaccine` sang backend Aladdin
+- **Tên file handler**: `ws_INV_ProductTemp_Proccessing_Vaccine.cs`
+- đường dẫn chứa file handle: C:\PROJECTS\aladdin\WebService.Handlers\QAHosGenericDB
+- đường dẫn chứa file testcase:C:\PROJECTS\aladdin\WebService.Handlers.Tests\QAHosGenericDB
+- đường dẫn chứa file yaml testcase: C:\PROJECTS\aladdin\WebService.Handlers.Tests\TestCases\QAHosGenericDB
+
+## GIT FLOW (không chạy, chỉ tham thảo)
+
+  git checkout main
+  git pull
+  git checkout -b feat/Convert__ws_INV_ProductTemp_Proccessing_Vaccine
+  git add -p
+  git commit
+  git push origin feat/Convert__ws_INV_ProductTemp_Proccessing_Vaccine
+
+  Những lần sau sẽ commit:
+  git add -p
+  git commit --amend
+  git push origin -f
+
+
 
 ## 🎯 Yêu cầu kỹ thuật
 
@@ -24,10 +36,6 @@ git push origin -f
 - ✅ Cần có try-catch log
 - ✅ Cần tạo test cases
 - **Kiến trúc code phải phân tách thành các function để code gọn gàng, dễ đọc, dễ bảo trì.**
-- đường dẫn chứa file handle: C:\PROJECTS\aladdin\WebService.Handlers\QAHosGenericDB
-- đường dẫn chứa file testcase:C:\PROJECTS\aladdin\WebService.Handlers.Tests\QAHosGenericDB
-- đường dẫn chứa file yaml testcase: C:\PROJECTS\aladdin\WebService.Handlers.Tests\TestCases\QAHosGenericDB
-
 
 ### 🔧 QUY TẮC REFACTOR CODE (BẮT BUỘC):
 
@@ -42,26 +50,6 @@ git push origin -f
 - Sử dụng PascalCase: `GetClinicalSession()`, `UpdatePaymentStatus()`
 - Tên function phải mô tả rõ chức năng
 - Thêm XML documentation cho mỗi function
-
-
-### RULE KỸ THUẬT:
-
-- Tuân thủ lập trình file handler theo tài liệu: C:\PROJECTS\aladdin\HANDLERS.md
-- Có ghi chú từ code tương ứng với SQL Store procedure (nếu có) trên code bằng tiếng anh
-- Sau khi tạo xong, phải biên dịch lại project để kiểm tra lại
-- Code cũng phải có With(SqlServerHints.Table.NoLock)
-- Chuỗi xuất ra thì nên dùng: singleQuote: true
-- Khi có update nào trong source code thì cũng nên đồng bộ vào file README_GEN.md.
-- Code phải đảm bảo đúng logic như store procedure.
-- Sau khi hoàn tất code thì nên sinh ra file README_GEN.md giống với file mẫu này: README_GEN.md 
-trong cùng thư mục.
-- Tóm tắt các bước sau khi tạo file vào file README_GEN.md.
-- Nên tạo lớp  Parameters cho việc làm tham số handle public override DataSet Handle(Parameters @params). Tham thảo như file : ws_MDM_Patient_CheckExists.cs
-- khi tạo các test case mà có phát sinh lỗi thì check lại các fields trong các class entity trong thư mục: C:\PROJECTS\aladdin\Entities\QAHosGenericDB để cần lấy entity tương ứng.
-- Xử lý ra code nhanh.
-- Sau khi suy luận ra các đầy đủ thông tin, thì tạo 1 file README_TODO_BEFORE_GEN.md để tập hợp đầy đủ các thông tin mà đã suy luận, và đầy đủ thông tin để file này làm cơ sở gen ra code.
-- Khi biên dịch file code handler chạy ổn thì mới tạo code cho các file test case.
-- Trong file README_GEN.md có thêm các đường dẫn testcase mà đã gen ra để tôi có thể click vào nó đến đúng file nhanh chóng.
 
 #### 3. **Function Structure:**
 ```csharp
@@ -148,6 +136,21 @@ expectedData:
     rows:
       - Field1: "expected_value"
 ```
+
+### RULE KỸ THUẬT:
+
+- Tuân thủ lập trình file handler theo tài liệu: C:\PROJECTS\aladdin\HANDLERS.md
+- Có ghi chú từ code tương ứng với SQL Store procedure (nếu có) trên code bằng tiếng anh
+- Sau khi tạo xong, phải biên dịch lại project để kiểm tra lại
+- Code cũng phải có With(SqlServerHints.Table.NoLock)
+- Chuỗi xuất ra thì nên dùng: singleQuote: true
+- Khi có update nào trong source code thì cũng nên đồng bộ vào file README_GEN.md.
+- Code phải đảm bảo đúng logic như store procedure.
+- Sau khi hoàn tất code thì nên sinh ra file README_GEN.md giống với file mẫu này: README_GEN.md 
+trong cùng thư mục.
+- Tóm tắt các bước sau khi tạo file vào file README_GEN.md.
+- Trong file README_GEN.md có thêm các đường dẫn testcase mà đã gen ra để tôi có thể click vào nó đến đúng file nhanh chóng
+- Nên tạo lớp  Parameters cho việc làm tham số handle public override DataSet Handle(Parameters @params). Tham thảo như file : ws_MDM_Patient_CheckExists.cs
 
 ### 📝 README_GEN.md TEMPLATE:
 

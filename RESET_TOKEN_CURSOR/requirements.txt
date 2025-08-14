@@ -1,0 +1,3 @@
+# Requirements for cursor_reset_machine.py
+# Optional dependency for process checking on Windows
+psutil>=5.8.0
