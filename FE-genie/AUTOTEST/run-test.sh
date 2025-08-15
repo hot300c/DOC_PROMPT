@@ -5,17 +5,17 @@ echo "Auto Test - In ma vach (Print Barcode)"
 echo "========================================"
 echo
 
-# Check if we're in the right directory
-if [ ! -f "../../../genie/playwright.config.ts" ]; then
-    echo "Error: Please run this script from DOCS_PROMPT/FE-genie/AUTOTEST/"
+# Check if genie directory exists
+if [ ! -f "/c/PROJECTS/genie/playwright.config.ts" ]; then
+    echo "Error: Genie directory not found at /c/PROJECTS/genie/"
     echo "Current directory: $(pwd)"
-    echo "Expected to find: ../../../genie/playwright.config.ts"
+    echo "Expected to find: /c/PROJECTS/genie/playwright.config.ts"
     exit 1
 fi
 
 echo "Current directory: $(pwd)"
 echo "Moving to genie directory..."
-cd ../../../genie
+cd /c/PROJECTS/genie
 
 echo
 echo "Running Playwright test for print barcode scenario..."
@@ -25,23 +25,23 @@ echo
 case "$1" in
     "--ui")
         echo "Running with UI mode..."
-        npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --ui
+        npx playwright test /c/PROJECTS/DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --ui
         ;;
     "--debug")
         echo "Running with debug mode..."
-        npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --debug
+        npx playwright test /c/PROJECTS/DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --debug
         ;;
     "--report")
         echo "Running with HTML report..."
-        npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --reporter=html
+        npx playwright test /c/PROJECTS/DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --reporter=html
         ;;
     "--video")
         echo "Running with video recording..."
-        npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --video=on
+        npx playwright test /c/PROJECTS/DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --video=on
         ;;
     *)
         echo "Running test normally..."
-        npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts
+        npx playwright test /c/PROJECTS/DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts
         ;;
 esac
 

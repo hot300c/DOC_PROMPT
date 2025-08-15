@@ -4,18 +4,18 @@ echo Auto Test - In ma vach (Print Barcode)
 echo ========================================
 echo.
 
-REM Check if we're in the right directory
-if not exist "..\..\..\genie\playwright.config.ts" (
-    echo Error: Please run this script from DOCS_PROMPT/FE-genie/AUTOTEST/
+REM Check if genie directory exists
+if not exist "C:\PROJECTS\genie\playwright.config.ts" (
+    echo Error: Genie directory not found at C:\PROJECTS\genie\
     echo Current directory: %CD%
-    echo Expected to find: ..\..\..\genie\playwright.config.ts
+    echo Expected to find: C:\PROJECTS\genie\playwright.config.ts
     pause
     exit /b 1
 )
 
 echo Current directory: %CD%
 echo Moving to genie directory...
-cd ..\..\..\genie
+cd C:\PROJECTS\genie
 
 echo.
 echo Running Playwright test for print barcode scenario...
@@ -24,19 +24,19 @@ echo.
 REM Run the test with different options based on arguments
 if "%1"=="--ui" (
     echo Running with UI mode...
-    npx playwright test ..\DOCS_PROMPT\FE-genie\AUTOTEST\playwright\printBarcode.spec.ts --ui
+    npx playwright test playwright\tests\printBarcode.spec.ts --ui
 ) else if "%1"=="--debug" (
     echo Running with debug mode...
-    npx playwright test ..\DOCS_PROMPT\FE-genie\AUTOTEST\playwright\printBarcode.spec.ts --debug
+    npx playwright test playwright\tests\printBarcode.spec.ts --debug
 ) else if "%1"=="--report" (
     echo Running with HTML report...
-    npx playwright test ..\DOCS_PROMPT\FE-genie\AUTOTEST\playwright\printBarcode.spec.ts --reporter=html
+    npx playwright test playwright\tests\printBarcode.spec.ts --reporter=html
 ) else if "%1"=="--video" (
     echo Running with video recording...
-    npx playwright test ..\DOCS_PROMPT\FE-genie\AUTOTEST\playwright\printBarcode.spec.ts --video=on
+    npx playwright test playwright\tests\printBarcode.spec.ts --video=on
 ) else (
     echo Running test normally...
-    npx playwright test ..\DOCS_PROMPT\FE-genie\AUTOTEST\playwright\printBarcode.spec.ts
+    npx playwright test playwright\tests\printBarcode.spec.ts
 )
 
 echo.
