@@ -1,0 +1,28 @@
+{
+  "name": "genie-autotest-print-barcode",
+  "version": "1.0.0",
+  "description": "Auto test for Genie Print Barcode functionality",
+  "scripts": {
+    "test": "cd ../../../genie && npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts",
+    "test:ui": "cd ../../../genie && npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --ui",
+    "test:debug": "cd ../../../genie && npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --debug",
+    "test:report": "cd ../../../genie && npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --reporter=html",
+    "test:video": "cd ../../../genie && npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --video=on",
+    "test:headed": "cd ../../../genie && npx playwright test ../DOCS_PROMPT/FE-genie/AUTOTEST/playwright/printBarcode.spec.ts --headed",
+    "setup": "cd ../../../genie && npx playwright install",
+    "auth": "cd ../../../genie && npx playwright test playwright/tests/authentication.setup.ts"
+  },
+  "keywords": [
+    "playwright",
+    "e2e",
+    "testing",
+    "genie",
+    "print-barcode",
+    "ws_MDM_Patient_CheckExists"
+  ],
+  "author": "Auto Test Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}
