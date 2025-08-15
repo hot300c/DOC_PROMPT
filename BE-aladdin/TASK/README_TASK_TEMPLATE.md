@@ -3,10 +3,11 @@
 ## GIT FLOW
 git checkout main
 git pull
-git checkout -b feat/ws_Vaccine_KiemTraDongPhacDo
-git add -p
+git checkout -b feat/Convert_ws_Vaccine_KiemTraCanhBaoTiemVaccineTrungNhomBenh
+
+git add -A
 git commit
-git push origin feat/ws_Vaccine_KiemTraDongPhacDo
+git push origin feat/Convert_ws_Vaccine_KiemTraCanhBaoTiemVaccineTrungNhomBenh
 
 Những lần sau sẽ commit:
 git add -p
@@ -62,6 +63,7 @@ trong cùng thư mục.
 - Sau khi suy luận ra các đầy đủ thông tin, thì tạo 1 file README_TODO_BEFORE_GEN.md để tập hợp đầy đủ các thông tin mà đã suy luận, và đầy đủ thông tin để file này làm cơ sở gen ra code.
 - Khi biên dịch file code handler chạy ổn thì mới tạo code cho các file test case.
 - Trong file README_GEN.md có thêm các đường dẫn testcase mà đã gen ra để tôi có thể click vào nó đến đúng file nhanh chóng.
+- Sau khi gen ra các file test case xong, thì chạy để testing lại các test case đó để pass được hết các file.
 
 #### 3. **Function Structure:**
 ```csharp

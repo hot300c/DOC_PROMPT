@@ -5,14 +5,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-/*
-Version: 1.1.1.1 20170914 08h20 hungnq created
-Version: 1.1.2.1 20171218 hungnq thêm tham số @IsTiem
-Version: 1.1.7.0 2020200625 hungnq lưu thêm TotalContract khi thu tạm ứng
-Version: 1.1.7.1 2020-11-26 9:23 hieunt điều kiện lưu thêm TotalContract bỏ cột muithanhtoan của hợp đồng
-Version: 1.1.7.2 2021-05-11 9:48 hieunt đổi qua bảng BIL_Invoice_CurrentDay
-Version: 1.1.7.3 20240111 quytx 123058-( 0 - Undefined)-Sửa SP lưu dữ liệu khóa invoiceID theo hàm chung
-*/
+
 ALTER PROCEDURE [dbo].[ws_BIL_Invoice_Save_Vaccine]
     @SessionID VARCHAR(300) = '',
     @InvoiceID UNIQUEIDENTIFIER,

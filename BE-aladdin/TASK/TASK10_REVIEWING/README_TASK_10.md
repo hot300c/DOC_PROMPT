@@ -2,7 +2,7 @@
 
 ## 📋 Thông tin chung
 
-- **Ticket**: https://rm.vnvc.info/issues/137323
+- **Ticket**: 
 - **Mục tiêu**: Convert stored procedure `ws_BIL_Invoice_Save_Vaccine` sang backend Aladdin
 - **Tên file handler**: `ws_BIL_Invoice_Save_Vaccine.cs`
 
