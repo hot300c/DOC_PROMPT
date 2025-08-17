@@ -94,29 +94,106 @@ def clear_cursor_cache():
         return False
 
 def reset_machine_id():
-    """Reset Machine ID của Cursor AI (dựa trên cursor-free-vip)"""
-    cache_path = get_cursor_cache_path()
-    
-    if not cache_path:
-        return False
+    """Reset Machine ID của Cursor AI sử dụng script từ cursor-free-vip"""
+    system = platform.system()
     
     try:
-        # Xóa machineId file
-        machine_id_path = cache_path / "machineId"
-        if machine_id_path.exists():
-            machine_id_path.unlink()
-            print("✓ Đã xóa machineId")
-        
-        # Tạo machineId mới (random)
-        import uuid
-        new_machine_id = str(uuid.uuid4())
-        machine_id_path.write_text(new_machine_id)
-        print(f"✓ Đã tạo machineId mới: {new_machine_id}")
-        
+        if system == "Darwin":  # macOS
+            print("🔄 Đang mở Terminal và chạy script reset từ cursor-free-vip...")
+            print("📥 Tải script install.sh...")
+            
+            # Lệnh curl để tải và chạy script
+            curl_cmd = "curl -fsSL https://raw.githubusercontent.com/yeongpin/cursor-free-vip/main/scripts/install.sh -o install.sh && chmod +x install.sh && ./install.sh"
+            
+            print("🚀 Mở Terminal và chạy lệnh:")
+            print(f"   {curl_cmd}")
+            print("\n⚠️  Lưu ý: Script sẽ tự động reset Machine ID và tạo tài khoản mới.")
+            
+            # Mở Terminal và chạy lệnh
+            terminal_cmd = ["open", "-a", "Terminal"]
+            subprocess.run(terminal_cmd, check=True)
+            
+            # Chờ một chút để Terminal mở
+            import time
+            time.sleep(2)
+            
+            # Chạy lệnh curl trong Terminal
+            osascript_cmd = f'osascript -e \'tell application "Terminal" to do script "{curl_cmd}"\''
+            result = subprocess.run(osascript_cmd, shell=True, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                print("✅ Đã mở Terminal và chạy script cursor-free-vip!")
+                print("📱 Script đang chạy trong Terminal mới.")
+            else:
+                print(f"⚠️  Có thể có lỗi khi chạy script: {result.stderr}")
+                print("💡 Bạn có thể copy và paste lệnh này vào Terminal:")
+                print(f"   {curl_cmd}")
+                
+        elif system == "Windows":
+            print("🔄 Đang mở PowerShell và chạy script reset từ cursor-free-vip...")
+            print("📥 Tải script install.ps1...")
+            
+            # Lệnh PowerShell để tải và chạy script
+            ps_cmd = "irm https://raw.githubusercontent.com/yeongpin/cursor-free-vip/main/scripts/install.ps1 | iex"
+            
+            print("🚀 Mở PowerShell và chạy lệnh:")
+            print(f"   {ps_cmd}")
+            print("\n⚠️  Lưu ý: Script sẽ tự động reset Machine ID và tạo tài khoản mới.")
+            
+            # Mở PowerShell và chạy lệnh
+            powershell_cmd = ["powershell", "-Command", ps_cmd]
+            
+            # Mở PowerShell mới
+            subprocess.Popen(["powershell", "-NoExit", "-Command", ps_cmd])
+            
+            print("✅ Đã mở PowerShell và chạy script cursor-free-vip!")
+            print("📱 Script đang chạy trong PowerShell mới.")
+                
+        elif system == "Linux":
+            print("🔄 Đang mở Terminal và chạy script reset từ cursor-free-vip...")
+            print("📥 Tải script install.sh...")
+            
+            # Lệnh curl để tải và chạy script
+            curl_cmd = "curl -fsSL https://raw.githubusercontent.com/yeongpin/cursor-free-vip/main/scripts/install.sh -o install.sh && chmod +x install.sh && ./install.sh"
+            
+            print("🚀 Mở Terminal và chạy lệnh:")
+            print(f"   {curl_cmd}")
+            print("\n⚠️  Lưu ý: Script sẽ tự động reset Machine ID và tạo tài khoản mới.")
+            
+            # Thử mở terminal khác nhau trên Linux
+            terminal_apps = ["gnome-terminal", "konsole", "xterm", "terminator"]
+            terminal_opened = False
+            
+            for terminal_app in terminal_apps:
+                try:
+                    # Mở terminal mới với lệnh
+                    terminal_cmd = [terminal_app, "--", "bash", "-c", curl_cmd]
+                    subprocess.Popen(terminal_cmd)
+                    print(f"✅ Đã mở {terminal_app} và chạy script cursor-free-vip!")
+                    print("📱 Script đang chạy trong Terminal mới.")
+                    terminal_opened = True
+                    break
+                except FileNotFoundError:
+                    continue
+            
+            if not terminal_opened:
+                print("⚠️  Không thể mở terminal tự động.")
+                print("💡 Bạn có thể copy và paste lệnh này vào terminal:")
+                print(f"   {curl_cmd}")
+                
+        else:
+            print(f"❌ Hệ điều hành {system} không được hỗ trợ")
+            return False
+            
         return True
-        
+            
     except Exception as e:
-        print(f"❌ Lỗi khi reset machineId: {e}")
+        print(f"❌ Lỗi khi chạy script cursor-free-vip: {e}")
+        print("💡 Bạn có thể chạy thủ công:")
+        if system == "Darwin" or system == "Linux":
+            print("   curl -fsSL https://raw.githubusercontent.com/yeongpin/cursor-free-vip/main/scripts/install.sh -o install.sh && chmod +x install.sh && ./install.sh")
+        elif system == "Windows":
+            print("   irm https://raw.githubusercontent.com/yeongpin/cursor-free-vip/main/scripts/install.ps1 | iex")
         return False
 
 def clear_user_storage():
@@ -300,6 +377,57 @@ def force_kill_cursor():
         print(f"⚠️  Không thể force kill Cursor AI: {e}")
         return False
 
+def open_default_browser():
+    """Mở trình duyệt mặc định theo hệ điều hành"""
+    system = platform.system()
+    
+    # URL dashboard settings của Cursor
+    cursor_dashboard_url = "https://cursor.com/dashboard?tab=settings"
+    
+    try:
+        if system == "Darwin":  # macOS
+            # Mở trình duyệt mặc định trên macOS
+            subprocess.run(["open", cursor_dashboard_url], check=True)
+            print("✅ Đã mở trình duyệt mặc định để truy cập Cursor Dashboard Settings")
+            return True
+            
+        elif system == "Windows":
+            # Mở trình duyệt mặc định trên Windows
+            subprocess.run(["start", cursor_dashboard_url], shell=True, check=True)
+            print("✅ Đã mở trình duyệt mặc định để truy cập Cursor Dashboard Settings")
+            return True
+            
+        elif system == "Linux":
+            # Thử các lệnh mở trình duyệt trên Linux
+            browser_commands = [
+                ["xdg-open", cursor_dashboard_url],
+                ["x-www-browser", cursor_dashboard_url],
+                ["firefox", cursor_dashboard_url],
+                ["google-chrome", cursor_dashboard_url],
+                ["chromium-browser", cursor_dashboard_url]
+            ]
+            
+            for cmd in browser_commands:
+                try:
+                    subprocess.run(cmd, check=True)
+                    print("✅ Đã mở trình duyệt để truy cập Cursor Dashboard Settings")
+                    return True
+                except (subprocess.CalledProcessError, FileNotFoundError):
+                    continue
+            
+            print("⚠️  Không thể mở trình duyệt tự động trên Linux")
+            print(f"💡 Vui lòng mở trình duyệt và truy cập: {cursor_dashboard_url}")
+            return False
+            
+        else:
+            print(f"❌ Hệ điều hành {system} không được hỗ trợ")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Lỗi khi mở trình duyệt: {e}")
+        print(f"💡 Vui lòng mở trình duyệt và truy cập: {cursor_dashboard_url}")
+        return False
+
 
 
 def show_menu():
@@ -308,11 +436,11 @@ def show_menu():
     print("🚀 CURSOR AI LOGOUT TOOL")
     print("="*50)
     print("Chọn tùy chọn:")
-    print("1. 🔄 Reset Machine ID (chỉ reset ID, không xóa cache)")
+    print("1. 🔄 Reset Machine ID (sử dụng cursor-free-vip)")
     print("2. Logout account và xóa cache")
-    print("3. Reset Machine ID (dựa trên cursor-free-vip)")
-    print("4. Force kill Cursor AI (khuyến nghị trước khi logout)")
-    print("5. 🔥 RESET HOÀN TOÀN (Đóng Cursor AI + Logout + Reset Machine ID, KHÔNG xóa cache)")
+    print("3. Force kill Cursor AI (khuyến nghị trước khi logout)")
+    print("4. 🔥 RESET HOÀN TOÀN (Đóng Cursor AI + Reset Machine ID + Mở Dashboard Settings)")
+    print("5. 🌐 Mở trình duyệt truy cập Cursor Dashboard Settings")
     print("6. Thoát")
     print("="*50)
 
@@ -322,13 +450,16 @@ def main():
         show_menu()
         
         try:
-            choice = input("\nNhập lựa chọn của bạn (1-6): ").strip()
+            choice = input("\nNhập lựa chọn của bạn (1-5): ").strip()
             
             if choice == "1":
-                print("\n🔄 Đang reset Machine ID...")
+                print("\n🔄 Đang reset Machine ID sử dụng cursor-free-vip...")
+                print("⚠️  Lưu ý: Script sẽ tự động tạo tài khoản mới và reset Machine ID")
+                print("   Bạn có thể nhấn Ctrl+C để dừng nếu cần thiết.")
+                
                 if reset_machine_id():
                     print("✅ Đã reset Machine ID thành công!")
-                    print("ℹ️  Chỉ reset machine ID, không xóa cache cursor")
+                    print("ℹ️  Sử dụng script từ cursor-free-vip để reset hoàn toàn")
                 else:
                     print("❌ Có lỗi xảy ra khi reset Machine ID.")
                     
@@ -344,18 +475,11 @@ def main():
                     print("⚠️  Một số thao tác có thể không thành công.")
                     
             elif choice == "3":
-                print("\n🔄 Đang reset Machine ID...")
-                if reset_machine_id():
-                    print("✅ Đã reset Machine ID thành công!")
-                else:
-                    print("❌ Có lỗi xảy ra khi reset Machine ID.")
-                    
-            elif choice == "4":
                 print("\n🔄 Đang force kill Cursor AI...")
                 force_kill_cursor()
                 print("✅ Hoàn thành! Bây giờ có thể chạy logout.")
                     
-            elif choice == "5":
+            elif choice == "4":
                 print("\n🔄 Bắt đầu reset hoàn toàn Cursor AI...")
                 print("="*60)
                 
@@ -363,32 +487,38 @@ def main():
                 print("📋 Bước 1: Đóng Cursor AI...")
                 force_kill_success = force_kill_cursor()
                 
-                # Bước 2: Logout và xóa storage (KHÔNG xóa cache cursor)
-                print("\n📋 Bước 2: Logout và xóa dữ liệu...")
-                logout_success = logout_cursor()
-                storage_success = clear_user_storage()
-                
-                # Bước 3: Reset Machine ID
-                print("\n📋 Bước 3: Reset Machine ID...")
+                # Bước 2: Reset Machine ID sử dụng cursor-free-vip
+                print("\n📋 Bước 2: Reset Machine ID sử dụng cursor-free-vip...")
                 machine_id_success = reset_machine_id()
+                
+                # Bước 3: Mở trình duyệt để truy cập Cursor Dashboard Settings
+                print("\n📋 Bước 3: Mở trình duyệt để truy cập Cursor Dashboard Settings...")
+                browser_success = open_default_browser()
                 
                 print("\n" + "="*60)
                 print("📊 KẾT QUẢ RESET HOÀN TOÀN:")
                 print(f"  • Đóng Cursor AI: {'✅' if force_kill_success else '❌'}")
-                print(f"  • Logout: {'✅' if logout_success else '❌'}")
-                print(f"  • Xóa Storage: {'✅' if storage_success else '❌'}")
                 print(f"  • Reset Machine ID: {'✅' if machine_id_success else '❌'}")
+                print(f"  • Mở trình duyệt: {'✅' if browser_success else '❌'}")
                 
-                success_count = sum([force_kill_success, logout_success, storage_success, machine_id_success])
+                success_count = sum([force_kill_success, machine_id_success, browser_success])
                 
-                if success_count >= 3:
+                if success_count >= 2:
                     print("\n🎉 RESET HOÀN TOÀN THÀNH CÔNG!")
                     print("✅ Cursor AI đã được reset hoàn toàn.")
-                    print("ℹ️  Cache cursor được giữ nguyên (theo logic cursor-free-vip)")
+                    print("ℹ️  Sử dụng script từ cursor-free-vip để reset Machine ID")
+                    print("🌐 Trình duyệt đã được mở để truy cập Cursor Dashboard Settings")
                     print("🚀 Bạn có thể khởi động lại Cursor AI và đăng nhập với tài khoản mới.")
                 else:
                     print("\n⚠️  Một số thao tác có thể không thành công.")
                     print("🔧 Vui lòng thử lại hoặc chạy từng tùy chọn riêng lẻ.")
+                    
+            elif choice == "5":
+                print("\n🌐 Đang mở trình duyệt để truy cập Cursor Dashboard Settings...")
+                if open_default_browser():
+                    print("✅ Hoàn thành!")
+                else:
+                    print("⚠️  Có lỗi xảy ra khi mở trình duyệt.")
                     
             elif choice == "6":
                 print("\n👋 Tạm biệt!")
