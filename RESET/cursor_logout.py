@@ -300,37 +300,7 @@ def force_kill_cursor():
         print(f"⚠️  Không thể force kill Cursor AI: {e}")
         return False
 
-def complete_reset():
-    """Thực hiện reset hoàn toàn: Logout + Reset Machine ID"""
-    print("\n🔄 Bắt đầu reset hoàn toàn Cursor AI...")
-    print("="*60)
-    
-    # Bước 1: Logout và xóa storage
-    print("📋 Bước 1: Logout và xóa dữ liệu...")
-    logout_success = logout_cursor()
-    storage_success = clear_user_storage()
-    
-    # Bước 2: Reset Machine ID
-    print("\n📋 Bước 2: Reset Machine ID...")
-    machine_id_success = reset_machine_id()
-    
-    print("\n" + "="*60)
-    print("📊 KẾT QUẢ RESET HOÀN TOÀN:")
-    print(f"  • Logout: {'✅' if logout_success else '❌'}")
-    print(f"  • Xóa Storage: {'✅' if storage_success else '❌'}")
-    print(f"  • Reset Machine ID: {'✅' if machine_id_success else '❌'}")
-    
-    success_count = sum([logout_success, storage_success, machine_id_success])
-    
-    if success_count >= 2:
-        print("\n🎉 RESET HOÀN TOÀN THÀNH CÔNG!")
-        print("✅ Cursor AI đã được reset hoàn toàn.")
-        print("🚀 Bạn có thể khởi động lại Cursor AI và đăng nhập với tài khoản mới.")
-    else:
-        print("\n⚠️  Một số thao tác có thể không thành công.")
-        print("🔧 Vui lòng thử lại hoặc chạy từng tùy chọn riêng lẻ.")
-    
-    return success_count >= 2
+
 
 def show_menu():
     """Hiển thị menu tùy chọn"""
@@ -338,11 +308,11 @@ def show_menu():
     print("🚀 CURSOR AI LOGOUT TOOL")
     print("="*50)
     print("Chọn tùy chọn:")
-    print("1. Logout account trong Cursor AI (không xóa cache)")
+    print("1. 🔄 Reset Machine ID (chỉ reset ID, không xóa cache)")
     print("2. Logout account và xóa cache")
     print("3. Reset Machine ID (dựa trên cursor-free-vip)")
     print("4. Force kill Cursor AI (khuyến nghị trước khi logout)")
-    print("5. 🔥 RESET HOÀN TOÀN (Logout + Reset Machine ID)")
+    print("5. 🔥 RESET HOÀN TOÀN (Đóng Cursor AI + Logout + Reset Machine ID, KHÔNG xóa cache)")
     print("6. Thoát")
     print("="*50)
 
@@ -355,14 +325,12 @@ def main():
             choice = input("\nNhập lựa chọn của bạn (1-6): ").strip()
             
             if choice == "1":
-                print("\n🔄 Đang logout khỏi Cursor AI...")
-                logout_success = logout_cursor()
-                storage_success = clear_user_storage()
-                
-                if logout_success or storage_success:
-                    print("✅ Hoàn thành! Vui lòng khởi động lại Cursor AI.")
+                print("\n🔄 Đang reset Machine ID...")
+                if reset_machine_id():
+                    print("✅ Đã reset Machine ID thành công!")
+                    print("ℹ️  Chỉ reset machine ID, không xóa cache cursor")
                 else:
-                    print("❌ Có lỗi xảy ra khi logout.")
+                    print("❌ Có lỗi xảy ra khi reset Machine ID.")
                     
             elif choice == "2":
                 print("\n🔄 Đang logout và xóa cache...")
@@ -388,7 +356,39 @@ def main():
                 print("✅ Hoàn thành! Bây giờ có thể chạy logout.")
                     
             elif choice == "5":
-                complete_reset()
+                print("\n🔄 Bắt đầu reset hoàn toàn Cursor AI...")
+                print("="*60)
+                
+                # Bước 1: Force kill Cursor AI
+                print("📋 Bước 1: Đóng Cursor AI...")
+                force_kill_success = force_kill_cursor()
+                
+                # Bước 2: Logout và xóa storage (KHÔNG xóa cache cursor)
+                print("\n📋 Bước 2: Logout và xóa dữ liệu...")
+                logout_success = logout_cursor()
+                storage_success = clear_user_storage()
+                
+                # Bước 3: Reset Machine ID
+                print("\n📋 Bước 3: Reset Machine ID...")
+                machine_id_success = reset_machine_id()
+                
+                print("\n" + "="*60)
+                print("📊 KẾT QUẢ RESET HOÀN TOÀN:")
+                print(f"  • Đóng Cursor AI: {'✅' if force_kill_success else '❌'}")
+                print(f"  • Logout: {'✅' if logout_success else '❌'}")
+                print(f"  • Xóa Storage: {'✅' if storage_success else '❌'}")
+                print(f"  • Reset Machine ID: {'✅' if machine_id_success else '❌'}")
+                
+                success_count = sum([force_kill_success, logout_success, storage_success, machine_id_success])
+                
+                if success_count >= 3:
+                    print("\n🎉 RESET HOÀN TOÀN THÀNH CÔNG!")
+                    print("✅ Cursor AI đã được reset hoàn toàn.")
+                    print("ℹ️  Cache cursor được giữ nguyên (theo logic cursor-free-vip)")
+                    print("🚀 Bạn có thể khởi động lại Cursor AI và đăng nhập với tài khoản mới.")
+                else:
+                    print("\n⚠️  Một số thao tác có thể không thành công.")
+                    print("🔧 Vui lòng thử lại hoặc chạy từng tùy chọn riêng lẻ.")
                     
             elif choice == "6":
                 print("\n👋 Tạm biệt!")
