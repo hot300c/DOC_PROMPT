@@ -9,10 +9,15 @@ Tài liệu này ghi nhớ cách xử lý khi cần commit và push code với a
 ```bash
 # để kiểm tra nhánh
 cd aladdin
-git branch 
+# chuyen nhánh nếu cần
+git checkout feat/Convert_ws_Vaccine_ThongBaoKhongchan
+
+git branch
 git status
 git log --oneline
 ```
+
+
 
 ### 2. Add các file đã thay đổi
 ```bash

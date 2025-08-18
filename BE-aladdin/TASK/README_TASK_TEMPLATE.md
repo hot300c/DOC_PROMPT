@@ -151,6 +151,45 @@ BuildErrorResponse(message)
 
 ## 📋 Response Patterns
 
+### 0. Standardized Error Response Helper (Required)
+Implement a centralized error response and validation pattern in handlers:
+
+```csharp
+// Field to store last validation failure message
+private string? _failureMessage;
+
+// 1) Authentication should return Guid? and null on failure
+private Guid? AuthenticateUser(string sessionId)
+{
+    var session = db.Security.Sessions.With(SqlServerHints.Table.NoLock)
+        .FirstOrDefault(s => s.SessionId == sessionId);
+    return session?.UserId; // null => not authenticated
+}
+
+// 2) Input validation returns bool and sets _failureMessage
+private bool ValidateInput(Parameters @params)
+{
+    if (string.IsNullOrWhiteSpace(@params.SessionID)) { _failureMessage = "SessionID is required"; return false; }
+    if (@params.ClinicalSessionID == Guid.Empty) { _failureMessage = "ClinicalSessionID is required"; return false; }
+    return true;
+}
+
+// 3) Standardized error response (table with errorCode/errorMsg)
+private DataSet CreateErrorResponse(int errorCode, string errorMsg)
+{
+    var ds = new DataSet();
+    ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode, errorMsg }));
+    return ds;
+}
+
+// 4) Usage in Handle()
+var userId = AuthenticateUser(@params.SessionID);
+if (userId == null) return CreateErrorResponse(1, "Session ID is not valid");
+if (!ValidateInput(@params)) return CreateErrorResponse(2, _failureMessage ?? "Invalid input parameters");
+
+// For system errors, throw AppException(500, ...)
+```
+
 ### 1. Authentication & Authorization Errors
 ```csharp
 // Pattern 1: Return empty DataSet for auth failures (NO message in response)
