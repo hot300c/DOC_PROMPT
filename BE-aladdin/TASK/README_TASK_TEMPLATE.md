@@ -46,6 +46,7 @@ git push origin -f
 - **File Naming**: Đặt tên file theo cấu trúc thư mục handler
 - **Testing**: Bắt buộc tạo test cases cho mọi function
 - **Architecture**: **Kiến trúc code phải phân tách thành các function để code gọn gàng, dễ đọc, dễ bảo trì**
+- **non auto commit**: - Các commit thay đổi thì tôi tự chủ động thực hiện. 
 
 ### 📁 File Paths
 - **Handler Files**: `C:\PROJECTS\aladdin\WebService.Handlers\QAHosGenericDB`

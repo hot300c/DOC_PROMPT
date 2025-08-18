@@ -3,6 +3,25 @@
 ## Mục đích
 Tài liệu này hướng dẫn cách tìm kiếm và kiểm tra nơi gọi API trong dự án Genie Frontend (React/Next.js).
 
+## ⚡ QUY TẮC QUAN TRỌNG: SỬ DỤNG TÀI LIỆU TỔNG QUAN
+
+**TRƯỚC KHI BẮT ĐẦU TÌM KIẾM API, LUÔN ĐỌC TÀI LIỆU TỔNG QUAN:**
+- **File**: `DOCS_PROMPT/FE-genie/GENIE_CODEBASE_OVERVIEW.md`
+- **Mục đích**: Hiểu nhanh cấu trúc toàn bộ codebase để tìm kiếm hiệu quả
+- **Lợi ích**: 
+  - Không cần quét lại từ đầu mỗi lần
+  - Biết chính xác nơi tìm kiếm
+  - Hiểu pattern sử dụng chung
+  - Tiết kiệm thời gian tìm kiếm
+
+**QUY TRÌNH TÌM KIẾM TỐI ƯU:**
+1. ✅ **Đọc GENIE_CODEBASE_OVERVIEW.md** (5 phút)
+2. ✅ **Xác định API cần tìm** (1 phút)  
+3. ✅ **Áp dụng search strategy** từ tài liệu tổng quan (10-15 phút)
+4. ✅ **Tạo báo cáo README_FOUND.md** (5 phút)
+
+**TỔNG THỜI GIAN**: ~25 phút thay vì 1-2 giờ như trước!
+
 ## Phạm vi tìm kiếm
 **Chỉ tìm kiếm trong project Genie**: `C:\PROJECTS\genie`
 - Không bao gồm các project khác như aladdin, qas-app, qas-db, etc.
@@ -12,6 +31,15 @@ Tài liệu này hướng dẫn cách tìm kiếm và kiểm tra nơi gọi API 
 - Để làm sao quét hết mọi trường hợp mà có thể hay nghi vấn gọi vào API đó.
 
 ## Các bước thực hiện
+
+### Bước 0: ⚡ ĐỌC TÀI LIỆU TỔNG QUAN (BẮT BUỘC)
+- **File**: `DOCS_PROMPT/FE-genie/GENIE_CODEBASE_OVERVIEW.md`
+- **Thời gian**: 5 phút
+- **Mục đích**: 
+  - Hiểu cấu trúc toàn bộ codebase
+  - Nắm vững service patterns và component patterns
+  - Biết chính xác nơi tìm kiếm
+  - Hiểu common import patterns và business logic locations
 
 ### Bước 1: Xác định tên API cần tìm
 - Ghi nhớ chính xác tên API (ví dụ: `ws_MDM_Patient_CheckExists`)
@@ -351,6 +379,12 @@ git grep -A 5 -B 5 "API_NAME"
 
 ## Best Practices
 
+### 0. ⚡ SỬ DỤNG TÀI LIỆU TỔNG QUAN (BẮT BUỘC)
+- **LUÔN ĐỌC**: `GENIE_CODEBASE_OVERVIEW.md` trước khi bắt đầu
+- **Hiểu cấu trúc**: App directory, service patterns, component patterns
+- **Nắm vững**: Common import patterns, business logic locations
+- **Tiết kiệm thời gian**: Không cần quét lại từ đầu mỗi lần
+
 ### 1. Tìm kiếm có hệ thống
 - Bắt đầu với tên chính xác của API
 - Tìm kiếm function wrapper (thường có prefix `fetch_`)
@@ -451,6 +485,12 @@ git grep -A 5 -B 5 "API_NAME"
 13. **QUAN TRỌNG**: Kiểm tra các keyboard shortcuts và form submissions
 14. **QUAN TRỌNG**: Tìm kiếm các modal và dialog triggers
 15. **QUAN TRỌNG**: Phân tích các useEffect dependencies
+
+### ⚡ NẾU VẪN KHÔNG TÌM THẤY:
+1. **ĐỌC LẠI**: `GENIE_CODEBASE_OVERVIEW.md` để hiểu sâu hơn
+2. **Kiểm tra**: Có bỏ sót pattern nào không
+3. **Tìm kiếm**: Trong các file tương tự (ví dụ: cùng module)
+4. **Phân tích**: Business logic flow để tìm nơi gọi gián tiếp
 
 ## Bước 6: Tạo tài liệu README_FOUND.md
 
@@ -819,6 +859,52 @@ API này đóng vai trò quan trọng trong việc [mô tả vai trò].
 10. **QUAN TRỌNG**: Bao gồm cả các nơi gọi gián tiếp và UI components
 11. **QUAN TRỌNG**: Ghi chú lý do thiếu sót nếu có trong báo cáo ban đầu
 12. **QUAN TRỌNG**: Phân tích toàn diện tất cả các pattern sử dụng
+
+### 6.5. Rule BẮT BUỘC cho User Journey & Testing Scenarios
+
+- **Mức chi tiết yêu cầu cho MỖI flow**:
+  - **Đường dẫn màn hình**: Ghi rõ menu → module → màn hình (ví dụ: `Menu → Ngoại trú → Khám bệnh`).
+  - **Tiền điều kiện**: ID/Session/Role/Config cần thiết (ví dụ: `PatientID`, `ClinicalSessionID`, quyền User, cơ sở `FacID`).
+  - **Bước thao tác UI cụ thể**: Liệt kê theo thứ tự từng click/nhập/chọn, nêu rõ tên nút/label trường nhập, và phím tắt (nếu có).
+  - **Thời điểm API được gọi**: Nêu rõ hành động nào trigger API, và (nếu xác định) function/hook gọi (ví dụ: `useChiDinhVaccine → ws_Vaccine_ThongBaoKhongchan`).
+  - **Kỳ vọng hiển thị**: Modal/Dialog/Toast nào xuất hiện, nội dung message chính, icon trạng thái, và hành vi khi đóng.
+  - **Nhánh quyết định**: Nếu có confirm, mô tả nhánh A/B (Đồng ý/Từ chối) và luồng tiếp theo (API phụ được gọi gì).
+  - **Kết quả dữ liệu**: Ghi rõ field chính trong response được sử dụng (ví dụ: `data.table[0].mess`, `IsBlock`...).
+  - **Dữ liệu mẫu**: Cung cấp input mẫu để tester tái hiện (ID, mã bệnh nhân, thông số form...).
+  - **Negative cases**: Thiếu dữ liệu, quyền không đủ, timeout/network error, 4xx/5xx, dữ liệu biên; nêu kỳ vọng UI tương ứng.
+  - **Mapping UI → Code**: Đường dẫn component/hook/service và handler (nếu xác định được).
+
+- **Số lượng flow tối thiểu**: 2–3 flow đại diện các màn hình chính có liên quan đến API (ví dụ: flow tại màn hình A, flow tại dialog B, flow thao tác bằng hotkey).
+
+- **Mini-template bắt buộc cho mỗi flow**:
+```markdown
+#### Flow [Tên flow/ngữ cảnh]
+- **Đường dẫn màn hình**: [Menu → Module → Màn hình]
+- **Tiền điều kiện**: [IDs/Role/Config/...]
+- **Bước thao tác**:
+  1) [Click nút "..."]
+  2) [Nhập trường "...": giá trị]
+  3) [Chọn dropdown "..."]
+  4) [Phím tắt nếu có]
+- **Trigger API**: `[TÊN_API]` (tại [tên function/hook] nếu biết)
+- **Kỳ vọng UI**: [Dialog/Toast/Message], [nội dung chính], [hành vi]
+- **Nhánh quyết định**:
+  - A) [Hành động], tiếp tục → [API phụ/luồng tiếp]
+  - B) [Hành động], dừng → [trạng thái]
+- **Kết quả dữ liệu**: [field chính từ response và cách sử dụng]
+- **Dữ liệu mẫu**: [ví dụ input]
+- **Mapping UI → Code**: [`app/.../Component.tsx` → `handleXxx`; `app/lib/services/...ts` → `fetch_ws_...`]
+```
+
+### 6.6. Definition of Done (DoD) cho README_FOUND.md
+
+- **Bắt buộc đạt tất cả**:
+  - Có tối thiểu 2 flow User Journey theo mini-template ở trên, mỗi flow đầy đủ 10 mục.
+  - Chỉ rõ ít nhất 1 vị trí Mapping UI → Code cho mỗi flow (nếu không xác định được, phải nêu lý do và hướng dẫn tìm tiếp).
+  - Liệt kê Negative cases tối thiểu 3 tình huống và kỳ vọng UI tương ứng.
+  - Có cURL mẫu và Request/Response mẫu để test nhanh.
+  - Tổng hợp “Mục đích chính” và “Pattern sử dụng” ngắn gọn, bám sát usage thực tế.
+  - Checklist cuối tài liệu được tick đủ cho API đang xét.
 
 ## Kết luận
 
