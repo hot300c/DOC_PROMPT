@@ -9,8 +9,7 @@ Tài liệu này ghi nhớ cách xử lý khi cần commit và push code với a
 ```bash
 # để kiểm tra nhánh
 cd aladdin
-# chuyen nhánh nếu cần
-git checkout feat/Convert_ws_Vaccine_ThongBaoKhongchan
+git checkout fix/ws_QuanLyTapTrung
 
 git branch
 git status
@@ -28,14 +27,15 @@ git add -A
 
 ### 3. Commit với amend (cập nhật commit cuối cùng)
 ```bash
-git commit --amend -m "Fix some Testcase YAML by the fix datetime"
+git commit --amend -m "fix for column name as SP"
+# git commit --amend -m "Adjust parameters to match the values and names sent from the Front-end"
 ```
 
 ### 4. Push code lên remote (force push vì đã amend)
 ```bash
 #git push origin <tên_nhánh> --force
 # hoặc
-git push origin feat/Convert_ws_BIL_Invoice_Save_Vaccine --force-with-lease
+git push origin fix/Convert_ws_Vaccine_KiemTraTrungNhomBenhDangMo --force-with-lease
 ```
 
 ## Lưu ý quan trọng

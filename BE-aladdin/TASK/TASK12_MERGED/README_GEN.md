@@ -20,11 +20,11 @@ Handler `ws_Vaccine_KiemTraTrungNhomBenhDangMo` đã được refactor để tá
 - **Reusable:** Các function có thể được tái sử dụng
 
 ### 3. Test Cases Created
-- **Test-01.yaml**: Trường hợp có phác đồ trùng (count > 1) - [Link](aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-01.yaml)
-- **Test-02.yaml**: Trường hợp không có phác đồ trùng (count <= 1) - [Link](aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-02.yaml)
-- **Test-03.yaml**: Trường hợp không có dữ liệu - [Link](aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-03.yaml)
-- **Test-04.yaml**: Trường hợp PatientID không tồn tại - [Link](aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-04.yaml)
-- **Test-05.yaml**: Trường hợp MaChung không tồn tại - [Link](aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-05.yaml)
+- **Test-01.yaml**: Trường hợp có phác đồ trùng (count > 1) - [Link](file:///C:/PROJECTS/aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-01.yaml)
+- **Test-02.yaml**: Trường hợp không có phác đồ trùng (count <= 1) - [Link](file:///C:/PROJECTS/aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-02.yaml)
+- **Test-03.yaml**: Trường hợp không có dữ liệu - [Link](file:///C:/PROJECTS/aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-03.yaml)
+- **Test-04.yaml**: Trường hợp PatientID không tồn tại - [Link](file:///C:/PROJECTS/aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-04.yaml)
+- **Test-05.yaml**: Trường hợp MaChung không tồn tại - [Link](file:///C:/PROJECTS/aladdin/WebService.Handlers.Tests/TestCases/QAHosGenericDB/ws_Vaccine_KiemTraTrungNhomBenhDangMo/Test-05.yaml)
 
 ### 4. Business Logic Preserved
 - Tất cả business logic gốc được giữ nguyên
