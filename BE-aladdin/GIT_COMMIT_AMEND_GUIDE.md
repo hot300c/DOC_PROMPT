@@ -16,6 +16,15 @@ git status
 git log --oneline
 ```
 
+Convert SP to handle ws_BIL_Invoice_Save_Vaccine: DONE
+feat/Convert_ws_Vaccine_KiemTraCanhBaoTiemVaccineTrungNhomBenh: DONE
+https://git.vnvc.info/vnvc-qas/aladdin/-/tree/feat/Convert_ws_Vaccine_ThongBaoKhongchan: 
+
+
+
+review code giúp tôi theo rule trong task template. Nếu code chưa tuân thủ đúng thì cập nhật lại nhưng vẫn đảm bảo logic code đúng đắn vì tôi đã testing passed nó rồi.
+
+review lại code trang này mà phải tuân thủ theo rule của task template. Và cập nhật nó khi chưa tuân thủ đầy đủ. Cũng test lại test case luôn.
 
 
 ### 2. Add các file đã thay đổi
@@ -27,7 +36,7 @@ git add -A
 
 ### 3. Commit với amend (cập nhật commit cuối cùng)
 ```bash
-git commit --amend -m "fix for column name as SP"
+git commit --amend -m "Refactor code to follow coding conventions"
 # git commit --amend -m "Adjust parameters to match the values and names sent from the Front-end"
 ```
 
@@ -35,8 +44,13 @@ git commit --amend -m "fix for column name as SP"
 ```bash
 #git push origin <tên_nhánh> --force
 # hoặc
-git push origin fix/Convert_ws_Vaccine_KiemTraTrungNhomBenhDangMo --force-with-lease
+git push origin feat/Convert_ws_Vaccine_KiemTraCanhBaoTiemVaccineTrungNhomBenh --force-with-lease
 ```
+
+### 5. Check
+https://git.vnvc.info/vnvc-qas/aladdin/-/merge_requests
+
+
 
 ## Lưu ý quan trọng
 

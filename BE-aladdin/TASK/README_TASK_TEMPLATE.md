@@ -4,6 +4,8 @@
 - [Git Workflow](#git-workflow)
 - [Technical Requirements](#technical-requirements)
 - [Code Architecture Rules](#code-architecture-rules)
+  - [Code Optimization Rules](#code-optimization-rules-bắt-buộc)
+  - [Functional Programming Principles](#functional-programming-principles)
 - [Response Patterns](#response-patterns)
 - [File Structure](#file-structure)
 - [Testing Guidelines](#testing-guidelines)
@@ -59,13 +61,166 @@ git push origin -f
 
 ## 🔧 Code Architecture Rules
 
+### Code Optimization Rules (BẮT BUỘC)
+
+#### 1. Remove Redundant Functions ✅
+- **Problem**: Wrapper functions that only call pure functions
+- **Solution**: Call pure functions directly
+- **Example**:
+```csharp
+// ❌ Avoid: Redundant wrapper
+private string BuildDescription(string note) => BuildDescriptionPure(note);
+
+// ✅ Use: Direct call to pure function
+var description = BuildDescriptionPure(@params.Note);
+```
+
+#### 2. Remove Redundant Variables ✅
+- **Problem**: Unnecessary fields that only store simple values
+- **Solution**: Use direct string literals or values
+- **Example**:
+```csharp
+// ❌ Avoid: Redundant variable
+private string? _failureMessage;
+_failureMessage = "Business rule validation error";
+return CreateErrorResponse(2, _failureMessage ?? "Business rules validation failed");
+
+// ✅ Use: Direct string literal
+return CreateErrorResponse(2, "Business rules validation failed");
+```
+
+#### 3. Use Data Annotations Instead of Manual Validation ✅
+- **Problem**: Manual validation functions that duplicate data annotation checks
+- **Solution**: Use `[Required]`, `[Range]`, `[DefaultValue]` in Parameters class
+- **Example**:
+```csharp
+// ❌ Avoid: Manual validation
+private bool ValidateInput(Parameters @params)
+{
+    if (string.IsNullOrWhiteSpace(@params.SessionID)) return false;
+    if (@params.CounterID < 0) return false;
+    return true;
+}
+
+// ✅ Use: Data annotations in Parameters class
+public class Parameters
+{   
+    [Range(0, int.MaxValue, ErrorMessage = "CounterID must be non-negative")]
+    public int CounterID { get; set; }
+}
+```
+
+#### 4. Eliminate Empty Functions ✅
+- **Problem**: Functions that only return `true` without any logic
+- **Solution**: Remove them completely
+- **Example**:
+```csharp
+// ❌ Avoid: Empty function
+private bool ValidateBusinessRules(Parameters parameters)
+{
+    try
+    {
+        // No actual validation logic
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DEBUG: Error in ValidateBusinessRules: {ex.Message}");
+        return false;
+    }
+}
+
+// ✅ Use: Remove completely, rely on data annotations
+// All basic validations are handled by data annotations in Parameters class
+```
+
+#### 5. Direct Pure Function Calls ✅
+- **Problem**: Calling pure functions through unnecessary wrappers
+- **Solution**: Call pure functions directly in the main handler
+- **Example**:
+```csharp
+// ❌ Avoid: Wrapper function
+private string BuildInvoiceNo(Parameters @params) => BuildInvoiceNoPure(@params, db, dateTimeService);
+
+// ✅ Use: Direct call in Handle method
+var invoiceNo = BuildInvoiceNoPure(ExtractInvoiceCalculationData(@params), db, dateTimeService);
+```
+
+### Functional Programming Principles
+
+#### 1. Pure Function Principle ✅
+- **Definition**: Hàm không có side effects và luôn trả về cùng output cho cùng input
+- **Implementation**: Tách logic tính toán thành pure functions riêng biệt
+- **Benefits**: Dễ test, predictable, composable
+
+```csharp
+// Pure function example
+private static decimal CalculatePaymentAmountLogic(PaymentCalculationData data)
+{
+    if (data.IsMuiNgoaiDanhMuc || data.IsTiemNgoai)
+        return 0;
+    
+    return data.GiaMuiTiem + data.GiaChenhLechChuaGiam - data.TienGiam;
+}
+```
+
+#### 2. Single Responsibility Principle ✅
+- **Definition**: Mỗi function chỉ có một lý do để thay đổi - một trách nhiệm duy nhất
+- **Implementation**: Tách riêng data extraction, business logic, database operations
+- **Benefits**: Dễ maintain, test, reuse
+
+```csharp
+// Single responsibility examples
+private static PaymentCalculationData ExtractPaymentData(DataRow row) { /* Data extraction only */ }
+private static decimal CalculatePaymentAmountLogic(PaymentCalculationData data) { /* Calculation only */ }
+private static int? GetSequenceNumberFromDatabase(SequenceLookupData data, AladdinDataConnection db) { /* DB query only */ }
+```
+
+#### 3. Immutability Principle ✅
+- **Definition**: Tránh thay đổi dữ liệu trực tiếp - tạo instance mới thay thế
+- **Implementation**: Sử dụng `readonly struct` với `init` properties
+- **Benefits**: Predictable, thread-safe, easier debugging
+
+```csharp
+// Immutable data structure
+private readonly struct PaymentCalculationData
+{
+    public bool IsMuiNgoaiDanhMuc { get; init; }
+    public decimal GiaMuiTiem { get; init; }
+    // ... other properties
+}
+
+// Returns new DataTable instead of modifying input
+private DataTable CalculatePaymentAmount(DataTable resultData)
+{
+    var newResultData = resultData.Clone(); // Create new instance
+    // ... process and return new instance
+    return newResultData;
+}
+```
+
+#### 4. Functional Pipeline Pattern
+- **Definition**: Kết hợp các transformations qua pipeline pattern
+- **Implementation**: Sử dụng extension method `Pipe<T>()`
+- **Benefits**: Readable, composable, maintainable
+
+```csharp
+// Functional pipeline
+var processedData = resultData
+    .Pipe(data => CalculatePaymentAmount(data))           // Pure calculation
+    .Pipe(data => UpdateSequenceNumber(data, db))         // Database + transformation
+    .Pipe(data => UpdateContractNumber(data, db))         // Database + transformation
+    .Pipe(data => UpdateUsageObjectID(data, db))          // Database + transformation
+    .Pipe(data => UpdateThoiGianGianCach(data, db));      // Database + transformation
+```
+
 ### 1. Function Separation (BẮT BUỘC)
 
-#### Authentication & Validation
+#### Validation Business
 ```csharp
-AuthenticateUser(sessionId)
-ValidateInput(parameters)
-ValidateBusinessRules(data)
+// Use Data Annotations in Parameters class for basic validation
+// Only complex business logic validations should be in separate functions
+// Avoid redundant ValidateInput functions that duplicate data annotation checks
 ```
 
 #### Data Retrieval
@@ -76,12 +231,35 @@ GetPatientData(patientId)
 GetRelatedData(parameters)
 ```
 
-#### Business Logic
+#### Data Extraction (Pure Functions)
 ```csharp
-ApplyBusinessLogic(data, parameters)
-CalculatePayment(amount, discount)
-ProcessVaccineSchedule(patientData)
-ValidateVaccineCompatibility(vaccineData)
+ExtractPaymentData(DataRow row)           // Extract payment calculation data
+ExtractSequenceData(DataRow row)          // Extract sequence lookup data
+ExtractContractData(DataRow row)          // Extract contract lookup data
+ExtractUsageObjectData(DataRow row)       // Extract usage object data
+```
+
+#### Business Logic (Pure Functions)
+```csharp
+CalculatePaymentAmountLogic(paymentData)  // Pure calculation function
+ApplyBusinessLogic(data, parameters)      // Business rules application
+ProcessVaccineSchedule(patientData)       // Schedule processing
+ValidateVaccineCompatibility(vaccineData) // Validation logic
+```
+
+#### Database Operations
+```csharp
+GetSequenceNumberFromDatabase(data, db)   // Database query only
+GetContractNumberFromDatabase(data, db)   // Database query only
+GetUsageObjectFromDatabase(data, db)      // Database query only
+```
+
+#### Data Transformation
+```csharp
+CalculatePaymentAmount(dataTable)         // Transform with calculation
+UpdateSequenceNumber(dataTable, db)       // Transform with DB lookup
+UpdateContractNumber(dataTable, db)       // Transform with DB lookup
+UpdateUsageObjectID(dataTable, db)        // Transform with DB lookup
 ```
 
 #### Data Updates
@@ -125,6 +303,21 @@ BuildErrorResponse(message)
 - ✅ **Logging**: Console.WriteLine cho debug
 - ✅ **Graceful Degradation**: Xử lý lỗi một cách graceful
 
+#### Functional Programming Requirements
+- ✅ **Pure Functions**: Tách riêng logic tính toán thành pure functions (không side effects)
+- ✅ **Data Extraction**: Tách riêng việc extract data từ DataRow thành functions riêng
+- ✅ **Database Separation**: Tách riêng database operations thành functions riêng
+- ✅ **Immutable Data**: Sử dụng `readonly struct` với `init` properties cho data structures
+- ✅ **Pipeline Pattern**: Sử dụng functional pipeline để kết hợp các transformations
+- ✅ **No Direct Modification**: Không thay đổi trực tiếp input data, tạo instance mới
+
+#### Code Optimization Requirements
+- ✅ **Remove Redundant Functions**: Loại bỏ wrapper functions không cần thiết (e.g., `BuildDescription()` gọi `BuildDescriptionPure()`)
+- ✅ **Remove Redundant Variables**: Loại bỏ biến dư thừa (e.g., `_failureMessage` khi có thể dùng string trực tiếp)
+- ✅ **Use Data Annotations**: Sử dụng `[Required]`, `[Range]`, `[DefaultValue]` thay vì validation thủ công
+- ✅ **Eliminate Empty Functions**: Loại bỏ functions rỗng (e.g., `ValidateBusinessRules()` chỉ return `true`)
+- ✅ **Direct Pure Function Calls**: Gọi trực tiếp pure functions thay vì qua wrapper
+
 ### 4. Development Process Rules
 
 #### Code Standards
@@ -134,6 +327,19 @@ BuildErrorResponse(message)
 - ✅ **NoLock Hints**: Code cũng phải có `With(SqlServerHints.Table.NoLock)`
 - ✅ **String Output**: Chuỗi xuất ra thì nên dùng: `singleQuote: true`
 - ✅ **Logic Preservation**: Code phải đảm bảo đúng logic như store procedure
+
+#### Functional Programming Principles (BẮT BUỘC)
+- ✅ **Pure Function Principle**: Hàm không có side effects, cùng input luôn cho cùng output
+- ✅ **Single Responsibility Principle**: Mỗi hàm chỉ làm một việc duy nhất
+- ✅ **Immutability Principle**: Không thay đổi trực tiếp dữ liệu đầu vào, tạo instance mới
+
+#### Code Architecture Best Practices
+- ✅ **Function Separation**: Tách code thành các function nhỏ, chuyên biệt
+- ✅ **Data Extraction**: Tách riêng việc extract data từ DataRow
+- ✅ **Business Logic**: Tách riêng logic tính toán thành pure functions
+- ✅ **Database Operations**: Tách riêng các thao tác database
+- ✅ **Immutable Data Structures**: Sử dụng `readonly struct` với `init` properties
+- ✅ **Functional Pipeline**: Sử dụng pipeline pattern để kết hợp các function
 
 #### Documentation Requirements
 - ✅ **README_GEN.md**: Khi có update nào trong source code thì cũng nên đồng bộ vào file `README_GEN.md`
@@ -155,24 +361,9 @@ BuildErrorResponse(message)
 Implement a centralized error response and validation pattern in handlers:
 
 ```csharp
-// Field to store last validation failure message
-private string? _failureMessage;
-
-// 1) Authentication should return Guid? and null on failure
-private Guid? AuthenticateUser(string sessionId)
-{
-    var session = db.Security.Sessions.With(SqlServerHints.Table.NoLock)
-        .FirstOrDefault(s => s.SessionId == sessionId);
-    return session?.UserId; // null => not authenticated
-}
-
-// 2) Input validation returns bool and sets _failureMessage
-private bool ValidateInput(Parameters @params)
-{
-    if (string.IsNullOrWhiteSpace(@params.SessionID)) { _failureMessage = "SessionID is required"; return false; }
-    if (@params.ClinicalSessionID == Guid.Empty) { _failureMessage = "ClinicalSessionID is required"; return false; }
-    return true;
-}
+// 2) Input validation - Use Data Annotations instead of manual validation
+// All basic validations should be handled by [Required], [Range], [DefaultValue] in Parameters class
+// Only complex business logic validations should be in separate functions
 
 // 3) Standardized error response (table with errorCode/errorMsg)
 private DataSet CreateErrorResponse(int errorCode, string errorMsg)
@@ -185,7 +376,7 @@ private DataSet CreateErrorResponse(int errorCode, string errorMsg)
 // 4) Usage in Handle()
 var userId = AuthenticateUser(@params.SessionID);
 if (userId == null) return CreateErrorResponse(1, "Session ID is not valid");
-if (!ValidateInput(@params)) return CreateErrorResponse(2, _failureMessage ?? "Invalid input parameters");
+// All basic validations are handled by data annotations in Parameters class
 
 // For system errors, throw AppException(500, ...)
 ```
@@ -272,19 +463,6 @@ return dataSet;
 return new List<object> { new { Result = 1, Data = result } }.ToDataSet();
 ```
 
-### 6. Authentication Handler Pattern
-```csharp
-// Add _failureMessage field to track authentication failures
-private string? _failureMessage;
-
-// Set failure message when authentication fails
-if (userId == null)
-{
-    _failureMessage = $"Session ID '{sessionId}' is not valid.";
-    return new DataSet();
-}
-```
-
 ### 7. Error Code Convention
 | Error Code | Meaning | Description |
 |------------|---------|-------------|
@@ -308,6 +486,8 @@ if (userId == null)
 ## 🏗️ File Structure
 
 ### 1. Function Structure Template
+
+#### Standard Function Template
 ```csharp
 /// <summary>
 /// Mô tả chức năng của function
@@ -329,7 +509,70 @@ private ReturnType FunctionName(ParameterType paramName)
 }
 ```
 
+#### Pure Function Template (Recommended)
+```csharp
+/// <summary>
+/// Pure function - no side effects, same output for same input
+/// </summary>
+/// <param name="data">Input data</param>
+/// <returns>Calculated result</returns>
+private static ReturnType PureFunctionName(InputDataType data)
+{
+    // Pure calculation logic - no side effects
+    return calculatedResult;
+}
+```
+
+#### Data Extraction Function Template
+```csharp
+/// <summary>
+/// Extracts data from DataRow (Pure function)
+/// </summary>
+/// <param name="row">DataRow containing data</param>
+/// <returns>Extracted data structure</returns>
+private static DataStructure ExtractDataFromRow(DataRow row)
+{
+    return new DataStructure
+    {
+        Property1 = Convert.ToType(row["ColumnName1"]),
+        Property2 = Convert.ToType(row["ColumnName2"]),
+        // ... other properties
+    };
+}
+```
+
+#### Immutable Data Structure Template
+```csharp
+/// <summary>
+/// Immutable data structure for type safety
+/// </summary>
+private readonly struct DataStructure
+{
+    public Type1 Property1 { get; init; }
+    public Type2 Property2 { get; init; }
+    // ... other properties
+}
+```
+
+#### Functional Pipeline Template
+```csharp
+// Extension method for functional pipeline
+public static class FunctionalExtensions
+{
+    public static T Pipe<T>(this T input, Func<T, T> func) => func(input);
+}
+
+// Usage in main handler
+var processedData = inputData
+    .Pipe(data => ExtractData(data))
+    .Pipe(data => CalculateBusinessLogic(data))
+    .Pipe(data => TransformData(data, db))
+    .Pipe(data => CreateResult(data));
+```
+
 ### 2. Main Handler Structure Template
+
+#### Standard Handler Template
 ```csharp
 public override DataSet Handle(Parameters @params)
 {
@@ -361,14 +604,52 @@ public override DataSet Handle(Parameters @params)
 }
 ```
 
+#### Functional Handler Template (Recommended)
+```csharp
+public override DataSet Handle(Parameters @params)
+{
+    try
+    {
+        // 1. Get initial data
+        var resultData = GetContractDetailData(@params);
+        if (resultData == null || resultData.Rows.Count == 0)
+        {
+            return CreateEmptyDataSet();
+        }
+
+        // 2. Process data through functional pipeline
+        var processedData = resultData
+            .Pipe(data => CalculatePaymentAmount(data))           // Pure calculation
+            .Pipe(data => UpdateSequenceNumber(data, db))         // Database + transformation
+            .Pipe(data => UpdateContractNumber(data, db))         // Database + transformation
+            .Pipe(data => UpdateUsageObjectID(data, db))          // Database + transformation
+            .Pipe(data => UpdateThoiGianGianCach(data, db));      // Database + transformation
+
+        // 3. Return result
+        return CreateResultDataSet(processedData);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DEBUG: Exception occurred: {ex.Message}");
+        return CreateEmptyDataSet();
+    }
+}
+```
+
 ### 3. Parameters Class Template
 ```csharp
 public class Parameters
 {
-    public string SessionID { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Param1 is required")]
+    [DefaultValue("")]
     public string Param1 { get; set; } = string.Empty;
+    
+    [DefaultValue(0)]
+    [Range(0, int.MaxValue, ErrorMessage = "Param2 must be non-negative")]
     public int Param2 { get; set; }
-    // Add other parameters as needed
+    
+    // Add other parameters with appropriate data annotations
+    // Use [Required], [Range], [DefaultValue] for validation
 }
 ```
 
@@ -510,8 +791,18 @@ Việc refactor đã thành công với các lợi ích đạt được.
 ### Development Checklist
 - [ ] Analyze stored procedure logic
 - [ ] Create README_TODO_BEFORE_GEN.md
-- [ ] Implement handler with function separation
+- [ ] Design function separation following 3 principles:
+  - [ ] Pure Function: Tách logic tính toán thành pure functions
+  - [ ] Single Responsibility: Mỗi function chỉ làm một việc
+  - [ ] Immutability: Không thay đổi input data trực tiếp
+- [ ] Implement handler with functional pipeline pattern
+- [ ] Create immutable data structures (`readonly struct`)
 - [ ] Add try-catch and logging
+- [ ] **Code Optimization Review**:
+  - [ ] Remove redundant wrapper functions (e.g., `BuildDescription()` calling `BuildDescriptionPure()`)
+  - [ ] Remove redundant variables (e.g., `_failureMessage` when direct strings can be used)
+  - [ ] Use Data Annotations instead of manual validation
+  - [ ] Eliminate empty functions (e.g., `ValidateBusinessRules()` that only return `true`)
 - [ ] Compile and test handler
 - [ ] Create test cases
 - [ ] Run all tests
@@ -519,14 +810,35 @@ Việc refactor đã thành công với các lợi ích đạt được.
 - [ ] Commit and push changes
 
 ### Common Patterns
-- **Auth Check (Old)**: `if (userId == null) { _failureMessage = $"Session ID '{sessionId}' is not valid."; return new DataSet(); }`
-- **Auth Check (New)**: `if (userId == null) { _failureMessage = $"Session ID '{sessionId}' is not valid."; var ds = new DataSet(); ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 1, errorMsg = "Session ID is not valid" })); return ds; }`
+
+#### Response Patterns
 - **Validation (Old)**: `if (!isValid) return new List<object> { new { Results = "message" } }.ToDataSet();`
-- **Validation (New)**: `if (!isValid) { var ds = new DataSet(); ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 2, errorMsg = "message" })); return ds; }`
+- **Validation (New)**: `if (!isValid) return CreateErrorResponse(2, "message");`
 - **Success (Old)**: `return new List<object> { new { Results = "Ok" } }.ToDataSet();`
-- **Success (New)**: `var ds = new DataSet(); ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 0, errorMsg = "Success" })); return ds;`
+- **Success (New)**: `return CreateSuccessResponse(data);`
 - **No Data (Old)**: `if (!data.Any()) return new DataSet();`
-- **No Data (New)**: `if (!data.Any()) { var ds = new DataSet(); ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 0, errorMsg = "No data found" })); return ds; }`
+- **No Data (New)**: `if (!data.Any()) return CreateErrorResponse(3, "No data found");`
+
+#### Code Optimization Patterns
+- **Remove Redundant Functions**: Avoid wrapper functions that only call pure functions (e.g., `BuildDescription()` calling `BuildDescriptionPure()`)
+- **Remove Redundant Variables**: Avoid unnecessary fields like `_failureMessage` when direct string literals can be used
+- **Use Data Annotations**: Replace manual validation with `[Required]`, `[Range]`, `[DefaultValue]` in Parameters class
+- **Eliminate Empty Functions**: Remove functions like `ValidateBusinessRules()` that only return `true` without any logic
+
+#### Functional Programming Patterns
+- **Data Extraction**: `private static DataStructure ExtractData(DataRow row) => new DataStructure { Property = Convert.ToType(row["Column"]) };`
+- **Pure Function**: `private static decimal CalculateLogic(DataStructure data) => data.Condition ? 0 : data.Value1 + data.Value2;`
+- **Immutable Struct**: `private readonly struct DataStructure { public Type Property { get; init; } }`
+- **Pipeline Pattern**: `var result = data.Pipe(ExtractData).Pipe(CalculateLogic).Pipe(TransformData);`
+- **Database Operation**: `private static Type? GetFromDatabase(LookupData data, AladdinDataConnection db) => db.Table.Where(...).Select(...).FirstOrDefault();`
+
+#### Code Optimization Patterns
+- **Remove Wrapper**: `// Instead of: BuildDescription() calling BuildDescriptionPure()`
+- **Direct Call**: `// Use: BuildDescriptionPure() directly`
+- **Remove Redundant Variable**: `// Instead of: _failureMessage = "error"; return _failureMessage;`
+- **Direct String**: `// Use: return "error"; directly`
+- **Data Annotations**: `[Required(ErrorMessage = "Field is required")]` instead of manual validation
+- **Eliminate Empty Functions**: Remove functions that only return `true` without logic
 
 ### File Naming Convention
 - **Handler**: `ws_[Module]_[FunctionName].cs`

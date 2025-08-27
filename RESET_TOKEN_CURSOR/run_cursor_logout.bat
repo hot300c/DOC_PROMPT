@@ -1,9 +1,9 @@
 @echo off
-REM Cursor AI Close Runner Script
-REM This script runs the Python cursor close script
+REM Cursor AI Close & Setup Runner Script
+REM This script runs the Python cursor close and setup script
 
 echo ========================================
-echo    CURSOR AI CLOSE RUNNER
+echo    CURSOR AI CLOSE & SETUP RUNNER
 echo ========================================
 echo.
 
@@ -29,10 +29,18 @@ if not exist "%~dp0cursor_logout.py" (
 echo Python found: 
 python --version
 echo.
-echo Running Cursor AI Close Script...
+echo Running Cursor AI Close & Setup Script...
 echo.
-echo NOTE: This script only closes Cursor AI processes
-echo       No data, cache, or settings will be deleted
+echo IMPORTANT: This script will ask for confirmation that you have
+echo already logged out of your Cursor account before proceeding.
+echo.
+echo This script will:
+echo 1. Ask for logout confirmation
+echo 2. Close Cursor AI processes
+echo 3. Open Terminal with PowerShell command for cursor-free-vip
+echo 4. Open Chrome with profile for account deletion
+echo 5. Ask if you want to reopen Cursor after account deletion
+echo 6. Clean up Terminal and Chrome after setup completion
 echo.
 
 REM Run the Python script
