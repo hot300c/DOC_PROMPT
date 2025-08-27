@@ -459,46 +459,6 @@ const onImport = async (file: File) => {
 15. **Export Validation**: Thông báo tường minh khi không có dữ liệu để export
 16. **Modal UI**: Close button sử dụng icon X với hover effect
 
-## B2B Company Management - Integration Rules
-
-### 1. List loading (khi mở page)
-- **Auto-load**: Gọi `b2bList()` khi mount trang, chỉ gửi `page` và `pageSize` nếu không có filter; không gửi các field rỗng.
-- **Stripping filters**: Service phải loại bỏ `undefined/null/""` trước khi gọi API (đảm bảo lấy tất cả mặc định).
-- **Response shapes**: Hỗ trợ nhiều cấu trúc dữ liệu trả về:
-  - `data.data.Tables` hoặc `data.Tables`
-  - `Table1` (rows), `Table2[0]` (meta)
-  - Ưu tiên đọc `Table1` làm dữ liệu bảng và `Table2[0]` cho `Total/Page/PageSize`.
-- **Normalize keys**: Chuẩn hóa keys để khớp `accessorKey` cột của DataTable:
-  - `CompanyB2BID`, `CompanyCode`, `CompanyName`, `CompanyTax`, `CompanyAddress`, `Hopdong`, `EffectiveFrom`, `EffectiveTo`, `IsActive`.
-
-### 2. DataTable
-- **Columns**: `accessorKey` phải khớp với keys đã normalize.
-- **Loading state**: Truyền `isLoading` vào `DataTable`.
-- **Toggle label**: Nhãn nút Toggle hiển thị theo trạng thái: `IsActive=true` → “Ngưng kích hoạt”, ngược lại → “Kích hoạt”.
-
-### 3. Modal (Thêm/Sửa)
-- **Thứ tự input**: Mã công ty → Tên công ty → Mã số thuế → Địa chỉ → (các field còn lại).
-- **Khóa mã**: Khi sửa (`editingId != null`), disable ô “Mã công ty”.
-- **Validation trước lưu**: Kiểm tra rỗng cho các field bắt buộc; dùng `notifyError` cho thông báo.
-
-### 4. Save flow
-- **Payload cleaning**: Trước khi gọi API:
-  - Trim tất cả chuỗi.
-  - Bỏ các field optional rỗng (`""`) hoặc `null/undefined`.
-  - Đảm bảo `IsActive` là boolean.
-  - Gửi `UserID` theo ngữ cảnh.
-- **Error handling**:
-  - Nếu backend trả `400` với `data.errors`, flatten và hiển thị message đầu tiên bằng toast; log đầy đủ để debug.
-- **Reload**: Sau khi save “Success”, reset form, đóng modal, gọi lại list với `Page/PageSize` hiện tại.
-
-### 5. Local API setup (Dev)
-- **Base URL**: Client axios dùng `baseURL = "/aladdin"` kèm header `Source: genie`.
-- **API Key (dev-only)**: Gắn `X-API-KEY` qua env:
-  - Client: `NEXT_PUBLIC_ALADDIN_API_KEY`
-  - Server: `ALADDIN_API_KEY`
-- **Rewrites**: Trong dev, proxy `"/aladdin/api/:path*"` → `${ALADDIN_API_URL}/api/:path*`.
-- **Interceptor an toàn**: Chỉ `JSON.parse(config.data)` khi là chuỗi hợp lệ (GET không có body).
-
 ### 📋 Template cho trang mới:
 ```tsx
 export default function NewPage() {

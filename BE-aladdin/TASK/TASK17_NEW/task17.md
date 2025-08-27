@@ -15,6 +15,10 @@ Bao gồm: Thêm/ Xóa/ Sửa/ Select/ import, export, Phân quyền theo user.
 - **entity linq DB**: C:\PROJECTS\aladdin\Entities\QAHosGenericDB\LCompanyB2B.cs
 - **code base front-end**: C:\PROJECTS\DOCS_PROMPT\FE-genie\GENIE_CODEBASE_OVERVIEW.md
 
+Ví dụ gọi API:
+API List:
+curl -H "X-API-KEY: BKDfNANyHx4cQAMvM7yHr0Qyo0PtQebvBOBA5g0o+IY=" "http://localhost:5272/api/company-b2b/list?page=1&pageSize=20"
+
 
 
 ## Yêu cầu chức năng
@@ -112,12 +116,23 @@ git checkout feat/ws_CompanyB2B
    - Nhận `Base64Data` và `FileName`.
    - Thử decode Base64, nếu fail sẽ xử lý như raw CSV text.
    - Parse CSV header với alias tiếng Việt/Anh (xem Mapping bên dưới), robust date parsing.
+   - Giới hạn tối đa 10,000 dòng dữ liệu (không tính header). Nếu vượt, trả lỗi 400.
+   - Tiền kiểm toàn bộ file trước khi ghi DB:
+     - Bắt buộc: `CompanyCode`, `CompanyName`, `Hopdong`, `IsActive`, `EffectiveFrom`.
+     - Kiểm tra ngày và quan hệ `EffectiveFrom <= EffectiveTo` (nếu có).
+     - Nếu có lỗi: trả về bảng lỗi chi tiết gồm các cột: `Line`, `CompanyCode`, `Error`. Không ghi DB.
    - Upsert theo `CompanyCode`; cập nhật audit bằng `UserID`.
-   - Trả kết quả dạng: `Result=OK`, `Created`, `Updated`, `Skipped`.
+   - Thực thi trong transaction: dùng bulk insert cho bản ghi mới, update theo mã cho bản ghi cũ; rollback toàn bộ nếu bất kỳ bước nào lỗi.
+   - Trả kết quả: `Result=OK`, `Created` (số bản ghi mới), `Updated` (số bản ghi cập nhật).
 
 ### Export file CSV
 1. **Backend**:
    - Tạo CSV từ `L_CompanyB2B` (đã filter theo tham số).
+   - Cột xuất ra (tiêu đề tiếng Việt, theo thứ tự):
+     - Mã công ty, Tên công ty, Số PO-HĐ, Ngày bắt đầu tiêm, Ngày kết thúc, Ghi chú, Trạng thái
+     - Ghi chú hiện để trống (chưa có cột riêng trong DB)
+     - Trạng thái: "Kích hoạt"/"Không kích hoạt" theo `IsActive`
+   - Sắp xếp: ưu tiên `ModifiedOn` mới nhất trước (nếu null dùng `CreatedOn`), sau đó tie-break theo `CreatedOn` giảm dần.
    - Encode Base64, trả về ở bảng meta `Table2` gồm: `FileName`, `FileExtension=.csv`, `FileData`.
 
 2. **Frontend**:
@@ -248,6 +263,77 @@ public enum CompanyB2BPermission
   - File: `DOCS_PROMPT/BE-aladdin/TASK/TASK17_NEW/company-b2b.k6.js`
   - Biến môi trường: `BASE_URL`, `SESSION_ID`, `USER_ID`, `K6_VUS`, `K6_ITERS`.
   - Run: `k6 run DOCS_PROMPT/BE-aladdin/TASK/TASK17_NEW/company-b2b.k6.js -e BASE_URL=http://localhost:5000 -e USER_ID=00000000-0000-0000-0000-000000000000`.
+
+## Auth và cách gọi API (CompanyB2BController)
+
+Các endpoint trong `CompanyB2BController` kế thừa `ApiBaseController` nên bắt buộc xác thực bằng API Key qua header `X-API-KEY`.
+
+- Yêu cầu header: `X-API-KEY: <raw_api_key>`
+- Hệ thống sẽ băm SHA256 key này và so khớp với `Security.ApiKeys.KeyHash` trong DB. Role trích từ bảng API key sẽ được map quyền theo `Configs/api-roles.json`. Để thử nhanh, tạo key với role `FullAccess`.
+
+Tham khảo cấu hình:
+
+```12:20:aladdin/WebService/Api/ApiBaseController.cs
+[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
+```
+
+```1:16:aladdin/WebService/Configs/api-roles.json
+{
+  "RoleActions": {
+    "FullAccess": [{ "Path": ".*", "Method": ".*" }]
+  }
+}
+```
+
+### Đăng nhập (tham chiếu)
+
+Endpoint đăng nhập: `POST /Login` nhận `Username`, `PasswordHash` (MD5), `FacId`. Đăng nhập sẽ set cookie `s` (session id) dùng cho các controller xác thực theo SessionScheme. Riêng nhóm API `/api/company-b2b/*` dùng API Key nên không dùng cookie này.
+
+Ví dụ PowerShell (Windows):
+
+```powershell
+$password = "Phuc*1234"
+$hash = ([System.Security.Cryptography.MD5]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($password)) | ForEach-Object { $_.ToString("x2") }) -join ''
+$body = @{ Username='phucnnd'; PasswordHash=$hash; FacId='8.1' } | ConvertTo-Json -Compress
+Invoke-RestMethod -Method Post -Uri http://localhost:5272/Login -ContentType 'application/json' -Body $body
+```
+
+### Session cookie (s)
+
+- Sau khi `POST /Login` thành công, server set cookie phiên tên `s` (HttpOnly, Secure, SameSite phụ thuộc môi trường) hết hạn cuối ngày.
+- Swagger UI khi gọi `/Login` cũng sẽ lưu cookie này trong trình duyệt, nên các endpoint xác thực theo SessionScheme có thể gọi tiếp ngay trong Swagger.
+- Lưu ý: Nhóm API `CompanyB2BController` dùng `X-API-KEY` (ApiKeyScheme), nên cookie `s` không áp dụng để gọi các endpoint `/api/company-b2b/*`.
+
+### Gọi thử List qua Swagger
+
+1. Mở `http://localhost:5272/swagger/index.html`.
+2. Bấm "Authorize" → nhập `X-API-KEY` với giá trị API key thô (không băm).
+3. Mở `GET /api/company-b2b/list` → nhập tham số, Execute.
+
+### Gọi thử List qua PowerShell
+
+```powershell
+# Thay bằng API key thực tế của bạn (raw string, không phải SHA256)
+$API_KEY = "<YOUR_API_KEY>"
+
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:5272/api/company-b2b/list?page=1&pageSize=20" `
+  -Headers @{ "X-API-KEY" = $API_KEY }
+```
+
+Nếu thiếu hoặc sai API key:
+
+- Thiếu header: trả Unauthorized
+- Key sai: trả thông báo "Invalid API Key."
+
+### Tạo API key mới (gợi ý)
+
+1. Chọn chuỗi bí mật làm key thô (ví dụ: `my-dev-key-123`).
+2. Băm SHA256 chuỗi này và lưu vào `Security.ApiKeys.KeyHash` với `Role='FullAccess'` (hoặc role phù hợp).
+3. Khi gọi API, gửi đúng chuỗi thô qua `X-API-KEY`.
+
+Lưu ý: Không commit key thô vào repo.
 
 ## Ghi chú triển khai
 - Tất cả handler B2B gom trong 1 file; dùng `GenericHandler<Parameters>` để map YAML/API -> tham số mạnh kiểu.
