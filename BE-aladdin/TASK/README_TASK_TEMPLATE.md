@@ -7,6 +7,7 @@
   - [Code Optimization Rules](#code-optimization-rules-bắt-buộc)
   - [Functional Programming Principles](#functional-programming-principles)
 - [Response Patterns](#response-patterns)
+- [Stored Procedure Conversion Guidelines](#stored-procedure-conversion-guidelines)
 - [File Structure](#file-structure)
 - [Testing Guidelines](#testing-guidelines)
 - [Documentation Templates](#documentation-templates)
@@ -49,6 +50,7 @@ git push origin -f
 - **Testing**: Bắt buộc tạo test cases cho mọi function
 - **Architecture**: **Kiến trúc code phải phân tách thành các function để code gọn gàng, dễ đọc, dễ bảo trì**
 - **non auto commit**: - Các commit thay đổi thì tôi tự chủ động thực hiện. 
+- **Stored Procedure Conversion**: **Phải convert đúng giá trị trả ra như store procedure gốc**
 
 ### 📁 File Paths
 - **Handler Files**: `C:\PROJECTS\aladdin\WebService.Handlers\QAHosGenericDB`
@@ -83,10 +85,10 @@ var description = BuildDescriptionPure(@params.Note);
 // ❌ Avoid: Redundant variable
 private string? _failureMessage;
 _failureMessage = "Business rule validation error";
-return CreateErrorResponse(2, _failureMessage ?? "Business rules validation failed");
+return new DataSet(); // Return empty DataSet for business validation error
 
-// ✅ Use: Direct string literal
-return CreateErrorResponse(2, "Business rules validation failed");
+// ✅ Use: Direct return
+return new DataSet(); // Return empty DataSet for business validation error
 ```
 
 #### 3. Use Data Annotations Instead of Manual Validation ✅
@@ -97,7 +99,7 @@ return CreateErrorResponse(2, "Business rules validation failed");
 // ❌ Avoid: Manual validation
 private bool ValidateInput(Parameters @params)
 {
-    if (string.IsNullOrWhiteSpace(@params.SessionID)) return false;
+    if (string.IsNullOrWhiteSpace(@params.CounterID)) return false;
     if (@params.CounterID < 0) return false;
     return true;
 }
@@ -225,7 +227,6 @@ var processedData = resultData
 
 #### Data Retrieval
 ```csharp
-GetClinicalSession(sessionId)
 GetApplicationSettings()
 GetPatientData(patientId)
 GetRelatedData(parameters)
@@ -275,18 +276,17 @@ SaveAuditLog(operation, userId)
 CreateResultDataSet(data)
 FormatResponse(result)
 BuildSuccessResponse(data)
-BuildErrorResponse(message)
 ```
 
 ### 2. Naming Conventions
 
 #### Function Names
-- ✅ **PascalCase**: `GetClinicalSession()`, `UpdatePaymentStatus()`
+- ✅ **PascalCase**: `GetApplicationSettings()`, `UpdatePaymentStatus()`
 - ✅ **Descriptive**: Tên function phải mô tả rõ chức năng
 - ✅ **XML Documentation**: Thêm documentation cho mỗi function
 
 #### Variable Names
-- ✅ **camelCase**: `patientData`, `sessionId`
+- ✅ **camelCase**: `patientData`
 - ✅ **Meaningful**: Tên biến phải có ý nghĩa
 - ✅ **Consistent**: Sử dụng nhất quán trong toàn bộ code
 
@@ -327,6 +327,7 @@ BuildErrorResponse(message)
 - ✅ **NoLock Hints**: Code cũng phải có `With(SqlServerHints.Table.NoLock)`
 - ✅ **String Output**: Chuỗi xuất ra thì nên dùng: `singleQuote: true`
 - ✅ **Logic Preservation**: Code phải đảm bảo đúng logic như store procedure
+- ✅ **Return Value Conversion**: Phải convert đúng giá trị trả ra như store procedure gốc
 
 #### Functional Programming Principles (BẮT BUỘC)
 - ✅ **Pure Function Principle**: Hàm không có side effects, cùng input luôn cho cùng output
@@ -357,69 +358,16 @@ BuildErrorResponse(message)
 
 ## 📋 Response Patterns
 
-### 0. Standardized Error Response Helper (Required)
-Implement a centralized error response and validation pattern in handlers:
-
+### 1. Business Logic Validation Errors
 ```csharp
-// 2) Input validation - Use Data Annotations instead of manual validation
-// All basic validations should be handled by [Required], [Range], [DefaultValue] in Parameters class
-// Only complex business logic validations should be in separate functions
-
-// 3) Standardized error response (table with errorCode/errorMsg)
-private DataSet CreateErrorResponse(int errorCode, string errorMsg)
-{
-    var ds = new DataSet();
-    ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode, errorMsg }));
-    return ds;
-}
-
-// 4) Usage in Handle()
-var userId = AuthenticateUser(@params.SessionID);
-if (userId == null) return CreateErrorResponse(1, "Session ID is not valid");
-// All basic validations are handled by data annotations in Parameters class
-
-// For system errors, throw AppException(500, ...)
-```
-
-### 1. Authentication & Authorization Errors
-```csharp
-// Pattern 1: Return empty DataSet for auth failures (NO message in response)
-Guid? userId = AuthenticateUser(@params.SessionID);
-if (userId == null)
-{
-    _failureMessage = $"Session ID '{@params.SessionID}' is not valid.";
-    return new DataSet(); // Empty DataSet for auth failure - client gets no data
-}
-
-// Pattern 2: Return DataSet with errorCode/errorMsg properties (Recommended) (WITH message in response)
-Guid? userId = AuthenticateUser(@params.SessionID);
-if (userId == null)
-{
-    _failureMessage = $"Session ID '{@params.SessionID}' is not valid.";
-    var dataSet = new DataSet();
-    dataSet.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 1, errorMsg = "Session ID is not valid" }));
-    return dataSet;
-}
-```
-
-### 2. Business Logic Validation Errors
-```csharp
-// Pattern 1: Return DataSet with Results property for business validation (WITH message in response)
+// Pattern: Return empty DataSet for business validation errors
 if (!isValid)
 {
-    return new List<object> { new { Results = "Error message" } }.ToDataSet();
-}
-
-// Pattern 2: Return DataSet with errorCode/errorMsg properties (Recommended) (WITH message in response)
-if (!isValid)
-{
-    var dataSet = new DataSet();
-    dataSet.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 2, errorMsg = "Error message" }));
-    return dataSet;
+    return new DataSet(); // Empty DataSet for business validation error
 }
 ```
 
-### 3. System/Technical Errors
+### 2. System/Technical Errors
 ```csharp
 // Pattern: Throw AppException for system errors
 catch (Exception ex)
@@ -429,57 +377,257 @@ catch (Exception ex)
 }
 ```
 
-### 4. No Data Found
+### 3. No Data Found
 ```csharp
-// Pattern 1: Return empty DataSet when no data matches criteria
+// Pattern: Return empty DataSet when no data matches criteria
 if (!data.Any())
 {
     return new DataSet(); // Empty DataSet for no data found
 }
-
-// Pattern 2: Return DataSet with errorCode/errorMsg properties (Recommended) - NOT an error, just no data
-if (!data.Any())
-{
-    var dataSet = new DataSet();
-    dataSet.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 3, errorMsg = "No data found" }));
-    return dataSet;
-}
 ```
 
-### 5. Success Responses
+### 4. Success Responses
 ```csharp
-// Pattern 1: Return DataSet with actual data
+// Pattern 1: Return DataSet with actual data (Recommended)
 return query.ToDataSet();
 
 // Pattern 2: Return DataSet with Results property
 return new List<object> { new { Results = "Ok" } }.ToDataSet();
 
-// Pattern 3: Return DataSet with errorCode/errorMsg properties (Recommended) - errorCode = 0 means success
-var dataSet = new DataSet();
-dataSet.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 0, errorMsg = "Success" }));
-return dataSet;
-
-// Pattern 4: Return DataSet with success result and data
+// Pattern 3: Return DataSet with success result and data
 return new List<object> { new { Result = 1, Data = result } }.ToDataSet();
 ```
 
-### 7. Error Code Convention
-| Error Code | Meaning | Description |
-|------------|---------|-------------|
-| 0 | Success | Operation completed successfully |
-| 1 | Authentication Failure | Session ID is not valid or user not authenticated |
-| 2 | Business Validation Error | Business logic validation failed |
-| 3 | No Data Found | No data matches criteria (NOT an error, just no data) |
-| 4+ | System/Technical Error | Reserved for future system errors |
-
-### 8. Response Pattern Summary
+### 5. Response Pattern Summary
 | Scenario | Response Type | Pattern |
 |----------|---------------|---------|
-| Authentication failures | ErrorCode/ErrorMsg DataSet | `{ errorCode = 1, errorMsg = "Session ID is not valid" }` |
-| Business validation errors | ErrorCode/ErrorMsg DataSet | `{ errorCode = 2, errorMsg = "message" }` |
-| No data found | ErrorCode/ErrorMsg DataSet | `{ errorCode = 3, errorMsg = "No data found" }` (NOT an error) |
+| Business validation errors | Empty DataSet | `return new DataSet();` |
+| No data found | Empty DataSet | `return new DataSet();` |
 | System/technical errors | AppException | `throw new AppException(500, "message")` |
-| Success with data | ErrorCode/ErrorMsg DataSet | `{ errorCode = 0, errorMsg = "Success" }`|
+| Success with data | DataSet with data | `return query.ToDataSet();` |
+
+---
+
+## 🔄 Stored Procedure Conversion Guidelines
+
+### 1. Return Value Conversion (BẮT BUỘC)
+
+#### Data Type Mapping
+```csharp
+// SQL Server to C# Data Type Mapping
+// SQL Server Type -> C# Type -> Conversion Method
+
+// String types
+NVARCHAR(MAX) -> string -> Convert.ToString(row["ColumnName"])
+VARCHAR(MAX) -> string -> Convert.ToString(row["ColumnName"])
+CHAR(n) -> string -> Convert.ToString(row["ColumnName"])
+
+// Numeric types
+INT -> int -> Convert.ToInt32(row["ColumnName"])
+BIGINT -> long -> Convert.ToInt64(row["ColumnName"])
+DECIMAL(p,s) -> decimal -> Convert.ToDecimal(row["ColumnName"])
+FLOAT -> double -> Convert.ToDouble(row["ColumnName"])
+BIT -> bool -> Convert.ToBoolean(row["ColumnName"])
+
+// Date/Time types
+DATETIME -> DateTime -> Convert.ToDateTime(row["ColumnName"])
+DATETIME2 -> DateTime -> Convert.ToDateTime(row["ColumnName"])
+DATE -> DateTime -> Convert.ToDateTime(row["ColumnName"])
+
+// Nullable types
+INT -> int? -> row["ColumnName"] == DBNull.Value ? null : Convert.ToInt32(row["ColumnName"])
+DECIMAL -> decimal? -> row["ColumnName"] == DBNull.Value ? null : Convert.ToDecimal(row["ColumnName"])
+```
+
+#### Safe Conversion Methods
+```csharp
+// Safe conversion with null handling
+private static string SafeGetString(DataRow row, string columnName)
+{
+    return row[columnName] == DBNull.Value ? string.Empty : Convert.ToString(row[columnName]);
+}
+
+private static int? SafeGetInt32(DataRow row, string columnName)
+{
+    return row[columnName] == DBNull.Value ? null : Convert.ToInt32(row[columnName]);
+}
+
+private static decimal? SafeGetDecimal(DataRow row, string columnName)
+{
+    return row[columnName] == DBNull.Value ? null : Convert.ToDecimal(row[columnName]);
+}
+
+private static DateTime? SafeGetDateTime(DataRow row, string columnName)
+{
+    return row[columnName] == DBNull.Value ? null : Convert.ToDateTime(row[columnName]);
+}
+
+private static bool SafeGetBoolean(DataRow row, string columnName)
+{
+    return row[columnName] != DBNull.Value && Convert.ToBoolean(row[columnName]);
+}
+```
+
+#### Data Extraction Function Template
+```csharp
+/// <summary>
+/// Extracts data from DataRow with proper type conversion (Pure function)
+/// </summary>
+/// <param name="row">DataRow containing data</param>
+/// <returns>Extracted data structure</returns>
+private static DataStructure ExtractDataFromRow(DataRow row)
+{
+    return new DataStructure
+    {
+        // String fields
+        Name = SafeGetString(row, "Name"),
+        Description = SafeGetString(row, "Description"),
+        
+        // Numeric fields
+        Id = SafeGetInt32(row, "Id") ?? 0,
+        Amount = SafeGetDecimal(row, "Amount") ?? 0m,
+        Quantity = SafeGetInt32(row, "Quantity") ?? 0,
+        
+        // Boolean fields
+        IsActive = SafeGetBoolean(row, "IsActive"),
+        
+        // DateTime fields
+        CreatedDate = SafeGetDateTime(row, "CreatedDate") ?? DateTime.MinValue,
+        UpdatedDate = SafeGetDateTime(row, "UpdatedDate"),
+        
+        // Nullable fields
+        OptionalId = SafeGetInt32(row, "OptionalId"),
+        OptionalAmount = SafeGetDecimal(row, "OptionalAmount")
+    };
+}
+```
+
+### 2. Stored Procedure Output Parameter Handling
+
+#### Output Parameter Conversion
+```csharp
+// For stored procedures with OUTPUT parameters
+// Convert OUTPUT parameters to return values
+
+// Example: SP with OUTPUT parameter
+// CREATE PROCEDURE GetPatientInfo @PatientId INT, @PatientName NVARCHAR(100) OUTPUT
+// AS
+// BEGIN
+//     SET @PatientName = (SELECT Name FROM Patients WHERE Id = @PatientId)
+// END
+
+// C# Handler equivalent
+public override DataSet Handle(Parameters @params)
+{
+    try
+    {
+        var result = db.GetPatientInfo(@params.PatientId, out string patientName);
+        
+        // Convert OUTPUT parameter to DataSet
+        var dataSet = new DataSet();
+        var dataTable = new DataTable("Result");
+        dataTable.Columns.Add("PatientName", typeof(string));
+        dataTable.Rows.Add(patientName);
+        dataSet.Tables.Add(dataTable);
+        
+        return dataSet;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DEBUG: Exception in GetPatientInfo: {ex.Message}");
+        throw new AppException(500, "Có lỗi khi lấy thông tin bệnh nhân");
+    }
+}
+```
+
+### 3. Multiple Result Sets Handling
+
+#### Multiple DataTable Conversion
+```csharp
+// For stored procedures returning multiple result sets
+// Convert each result set to separate DataTable
+
+public override DataSet Handle(Parameters @params)
+{
+    try
+    {
+        var dataSet = new DataSet();
+        
+        // First result set - Patient information
+        var patientData = db.GetPatientData(@params.PatientId);
+        dataSet.Tables.Add(patientData);
+        
+        // Second result set - Patient history
+        var historyData = db.GetPatientHistory(@params.PatientId);
+        dataSet.Tables.Add(historyData);
+        
+        // Third result set - Patient medications
+        var medicationData = db.GetPatientMedications(@params.PatientId);
+        dataSet.Tables.Add(medicationData);
+        
+        return dataSet;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DEBUG: Exception in GetPatientCompleteInfo: {ex.Message}");
+        throw new AppException(500, "Có lỗi khi lấy thông tin đầy đủ bệnh nhân");
+    }
+}
+```
+
+### 4. Return Value Validation
+
+#### Data Validation After Conversion
+```csharp
+/// <summary>
+/// Validates converted data matches expected format
+/// </summary>
+/// <param name="data">Converted data</param>
+/// <returns>True if valid, false otherwise</returns>
+private static bool ValidateConvertedData(DataStructure data)
+{
+    // Validate required fields
+    if (string.IsNullOrWhiteSpace(data.Name))
+        return false;
+    
+    // Validate numeric ranges
+    if (data.Amount < 0)
+        return false;
+    
+    // Validate date ranges
+    if (data.CreatedDate > DateTime.Now)
+        return false;
+    
+    return true;
+}
+```
+
+### 5. Error Handling for Conversion
+
+#### Conversion Error Handling
+```csharp
+/// <summary>
+/// Safe conversion with error handling
+/// </summary>
+/// <param name="row">DataRow containing data</param>
+/// <param name="columnName">Column name to convert</param>
+/// <returns>Converted value or default</returns>
+private static T SafeConvert<T>(DataRow row, string columnName, T defaultValue = default(T))
+{
+    try
+    {
+        if (row[columnName] == DBNull.Value)
+            return defaultValue;
+        
+        return (T)Convert.ChangeType(row[columnName], typeof(T));
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DEBUG: Conversion error for column {columnName}: {ex.Message}");
+        return defaultValue;
+    }
+}
+```
 
 ---
 
@@ -523,10 +671,10 @@ private static ReturnType PureFunctionName(InputDataType data)
 }
 ```
 
-#### Data Extraction Function Template
+#### Data Extraction Function Template with Safe Conversion
 ```csharp
 /// <summary>
-/// Extracts data from DataRow (Pure function)
+/// Extracts data from DataRow with safe conversion (Pure function)
 /// </summary>
 /// <param name="row">DataRow containing data</param>
 /// <returns>Extracted data structure</returns>
@@ -534,9 +682,12 @@ private static DataStructure ExtractDataFromRow(DataRow row)
 {
     return new DataStructure
     {
-        Property1 = Convert.ToType(row["ColumnName1"]),
-        Property2 = Convert.ToType(row["ColumnName2"]),
-        // ... other properties
+        // Use safe conversion methods
+        Property1 = SafeGetString(row, "ColumnName1"),
+        Property2 = SafeGetInt32(row, "ColumnName2") ?? 0,
+        Property3 = SafeGetDecimal(row, "ColumnName3") ?? 0m,
+        Property4 = SafeGetDateTime(row, "ColumnName4") ?? DateTime.MinValue,
+        Property5 = SafeGetBoolean(row, "ColumnName5")
     };
 }
 ```
@@ -548,8 +699,11 @@ private static DataStructure ExtractDataFromRow(DataRow row)
 /// </summary>
 private readonly struct DataStructure
 {
-    public Type1 Property1 { get; init; }
-    public Type2 Property2 { get; init; }
+    public string Property1 { get; init; }
+    public int Property2 { get; init; }
+    public decimal Property3 { get; init; }
+    public DateTime Property4 { get; init; }
+    public bool Property5 { get; init; }
     // ... other properties
 }
 ```
@@ -578,22 +732,18 @@ public override DataSet Handle(Parameters @params)
 {
     try
     {
-        // 1. Authentication & Validation
-        var userID = AuthenticateUser(@params.SessionID);
-        if (userID == Guid.Empty) return new DataSet();
-
-        // 2. Get Data
+        // 1. Get Data
         var mainData = GetMainData(@params);
         if (mainData == null) return new DataSet();
 
-        // 3. Apply Business Logic
+        // 2. Apply Business Logic
         ApplyBusinessLogic(@params, mainData);
 
-        // 4. Update Data
+        // 3. Update Data
         UpdateMainData(@params, userID);
         UpdateRelatedData(@params);
 
-        // 5. Return Result
+        // 4. Return Result
         return CreateResultDataSet();
     }
     catch (Exception ex)
@@ -614,7 +764,7 @@ public override DataSet Handle(Parameters @params)
         var resultData = GetContractDetailData(@params);
         if (resultData == null || resultData.Rows.Count == 0)
         {
-            return CreateEmptyDataSet();
+            return new DataSet(); // Empty DataSet for no data
         }
 
         // 2. Process data through functional pipeline
@@ -631,7 +781,7 @@ public override DataSet Handle(Parameters @params)
     catch (Exception ex)
     {
         Console.WriteLine($"DEBUG: Exception occurred: {ex.Message}");
-        return CreateEmptyDataSet();
+        return new DataSet(); // Empty DataSet for error
     }
 }
 ```
@@ -658,11 +808,12 @@ public class Parameters
 ## 🧪 Testing Guidelines
 
 ### 1. Test Cases Requirements
-- ✅ **Basic Tests**: Authentication, validation, happy path
+- ✅ **Basic Tests**: Validation, happy path
 - ✅ **Business Logic Tests**: Các trường hợp đặc biệt của business rules
 - ✅ **Error Tests**: Invalid input, missing data, exceptions
 - ✅ **Edge Tests**: Boundary values, null values
 - ✅ **Integration Tests**: Multiple tables, complex workflows
+- ✅ **Data Conversion Tests**: Verify proper type conversion from stored procedure
 
 ### 2. Test Case Structure
 ```yaml
@@ -694,6 +845,7 @@ expectedData:
 2. **Create Test Cases**: Tạo test cases cho từng scenario
 3. **Run Tests**: Chạy và verify tất cả test cases pass
 4. **Debug Issues**: Fix lỗi nếu có và re-run tests
+5. **Verify Data Conversion**: Kiểm tra conversion đúng như stored procedure
 
 ---
 
@@ -714,7 +866,6 @@ expectedData:
 - [Logic point 2]
 
 ### Required Functions
-- [ ] `AuthenticateUser()`
 - [ ] `ValidateInput()`
 - [ ] `GetMainData()`
 - [ ] `ApplyBusinessLogic()`
@@ -725,13 +876,18 @@ expectedData:
 - [Entity 1]: [Purpose]
 - [Entity 2]: [Purpose]
 
+### Stored Procedure Conversion
+- **Return Types**: [List of return data types]
+- **Output Parameters**: [List of OUTPUT parameters if any]
+- **Multiple Result Sets**: [Yes/No - if yes, describe each result set]
+
 ### Test Scenarios
 - [ ] Happy path
-- [ ] Authentication failure
 - [ ] Validation error
 - [ ] Business logic error
 - [ ] No data found
 - [ ] System error
+- [ ] Data conversion edge cases
 
 ## Notes
 [Additional notes and considerations]
@@ -748,32 +904,39 @@ Handler `[HandlerName]` đã được refactor để tách thành các function 
 
 ### 1. Code Refactoring
 - **Tách code thành các function riêng biệt:**
-  - `AuthenticateUser()`: Xác thực người dùng
   - `ValidateInput()`: Validate input parameters
   - `GetMainData()`: Lấy dữ liệu chính
   - `ApplyBusinessLogic()`: Áp dụng business logic
   - `UpdateData()`: Cập nhật dữ liệu
   - `CreateResultDataSet()`: Tạo kết quả trả về
 
-### 2. Benefits of Refactoring
+### 2. Stored Procedure Conversion
+- **Data Type Mapping**: Đã map đúng các kiểu dữ liệu từ SQL Server sang C#
+- **Safe Conversion**: Sử dụng safe conversion methods để xử lý null values
+- **Return Value Preservation**: Đảm bảo giá trị trả về giống hệt stored procedure gốc
+
+### 3. Benefits of Refactoring
 - **Dễ đọc:** Code được chia thành các function có tên rõ ràng
 - **Dễ test:** Mỗi function có thể được test riêng biệt
 - **Dễ maintain:** Logic được tách biệt, dễ sửa đổi từng phần
 - **Dễ debug:** Có thể debug từng function riêng lẻ
 - **Reusable:** Các function có thể được tái sử dụng
+- **Type Safe:** Sử dụng safe conversion methods để tránh runtime errors
 
-### 3. Test Cases Created
+### 4. Test Cases Created
 - **File**: `[TestFileName].cs`
 - **YAML**: `[TestFileName].yml`
 - **Scenarios**: [List of test scenarios]
 
-### 4. Business Logic Preserved
+### 5. Business Logic Preserved
 - Tất cả business logic gốc được giữ nguyên
 - Logic tương ứng với SQL Store procedure
+- Return values được convert đúng như stored procedure gốc
 
-### 5. Performance Considerations
+### 6. Performance Considerations
 - Vẫn sử dụng NoLock hints cho performance
 - Không thay đổi logic query, chỉ tách thành function
+- Safe conversion methods không ảnh hưởng performance
 
 ## File Links
 - **Handler**: `[HandlerPath]`
@@ -781,7 +944,7 @@ Handler `[HandlerName]` đã được refactor để tách thành các function 
 - **Test Cases**: `[TestCasesPath]`
 
 ## Conclusion
-Việc refactor đã thành công với các lợi ích đạt được.
+Việc refactor đã thành công với các lợi ích đạt được và đảm bảo conversion đúng như stored procedure gốc.
 ```
 
 ---
@@ -789,7 +952,7 @@ Việc refactor đã thành công với các lợi ích đạt được.
 ## ⚡ Quick Reference
 
 ### Development Checklist
-- [ ] Analyze stored procedure logic
+- [ ] Analyze stored procedure logic and return values
 - [ ] Create README_TODO_BEFORE_GEN.md
 - [ ] Design function separation following 3 principles:
   - [ ] Pure Function: Tách logic tính toán thành pure functions
@@ -803,6 +966,12 @@ Việc refactor đã thành công với các lợi ích đạt được.
   - [ ] Remove redundant variables (e.g., `_failureMessage` when direct strings can be used)
   - [ ] Use Data Annotations instead of manual validation
   - [ ] Eliminate empty functions (e.g., `ValidateBusinessRules()` that only return `true`)
+- [ ] **Stored Procedure Conversion Review**:
+  - [ ] Verify data type mapping from SQL Server to C#
+  - [ ] Implement safe conversion methods for null handling
+  - [ ] Test return value conversion matches stored procedure
+  - [ ] Handle OUTPUT parameters if any
+  - [ ] Handle multiple result sets if any
 - [ ] Compile and test handler
 - [ ] Create test cases
 - [ ] Run all tests
@@ -811,13 +980,11 @@ Việc refactor đã thành công với các lợi ích đạt được.
 
 ### Common Patterns
 
-#### Response Patterns
-- **Validation (Old)**: `if (!isValid) return new List<object> { new { Results = "message" } }.ToDataSet();`
-- **Validation (New)**: `if (!isValid) return CreateErrorResponse(2, "message");`
-- **Success (Old)**: `return new List<object> { new { Results = "Ok" } }.ToDataSet();`
-- **Success (New)**: `return CreateSuccessResponse(data);`
-- **No Data (Old)**: `if (!data.Any()) return new DataSet();`
-- **No Data (New)**: `if (!data.Any()) return CreateErrorResponse(3, "No data found");`
+#### Response Patterns (Updated)
+- **Validation Error**: `if (!isValid) return new DataSet();`
+- **Success**: `return query.ToDataSet();`
+- **No Data**: `if (!data.Any()) return new DataSet();`
+- **System Error**: `throw new AppException(500, "message");`
 
 #### Code Optimization Patterns
 - **Remove Redundant Functions**: Avoid wrapper functions that only call pure functions (e.g., `BuildDescription()` calling `BuildDescriptionPure()`)
@@ -826,11 +993,19 @@ Việc refactor đã thành công với các lợi ích đạt được.
 - **Eliminate Empty Functions**: Remove functions like `ValidateBusinessRules()` that only return `true` without any logic
 
 #### Functional Programming Patterns
-- **Data Extraction**: `private static DataStructure ExtractData(DataRow row) => new DataStructure { Property = Convert.ToType(row["Column"]) };`
+- **Data Extraction**: `private static DataStructure ExtractData(DataRow row) => new DataStructure { Property = SafeGetString(row, "Column") };`
 - **Pure Function**: `private static decimal CalculateLogic(DataStructure data) => data.Condition ? 0 : data.Value1 + data.Value2;`
 - **Immutable Struct**: `private readonly struct DataStructure { public Type Property { get; init; } }`
 - **Pipeline Pattern**: `var result = data.Pipe(ExtractData).Pipe(CalculateLogic).Pipe(TransformData);`
 - **Database Operation**: `private static Type? GetFromDatabase(LookupData data, AladdinDataConnection db) => db.Table.Where(...).Select(...).FirstOrDefault();`
+
+#### Stored Procedure Conversion Patterns
+- **Safe String Conversion**: `SafeGetString(row, "ColumnName")`
+- **Safe Numeric Conversion**: `SafeGetInt32(row, "ColumnName") ?? 0`
+- **Safe Decimal Conversion**: `SafeGetDecimal(row, "ColumnName") ?? 0m`
+- **Safe DateTime Conversion**: `SafeGetDateTime(row, "ColumnName") ?? DateTime.MinValue`
+- **Safe Boolean Conversion**: `SafeGetBoolean(row, "ColumnName")`
+- **Null Handling**: `row["ColumnName"] == DBNull.Value ? defaultValue : Convert.ToType(row["ColumnName"])`
 
 #### Code Optimization Patterns
 - **Remove Wrapper**: `// Instead of: BuildDescription() calling BuildDescriptionPure()`

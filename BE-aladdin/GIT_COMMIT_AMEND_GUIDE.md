@@ -16,10 +16,12 @@ git status
 git log --oneline
 ```
 
-Convert SP to handle ws_BIL_Invoice_Save_Vaccine: DONE
-feat/Convert_ws_Vaccine_KiemTraCanhBaoTiemVaccineTrungNhomBenh: DONE
-https://git.vnvc.info/vnvc-qas/aladdin/-/tree/feat/Convert_ws_Vaccine_ThongBaoKhongchan: 
 
+Convert SP to handle ws_LayDanhSachMuiTiemTheoHopDongDaDatTruoc: DONE
+Convert SP to handle ws_BIL_Invoice_Save_Vaccine: DONE
+feat/ws_Vaccine_KiemTraCanhBaoTiemVaccineTrungNhomBenh: DONE
+https://git.vnvc.info/vnvc-qas/aladdin/-/tree/feat/Convert_ws_Vaccine_ThongBaoKhongchan: DONE
+feat/ws_Vaccine_KiemTraDongPhacDo: DONE
 
 
 review code giúp tôi theo rule trong task template. Nếu code chưa tuân thủ đúng thì cập nhật lại nhưng vẫn đảm bảo logic code đúng đắn vì tôi đã testing passed nó rồi.
@@ -35,8 +37,11 @@ git add -A
 ```
 
 ### 3. Commit với amend (cập nhật commit cuối cùng)
+
 ```bash
-git commit --amend -m "Refactor code to follow coding conventions"
+// Remove errorCode & errorMsg to keep response like as store procedure.
+// Remove SessionID.
+git commit --amend -m "Refactor code to follow coding conventions & Remove errorCode & errorMsg to keep response like as store procedure. Remove SessionID."
 # git commit --amend -m "Adjust parameters to match the values and names sent from the Front-end"
 ```
 
