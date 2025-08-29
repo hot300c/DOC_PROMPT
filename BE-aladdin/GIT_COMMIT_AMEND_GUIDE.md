@@ -39,8 +39,6 @@ git add -A
 ### 3. Commit với amend (cập nhật commit cuối cùng)
 
 ```bash
-// Remove errorCode & errorMsg to keep response like as store procedure.
-// Remove SessionID.
 git commit --amend -m "Update UI"
 # git commit --amend -m "Adjust parameters to match the values and names sent from the Front-end"
 ```
