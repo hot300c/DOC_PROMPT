@@ -41,7 +41,7 @@ git add -A
 ```bash
 // Remove errorCode & errorMsg to keep response like as store procedure.
 // Remove SessionID.
-git commit --amend -m "Refactor code to follow coding conventions & Remove errorCode & errorMsg to keep response like as store procedure. Remove SessionID."
+git commit --amend -m "Update UI"
 # git commit --amend -m "Adjust parameters to match the values and names sent from the Front-end"
 ```
 
@@ -49,7 +49,7 @@ git commit --amend -m "Refactor code to follow coding conventions & Remove error
 ```bash
 #git push origin <tên_nhánh> --force
 # hoặc
-git push origin feat/Convert_ws_Vaccine_KiemTraCanhBaoTiemVaccineTrungNhomBenh --force-with-lease
+git push origin feat/ws_CompanyB2B --force-with-lease
 ```
 
 ### 5. Check
