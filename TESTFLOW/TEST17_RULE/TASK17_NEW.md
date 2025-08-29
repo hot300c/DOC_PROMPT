@@ -143,3 +143,19 @@ const exportData = JSON.parse(jsonString);
 
 ## TODO (sau khi hoàn tất Import)
 - Lấy `UserID` từ session cookie (user đã đăng nhập) trong `CompanyB2BController` thay vì nhận trực tiếp từ request. Dùng scheme xác thực theo session để map `UserID` và áp dụng cho audit (`CreatedBy`/`ModifiedBy`).
+
+---
+
+## Ghi chú Test17 (đã triển khai)
+- Controller `CompanyB2BController` tự động lấy `UserID` theo thứ tự: claim `NameIdentifier` → cookie `s` qua `UserService.GetUserIdFromSessionId`. Nếu tìm thấy sẽ override `UserID` trong body.
+- Chuẩn hoá thông báo tiếng Việt trong toàn bộ handler `ws_L_CompanyB2B` (Save/Get/Delete/List/Import/Export). Các message lỗi và trạng thái như: "Không tìm thấy công ty", "Ngày hiệu lực từ phải nhỏ hơn hoặc bằng ngày hiệu lực đến", "Thành công"…
+- Chuẩn hoá kiểu tham số khi gọi Stored Procedure/Handler trong `DataRequestDispatcher` để tránh lỗi convert Guid → String (map đúng `Guid` → `UniqueIdentifier`, `bool` → `Bit`, `DateTime` → `DateTime2`, v.v.).
+- API Save đang dùng handler: `ws_L_CompanyB2B_Save` với DTO `ws_L_CompanyB2B_Save.Parameters`. Get/List/Import/Export giữ nguyên.
+- Import: kiểm tra đầy đủ ràng buộc, trả về lỗi tiếng Việt theo dòng, rollback nếu có lỗi.
+
+### Hướng dẫn kiểm thử nhanh (Test17)
+1. Đăng nhập để có cookie `s` (hoặc đảm bảo claim `NameIdentifier` tồn tại). Gọi `POST /api/company-b2b/save` mà không gửi `UserID` → BE sẽ tự set `CreatedBy/ModifiedBy` theo user.
+2. Lỗi ràng buộc (thiếu `CompanyCode`, `CompanyName`, `EffectiveFrom`, `Hopdong` hoặc sai thứ tự ngày) trả về HTTP 400 với thông điệp tiếng Việt.
+3. Gọi `GET /api/company-b2b/list` → dữ liệu được chuẩn hoá theo mục 8 (format ngày/boolean, text null → "").
+4. Gọi `POST /api/company-b2b/import` với file hợp lệ/không hợp lệ để xác nhận quy tắc lỗi tiếng Việt và giao dịch rollback khi có lỗi.
+5. Gọi `GET /api/company-b2b/export` → nhận `FileData` (base64 JSON, UTF-8), decode kiểm tra tiếng Việt hiển thị đúng.

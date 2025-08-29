@@ -298,6 +298,42 @@ const onSave = async () => {
 };
 ```
 
+#### 2.1. Quy tắc hiển thị lỗi chuẩn hóa (API)
+- **Không gọi được API (không có `error.response`)**: hiển thị
+  - "Không thể kết nối tới máy chủ. Vui lòng kiểm tra mạng hoặc thử lại sau."
+- **HTTP 500 / Internal Server Error**: hiển thị
+  - "Hệ thống đang gặp sự cố. Vui lòng thử lại sau hoặc liên hệ hỗ trợ."
+- **Có `response.data.message`**: hiển thị đúng thông báo từ backend
+  - Ví dụ: "EffectiveFrom must be less than or equal to EffectiveTo"
+- **Có `response.data.errors` theo field**: flatten, hiển thị lỗi đầu tiên
+- **Fallback**: nếu không có thông tin cụ thể, hiển thị
+  - "Có lỗi xảy ra!" hoặc thông báo lỗi chung theo ngữ cảnh (lưu/tải/xử lý)
+
+```tsx
+try {
+  await apiCall();
+  toast.success("Thành công!");
+} catch (error) {
+  // @ts-ignore
+  const errResp = error?.response;
+  if (!errResp) {
+    notifyError("Không thể kết nối tới máy chủ. Vui lòng kiểm tra mạng hoặc thử lại sau.");
+  } else if (errResp?.status === 500 || String(errResp?.statusText || "").toLowerCase().includes("internal server error")) {
+    notifyError("Hệ thống đang gặp sự cố. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.");
+  } else if (errResp?.data?.message) {
+    toast.error(errResp.data.message);
+  } else if (errResp?.data?.errors && typeof errResp.data.errors === "object") {
+    const first = Object.entries(errResp.data.errors)
+      .flatMap(([field, msgs]) => Array.isArray(msgs) ? msgs.map((m) => `${field}: ${m}`) : typeof msgs === "string" ? [`${field}: ${msgs}`] : [])
+      .at(0);
+    if (first) toast.error(first);
+    else notifyError("Có lỗi xảy ra!");
+  } else {
+    notifyError("Có lỗi xảy ra!");
+  }
+}
+```
+
 ### 3. Toast Notification Types
 - **Success**: `toast.success("Thành công!")`
 - **Error**: `notifyError("Có lỗi xảy ra!")` (từ utils)
