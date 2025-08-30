@@ -27,7 +27,7 @@ git add -A
 
 ### 3. Commit với amend (cập nhật commit cuối cùng)
 ```bash
-git commit --amend -m "fix for column name as SP"
+git commit --amend -m "upgrade code"
 # git commit --amend -m "Adjust parameters to match the values and names sent from the Front-end"
 ```
 
@@ -35,7 +35,7 @@ git commit --amend -m "fix for column name as SP"
 ```bash
 #git push origin <tên_nhánh> --force
 # hoặc
-git push origin fix/Convert_ws_Vaccine_KiemTraTrungNhomBenhDangMo --force-with-lease
+git push origin feat/ws_CompanyB2B --force-with-lease
 ```
 
 ## Lưu ý quan trọng
