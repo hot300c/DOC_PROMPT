@@ -75,11 +75,56 @@ if not "%GENIE_DIR%"=="." (
 
 REM Run the PowerShell script with local API flag
 echo Starting development environment with local API...
-powershell -ExecutionPolicy Bypass -File "%~dp0run-dev.ps1" -UseLocalApi
+echo.
+echo Starting development server and opening browser...
+echo.
 
-REM If the script exits with an error, pause to show the error
+REM Start the PowerShell script in background and capture its PID
+powershell -ExecutionPolicy Bypass -Command "Start-Process powershell -ArgumentList '-ExecutionPolicy Bypass -File \"%~dp0run-dev.ps1\" -UseLocalApi' -WindowStyle Normal"
+
+REM Wait a moment for the server to start
+echo Waiting for development server to start...
+timeout /t 10 /nobreak >nul
+
+REM Check if server is running by testing the connection
+echo Checking if development server is running...
+powershell -Command "try { $response = Invoke-WebRequest -Uri 'http://localhost:3000' -TimeoutSec 5 -UseBasicParsing; if ($response.StatusCode -eq 200) { Write-Host 'Server is running' } } catch { Write-Host 'Server not ready yet, waiting...'; Start-Sleep -Seconds 5; try { $response = Invoke-WebRequest -Uri 'http://localhost:3000' -TimeoutSec 5 -UseBasicParsing; if ($response.StatusCode -eq 200) { Write-Host 'Server is now running' } } catch { Write-Host 'Server may not be ready, but opening browser anyway' } }"
+
+REM Open the default browser using the system's default browser handler
+echo Opening default browser...
+start "" "http://localhost:3000"
+
+REM Alternative: If the above doesn't work, try specific browsers
 if errorlevel 1 (
-    echo.
-    echo Script completed with errors. Press any key to exit...
-    pause >nul
+    echo Trying to open with specific browsers...
+    
+    REM Try Chrome
+    where chrome >nul 2>&1
+    if not errorlevel 1 (
+        echo Opening Chrome...
+        start chrome "http://localhost:3000"
+    ) else (
+        REM Try Edge
+        where msedge >nul 2>&1
+        if not errorlevel 1 (
+            echo Opening Microsoft Edge...
+            start msedge "http://localhost:3000"
+        ) else (
+            REM Try Firefox
+            where firefox >nul 2>&1
+            if not errorlevel 1 (
+                echo Opening Firefox...
+                start firefox "http://localhost:3000"
+            ) else (
+                echo No common browsers found. Please open manually: http://localhost:3000
+            )
+        )
+    )
 )
+
+echo.
+echo Development environment started!
+echo Frontend URL: http://localhost:3000
+echo.
+echo Press any key to exit this launcher (server will continue running)...
+pause >nul
