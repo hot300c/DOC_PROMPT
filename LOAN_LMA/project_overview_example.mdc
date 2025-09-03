@@ -1,0 +1,489 @@
+# Loan Management Project Overview
+
+## Project Structure
+The project follows Clean Architecture principles with clear separation of concerns:
+
+```
+loan_management_app/
+├── lib/
+│   ├── core/              - Core infrastructure and utilities
+│   │   ├── config/        - App configuration and constants
+│   │   ├── exceptions/    - Custom exceptions and error handling
+│   │   ├── services/      - Core services (API, storage, etc.)
+│   │   ├── utils/         - Utility functions and helpers
+│   │   └── widgets/       - Reusable UI components
+│   ├── domain/            - Business logic and domain models
+│   │   ├── entities/      - Core business entities
+│   │   ├── repositories/  - Repository interfaces
+│   │   ├── usecases/      - Business use cases
+│   │   └── value_objects/ - Domain value objects
+│   ├── data/              - Data layer implementation
+│   │   ├── datasources/   - Remote and local data sources
+│   │   ├── models/        - Data models and DTOs
+│   │   └── repositories/  - Repository implementations
+│   ├── presentation/      - UI layer
+│   │   ├── controllers/   - GetX controllers
+│   │   ├── pages/         - Screen pages
+│   │   ├── widgets/       - Page-specific widgets
+│   │   └── bindings/      - Dependency injection bindings
+│   ├── routes/            - App routing configuration
+│   └── main.dart          - App entry point
+├── assets/                - Static assets (images, fonts, etc.)
+├── test/                  - Unit and widget tests
+└── pubspec.yaml           - Dependencies and project configuration
+```
+
+## Key Patterns & Concepts
+
+1. **MVVM Pattern with GetX**:
+   - Controllers handle business logic and state management
+   - Views (pages) are reactive and update automatically
+   - Models represent data structures
+   
+```dart
+// Example Controller
+class LoanController extends GetxController {
+  final _loanRepository = Get.find<LoanRepository>();
+  final loans = <Loan>[].obs;
+  final isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchLoans();
+  }
+
+  Future<void> fetchLoans() async {
+    isLoading.value = true;
+    try {
+      final result = await _loanRepository.getLoans();
+      loans.value = result;
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to fetch loans');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+}
+```
+
+2. **Repository Pattern**:
+   - Abstracts data access logic
+   - Supports multiple data sources (API, local storage)
+   - Provides clean interface for domain layer
+   
+```dart
+// Repository Interface
+abstract class LoanRepository {
+  Future<List<Loan>> getLoans();
+  Future<Loan> getLoanById(String id);
+  Future<void> createLoan(Loan loan);
+  Future<void> updateLoan(Loan loan);
+  Future<void> deleteLoan(String id);
+}
+
+// Repository Implementation
+class LoanRepositoryImpl implements LoanRepository {
+  final LoanApiService _apiService;
+  final LoanLocalDataSource _localDataSource;
+
+  LoanRepositoryImpl(this._apiService, this._localDataSource);
+
+  @override
+  Future<List<Loan>> getLoans() async {
+    try {
+      final loans = await _apiService.getLoans();
+      await _localDataSource.cacheLoans(loans);
+      return loans;
+    } catch (e) {
+      return await _localDataSource.getCachedLoans();
+    }
+  }
+}
+```
+
+3. **Domain-Driven Design**:
+   - Rich domain models with business logic
+   - Value Objects for type safety
+   
+```dart
+// Domain Entity
+class Loan {
+  final String id;
+  final Money amount;
+  final InterestRate interestRate;
+  final LoanTerm term;
+  final LoanStatus status;
+  final DateTime createdAt;
+  final DateTime? dueDate;
+
+  Loan({
+    required this.id,
+    required this.amount,
+    required this.interestRate,
+    required this.term,
+    this.status = LoanStatus.pending,
+    required this.createdAt,
+    this.dueDate,
+  });
+
+  bool get isOverdue => 
+    dueDate != null && DateTime.now().isAfter(dueDate!);
+
+  Money get totalAmount => 
+    amount + (amount * interestRate.value * term.months / 12);
+
+  bool canBeApproved() => 
+    status == LoanStatus.pending && amount.value > 0;
+}
+
+// Value Objects
+class Money {
+  final double value;
+  final String currency;
+
+  Money(this.value, {this.currency = 'USD'});
+
+  Money operator +(Money other) => 
+    Money(value + other.value, currency: currency);
+
+  Money operator *(double multiplier) => 
+    Money(value * multiplier, currency: currency);
+}
+
+class InterestRate {
+  final double value;
+
+  InterestRate(this.value) {
+    if (value < 0 || value > 1) {
+      throw ArgumentError('Interest rate must be between 0 and 1');
+    }
+  }
+}
+```
+
+4. **Error Handling**:
+   - Centralized error handling with custom exceptions
+   - User-friendly error messages
+   
+```dart
+// Custom Exceptions
+class LoanException implements Exception {
+  final String message;
+  final String? code;
+
+  LoanException(this.message, {this.code});
+
+  @override
+  String toString() => 'LoanException: $message';
+}
+
+class NetworkException extends LoanException {
+  NetworkException(String message) : super(message, code: 'NETWORK_ERROR');
+}
+
+class ValidationException extends LoanException {
+  ValidationException(String message) : super(message, code: 'VALIDATION_ERROR');
+}
+
+// Error Handler
+class ErrorHandler {
+  static void handleError(dynamic error) {
+    if (error is NetworkException) {
+      Get.snackbar('Network Error', error.message);
+    } else if (error is ValidationException) {
+      Get.snackbar('Validation Error', error.message);
+    } else {
+      Get.snackbar('Error', 'An unexpected error occurred');
+    }
+  }
+}
+```
+
+## Core Domain Models
+
+1. **Loan Management**:
+   - `Loan` entity with business logic
+   - `LoanApplication` for loan requests
+   - `Payment` for loan repayments
+   - `Customer` for borrower information
+   
+```dart
+class LoanApplication {
+  final String id;
+  final Customer customer;
+  final Money requestedAmount;
+  final String purpose;
+  final List<Document> documents;
+  final ApplicationStatus status;
+  final DateTime submittedAt;
+  final DateTime? approvedAt;
+  final String? approvedBy;
+
+  LoanApplication({
+    required this.id,
+    required this.customer,
+    required this.requestedAmount,
+    required this.purpose,
+    required this.documents,
+    this.status = ApplicationStatus.submitted,
+    required this.submittedAt,
+    this.approvedAt,
+    this.approvedBy,
+  });
+
+  bool get isComplete => 
+    documents.isNotEmpty && customer.isVerified;
+
+  bool canBeApproved() => 
+    status == ApplicationStatus.submitted && isComplete;
+}
+
+class Payment {
+  final String id;
+  final String loanId;
+  final Money amount;
+  final PaymentType type;
+  final PaymentStatus status;
+  final DateTime scheduledDate;
+  final DateTime? paidAt;
+
+  Payment({
+    required this.id,
+    required this.loanId,
+    required this.amount,
+    required this.type,
+    this.status = PaymentStatus.scheduled,
+    required this.scheduledDate,
+    this.paidAt,
+  });
+
+  bool get isOverdue => 
+    status == PaymentStatus.scheduled && 
+    DateTime.now().isAfter(scheduledDate);
+}
+```
+
+2. **Customer Management**:
+   - Customer profiles with verification
+   - Credit scoring and history
+   - Document management
+   
+```dart
+class Customer {
+  final String id;
+  final String name;
+  final String email;
+  final String phone;
+  final String nationalId;
+  final Address address;
+  final CustomerStatus status;
+  final CreditScore creditScore;
+  final DateTime registeredAt;
+
+  Customer({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.nationalId,
+    required this.address,
+    this.status = CustomerStatus.pending,
+    this.creditScore = const CreditScore(0),
+    required this.registeredAt,
+  });
+
+  bool get isVerified => status == CustomerStatus.verified;
+  bool get isEligibleForLoan => 
+    isVerified && creditScore.value >= 600;
+}
+
+class CreditScore {
+  final int value;
+
+  const CreditScore(this.value);
+
+  String get category {
+    if (value >= 800) return 'Excellent';
+    if (value >= 700) return 'Good';
+    if (value >= 600) return 'Fair';
+    return 'Poor';
+  }
+}
+```
+
+## Infrastructure Highlights
+
+1. **API Services**:
+   - RESTful API communication
+   - Authentication and authorization
+   - Error handling and retry logic
+   
+```dart
+class LoanApiService {
+  final Dio _dio;
+  final AuthService _authService;
+
+  LoanApiService(this._dio, this._authService);
+
+  Future<List<Loan>> getLoans() async {
+    try {
+      final token = await _authService.getToken();
+      final response = await _dio.get(
+        '/api/v1/loans',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return (response.data as List)
+          .map((json) => Loan.fromJson(json))
+          .toList();
+    } on DioException catch (e) {
+      throw NetworkException('Failed to fetch loans: ${e.message}');
+    }
+  }
+
+  Future<Loan> createLoan(LoanApplication application) async {
+    try {
+      final token = await _authService.getToken();
+      final response = await _dio.post(
+        '/api/v1/loans',
+        data: application.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return Loan.fromJson(response.data);
+    } on DioException catch (e) {
+      throw NetworkException('Failed to create loan: ${e.message}');
+    }
+  }
+}
+```
+
+2. **Local Storage**:
+   - Secure storage for sensitive data
+   - Caching for offline functionality
+   - Shared preferences for app settings
+   
+```dart
+class LoanLocalDataSource {
+  final FlutterSecureStorage _secureStorage;
+  final SharedPreferences _prefs;
+
+  LoanLocalDataSource(this._secureStorage, this._prefs);
+
+  Future<void> cacheLoans(List<Loan> loans) async {
+    final jsonList = loans.map((loan) => loan.toJson()).toList();
+    await _prefs.setString('cached_loans', jsonEncode(jsonList));
+  }
+
+  Future<List<Loan>> getCachedLoans() async {
+    final jsonString = _prefs.getString('cached_loans');
+    if (jsonString == null) return [];
+    
+    final jsonList = jsonDecode(jsonString) as List;
+    return jsonList.map((json) => Loan.fromJson(json)).toList();
+  }
+
+  Future<void> saveUserToken(String token) async {
+    await _secureStorage.write(key: 'user_token', value: token);
+  }
+
+  Future<String?> getUserToken() async {
+    return await _secureStorage.read(key: 'user_token');
+  }
+}
+```
+
+3. **State Management**:
+   - GetX for reactive state management
+   - Dependency injection for service management
+   - Route management and navigation
+   
+```dart
+// Dependency Injection
+class AppBindings extends Bindings {
+  @override
+  void dependencies() {
+    // Core services
+    Get.lazyPut(() => AuthService());
+    Get.lazyPut(() => LoanApiService(Get.find(), Get.find()));
+    Get.lazyPut(() => LoanLocalDataSource(Get.find(), Get.find()));
+    
+    // Repositories
+    Get.lazyPut<LoanRepository>(
+      () => LoanRepositoryImpl(Get.find(), Get.find()),
+    );
+    
+    // Controllers
+    Get.lazyPut(() => LoanController());
+    Get.lazyPut(() => AuthController());
+  }
+}
+
+// Route Management
+class AppRoutes {
+  static const String home = '/home';
+  static const String login = '/login';
+  static const String loans = '/loans';
+  static const String loanDetails = '/loan-details';
+  static const String applyLoan = '/apply-loan';
+  static const String profile = '/profile';
+}
+
+class AppPages {
+  static final routes = [
+    GetPage(
+      name: AppRoutes.home,
+      page: () => const HomePage(),
+      binding: HomeBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.loans,
+      page: () => const LoansPage(),
+      binding: LoansBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.loanDetails,
+      page: () => const LoanDetailsPage(),
+      binding: LoanDetailsBinding(),
+    ),
+  ];
+}
+```
+
+## Key Flows
+
+1. **Loan Application Process**:
+   ```
+   Customer Registration → Document Upload → Credit Check → Application Review → Approval/Rejection
+   ```
+
+2. **Loan Management**:
+   ```
+   Loan Creation → Payment Scheduling → Payment Processing → Loan Closure
+   ```
+
+3. **Payment Processing**:
+   ```
+   Payment Due → Notification → Payment Collection → Status Update
+   ```
+
+## Getting Started Tips
+
+1. Start with domain models to understand business rules
+2. Follow the MVVM pattern with GetX for state management
+3. Use the Repository pattern for data access
+4. Leverage value objects for type safety
+5. Implement proper error handling and user feedback
+
+## Important Dependencies
+- GetX (State Management & Routing)
+- Dio (HTTP Client)
+- Flutter Secure Storage (Secure Data Storage)
+- Shared Preferences (Local Storage)
+- Firebase (Authentication & Analytics)
+- Flutter Localizations (Internationalization)
+
+This structure provides a maintainable foundation for a loan management system with robust business logic, secure data handling, and excellent user experience.
+description:
+globs:
+alwaysApply: true
+---
