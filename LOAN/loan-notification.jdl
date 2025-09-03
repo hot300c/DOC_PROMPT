@@ -1,0 +1,119 @@
+application {
+  config {
+    baseName loanNotification
+    applicationType monolith
+    authenticationType jwt
+    packageName com.pntsol.loan
+    prodDatabaseType postgresql
+    devDatabaseType h2Disk
+    databaseType sql
+    buildTool maven
+    serverPort 8080
+    enableHibernateCache true
+    dtoSuffix DTO
+    serviceSuffix Service
+    enableSwaggerCodegen true
+    skipClient true
+    withAdminUi false
+  }
+  entities *
+}
+
+enum NotificationChannel { EMAIL, PUSH, IN_APP }
+
+enum SendStatus { PENDING, SUCCESS, FAILED }
+
+enum Platform { ANDROID, IOS, WEB }
+
+enum AudienceType { REGISTERED, UNREGISTERED }
+
+entity CustomerProfile {
+  fullName String required,
+  phone String,
+  loanCode String unique,
+  googleSubject String,
+  googleAccount Boolean required default false,
+  registeredAt Instant
+}
+
+entity DeviceToken {
+  deviceToken String required,
+  platform Platform required,
+  email String,
+  username String,
+  loanCode String,
+  lastSeen Instant
+}
+
+entity NotificationCampaign {
+  name String required unique,
+  active Boolean required default true,
+  audience AudienceType required,
+  channelActiveEmail Boolean required default true,
+  channelActivePush Boolean required default true,
+  channelActiveInApp Boolean required default true,
+  // Email content
+  emailSubject String,
+  emailBody TextBlob,
+  // Push content
+  pushTitle String,
+  pushBody TextBlob,
+  // In-app content
+  inAppTitle String,
+  inAppBody TextBlob,
+  imageUrl String
+}
+
+entity NotificationHistory {
+  sentAt Instant required,
+  channel NotificationChannel required,
+  status SendStatus required,
+  error TextBlob,
+  // recipient snapshots
+  recipientEmail String,
+  recipientUsername String,
+  recipientLoanCode String
+}
+
+entity ReminderConfig {
+  enabled Boolean required default true,
+  runAt LocalTime required,
+  daysBeforeDue Integer required min(1),
+  maxReminders Integer required min(1)
+}
+
+entity ReminderHistory {
+  plannedAt Instant required,
+  sentAt Instant,
+  channel NotificationChannel required,
+  status SendStatus required,
+  loanCode String required,
+  templateSnapshot TextBlob
+}
+
+relationship OneToOne {
+  CustomerProfile{user(login)} to User
+}
+
+relationship OneToMany {
+  CustomerProfile{deviceTokens} to DeviceToken{customerProfile},
+  NotificationCampaign{histories} to NotificationHistory{campaign}
+}
+
+relationship ManyToOne {
+  NotificationHistory{customerProfile(fullName)} to CustomerProfile,
+  NotificationHistory{deviceToken(deviceToken)} to DeviceToken,
+  ReminderHistory{customerProfile(fullName)} to CustomerProfile,
+  ReminderHistory{campaign(name)} to NotificationCampaign
+}
+
+paginate NotificationCampaign, NotificationHistory, DeviceToken, CustomerProfile, ReminderHistory with pagination
+
+service all with serviceClass
+
+dto all with mapstruct
+
+// Constraints and validations derived from business rules
+// - Email must be unique when used as login (handled by built-in User)
+// - DeviceToken may include email/username/loanCode to indicate registered users
+// - Campaigns can target REGISTERED or UNREGISTERED audiences
