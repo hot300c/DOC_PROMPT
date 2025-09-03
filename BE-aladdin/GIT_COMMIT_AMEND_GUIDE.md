@@ -35,7 +35,7 @@ git commit --amend -m "upgrade code"
 ```bash
 #git push origin <tên_nhánh> --force
 # hoặc
-git push origin feat/ws_CompanyB2B --force-with-lease
+git push origin feat/Convert_ws_LayDanhSachMuiTiemTheoHopDongDaDatTruoc --force-with-lease
 ```
 
 ## Lưu ý quan trọng
