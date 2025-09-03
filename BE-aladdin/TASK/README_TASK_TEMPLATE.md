@@ -166,14 +166,6 @@ private Guid? AuthenticateUser(string sessionId)
     return session?.UserId; // null => not authenticated
 }
 
-// 2) Input validation returns bool and sets _failureMessage
-private bool ValidateInput(Parameters @params)
-{
-    if (string.IsNullOrWhiteSpace(@params.SessionID)) { _failureMessage = "SessionID is required"; return false; }
-    if (@params.ClinicalSessionID == Guid.Empty) { _failureMessage = "ClinicalSessionID is required"; return false; }
-    return true;
-}
-
 // 3) Standardized error response (table with errorCode/errorMsg)
 private DataSet CreateErrorResponse(int errorCode, string errorMsg)
 {
@@ -181,34 +173,7 @@ private DataSet CreateErrorResponse(int errorCode, string errorMsg)
     ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode, errorMsg }));
     return ds;
 }
-
-// 4) Usage in Handle()
-var userId = AuthenticateUser(@params.SessionID);
-if (userId == null) return CreateErrorResponse(1, "Session ID is not valid");
-if (!ValidateInput(@params)) return CreateErrorResponse(2, _failureMessage ?? "Invalid input parameters");
-
 // For system errors, throw AppException(500, ...)
-```
-
-### 1. Authentication & Authorization Errors
-```csharp
-// Pattern 1: Return empty DataSet for auth failures (NO message in response)
-Guid? userId = AuthenticateUser(@params.SessionID);
-if (userId == null)
-{
-    _failureMessage = $"Session ID '{@params.SessionID}' is not valid.";
-    return new DataSet(); // Empty DataSet for auth failure - client gets no data
-}
-
-// Pattern 2: Return DataSet with errorCode/errorMsg properties (Recommended) (WITH message in response)
-Guid? userId = AuthenticateUser(@params.SessionID);
-if (userId == null)
-{
-    _failureMessage = $"Session ID '{@params.SessionID}' is not valid.";
-    var dataSet = new DataSet();
-    dataSet.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 1, errorMsg = "Session ID is not valid" }));
-    return dataSet;
-}
 ```
 
 ### 2. Business Logic Validation Errors
@@ -272,32 +237,17 @@ return dataSet;
 return new List<object> { new { Result = 1, Data = result } }.ToDataSet();
 ```
 
-### 6. Authentication Handler Pattern
-```csharp
-// Add _failureMessage field to track authentication failures
-private string? _failureMessage;
-
-// Set failure message when authentication fails
-if (userId == null)
-{
-    _failureMessage = $"Session ID '{sessionId}' is not valid.";
-    return new DataSet();
-}
-```
-
 ### 7. Error Code Convention
 | Error Code | Meaning | Description |
 |------------|---------|-------------|
 | 0 | Success | Operation completed successfully |
-| 1 | Authentication Failure | Session ID is not valid or user not authenticated |
-| 2 | Business Validation Error | Business logic validation failed |
-| 3 | No Data Found | No data matches criteria (NOT an error, just no data) |
-| 4+ | System/Technical Error | Reserved for future system errors |
+| 1 | Business Validation Error | Business logic validation failed |
+| 2 | No Data Found | No data matches criteria (NOT an error, just no data) |
+| 3+ | System/Technical Error | Reserved for future system errors |
 
 ### 8. Response Pattern Summary
 | Scenario | Response Type | Pattern |
 |----------|---------------|---------|
-| Authentication failures | ErrorCode/ErrorMsg DataSet | `{ errorCode = 1, errorMsg = "Session ID is not valid" }` |
 | Business validation errors | ErrorCode/ErrorMsg DataSet | `{ errorCode = 2, errorMsg = "message" }` |
 | No data found | ErrorCode/ErrorMsg DataSet | `{ errorCode = 3, errorMsg = "No data found" }` (NOT an error) |
 | System/technical errors | AppException | `throw new AppException(500, "message")` |
@@ -335,10 +285,6 @@ public override DataSet Handle(Parameters @params)
 {
     try
     {
-        // 1. Authentication & Validation
-        var userID = AuthenticateUser(@params.SessionID);
-        if (userID == Guid.Empty) return new DataSet();
-
         // 2. Get Data
         var mainData = GetMainData(@params);
         if (mainData == null) return new DataSet();
@@ -467,7 +413,6 @@ Handler `[HandlerName]` đã được refactor để tách thành các function 
 
 ### 1. Code Refactoring
 - **Tách code thành các function riêng biệt:**
-  - `AuthenticateUser()`: Xác thực người dùng
   - `ValidateInput()`: Validate input parameters
   - `GetMainData()`: Lấy dữ liệu chính
   - `ApplyBusinessLogic()`: Áp dụng business logic
@@ -519,8 +464,6 @@ Việc refactor đã thành công với các lợi ích đạt được.
 - [ ] Commit and push changes
 
 ### Common Patterns
-- **Auth Check (Old)**: `if (userId == null) { _failureMessage = $"Session ID '{sessionId}' is not valid."; return new DataSet(); }`
-- **Auth Check (New)**: `if (userId == null) { _failureMessage = $"Session ID '{sessionId}' is not valid."; var ds = new DataSet(); ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 1, errorMsg = "Session ID is not valid" })); return ds; }`
 - **Validation (Old)**: `if (!isValid) return new List<object> { new { Results = "message" } }.ToDataSet();`
 - **Validation (New)**: `if (!isValid) { var ds = new DataSet(); ds.Tables.Add(DataUtils.CreateDataTable(new { errorCode = 2, errorMsg = "message" })); return ds; }`
 - **Success (Old)**: `return new List<object> { new { Results = "Ok" } }.ToDataSet();`

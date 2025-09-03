@@ -1,0 +1,182 @@
+# Cursor Rules for Aladdin Project
+
+## Project Context
+This is the Aladdin ASP.NET Core project - a REST API that replaces SQL Server stored procedures with C# handlers. The project uses LINQ to DB for data access and follows a clean architecture pattern.
+
+## Critical Security Rules
+
+### File Upload & Data Processing
+- ALWAYS implement file size limits for Base64Data parameters (max 10MB)
+- NEVER process untrusted file uploads without validation
+- ALWAYS validate file types before processing Excel/CSV imports
+- SANITIZE CSV data to prevent formula injection (escape =, @, +, - at start of fields)
+- IMPLEMENT rate limiting on import/export endpoints
+
+### Error Handling & Information Disclosure
+- NEVER expose internal exception details to API responses
+- ALWAYS log detailed errors server-side but return generic error messages to clients
+- USE structured logging with sensitive data redaction
+- AVOID exposing database schema, file paths, or internal architecture in error messages
+
+### Authentication & Authorization
+- ALWAYS validate UserID from authenticated context, never trust client-provided UserID
+- IMPLEMENT proper role-based access control for all CRUD operations
+- VALIDATE API key permissions before executing any business logic
+- LOG all authentication failures and security events
+
+## Performance Rules
+
+### Database Operations
+- ALWAYS use NOLOCK hints for read-only queries: `.With(SqlServerHints.Table.NoLock)`
+- NEVER execute queries in loops - use batch operations instead
+- IMPLEMENT pagination for all list operations (max 1000 records per page)
+- USE bulk operations for mass data operations (BulkCopy, BulkUpdate)
+- PREFER AsEnumerable() over ToList() when data is consumed once
+
+### Memory Management
+- LIMIT export operations to prevent memory exhaustion
+- IMPLEMENT streaming for large data operations
+- AVOID loading entire datasets into memory
+- USE proper disposal patterns for database connections
+
+### Query Optimization
+- USE parameterized queries with WhereIn() for list operations
+- IMPLEMENT query result caching where appropriate
+- OPTIMIZE JOIN operations and avoid N+1 query problems
+- USE proper indexing strategy (suggest indexes in code comments)
+
+## Handler Development Patterns
+
+### Handler Structure
+- INHERIT from GenericHandler<TParameters> for type safety
+- IMPLEMENT proper parameter validation using DataAnnotations
+- USE record types for Parameters with immutable properties
+- VALIDATE business logic constraints beyond basic field validation
+
+### Database Context
+- ALWAYS use appropriate database context (e.g., QAHosGenericDB)
+- IMPLEMENT proper transaction scoping - keep transactions short
+- USE GUID.NewSequentialGuid() for primary keys
+- TRACK CreatedBy/ModifiedBy for audit trails
+
+### Error Handling in Handlers
+- THROW specific exceptions with meaningful messages
+- USE custom exception factories for consistent error handling
+- IMPLEMENT proper validation before database operations
+- RETURN structured error responses with appropriate HTTP status codes
+
+## Validation Rules
+
+### Input Validation
+- VALIDATE all input parameters using DataAnnotations
+- IMPLEMENT custom validation for business rules (date ranges, formats)
+- SANITIZE user input to prevent injection attacks
+- VALIDATE file formats and content structure
+
+### Business Logic Validation
+- CHECK for duplicate records before creating
+- VALIDATE effective date ranges (EffectiveFrom <= EffectiveTo)
+- IMPLEMENT proper format validation for tax IDs, contract numbers
+- ENSURE data consistency across related entities
+
+### Data Constraints
+- RESPECT database field length limits
+- VALIDATE required fields at multiple levels
+- IMPLEMENT proper null handling for optional fields
+- CHECK business constraints before data persistence
+
+## Testing Requirements
+
+### Unit Testing
+- WRITE comprehensive test cases using the YAML test framework
+- IMPLEMENT both positive and negative test scenarios
+- TEST all error conditions and edge cases
+- ENSURE tests are isolated and don't depend on external data
+
+### Integration Testing
+- USE clean database state for each test run
+- IMPLEMENT proper test data setup and teardown
+- TEST complete workflows from API to database
+- VALIDATE error handling in integration scenarios
+
+## Code Quality Standards
+
+### Naming Conventions
+- USE PascalCase for public members and types
+- FOLLOW existing project naming patterns (e.g., ws_HandlerName)
+- USE descriptive names for parameters and variables
+- MAINTAIN consistent naming across related components
+
+### Code Organization
+- ORGANIZE handlers by database schema (folders like QAHosGenericDB)
+- IMPLEMENT proper separation of concerns
+- USE dependency injection for services
+- MAINTAIN clean architecture boundaries
+
+### Documentation
+- DOCUMENT complex business logic with comments
+- PROVIDE XML documentation for public APIs
+- INCLUDE performance considerations in code comments
+- DOCUMENT security considerations for sensitive operations
+
+## Specific Implementation Guidelines
+
+### CompanyB2B Module
+- IMPLEMENT file size validation for import operations
+- USE batch updates instead of individual UPDATE statements
+- ADD proper error handling without information disclosure
+- IMPLEMENT CSV injection protection in import functionality
+- ADD pagination to export functionality
+
+### Handler Implementation Checklist
+```csharp
+// Template for new handlers
+public class NewHandler(AladdinDataConnection db, DateTimeService dateTimeService) 
+    : GenericHandler<NewHandler.Parameters>
+{
+    public record Parameters
+    {
+        [Required] public string RequiredField { get; init; }
+        [StringLength(50)] public string? OptionalField { get; init; }
+        public Guid? UserID { get; init; } // Always include for audit
+    }
+
+    public override DataSet Handle(Parameters @params)
+    {
+        // 1. Validate business logic
+        // 2. Use parameterized queries
+        // 3. Implement proper error handling
+        // 4. Return structured results
+    }
+}
+```
+
+## Security Checklist for New Features
+- [ ] Input validation implemented
+- [ ] File upload size limits enforced
+- [ ] Rate limiting configured
+- [ ] Error messages don't expose internals
+- [ ] Authentication/authorization verified
+- [ ] SQL injection prevention confirmed
+- [ ] Audit logging implemented
+- [ ] CSV injection protection added (if applicable)
+
+## Performance Checklist for New Features
+- [ ] Database queries optimized with NOLOCK
+- [ ] Pagination implemented for lists
+- [ ] Bulk operations used for mass data
+- [ ] Memory usage considered
+- [ ] Query execution plans reviewed
+- [ ] Caching strategy implemented
+- [ ] Transaction scope minimized
+
+## Before Deployment
+- [ ] Security review completed
+- [ ] Performance testing done
+- [ ] Error handling tested
+- [ ] Integration tests passing
+- [ ] Code review approved
+- [ ] Documentation updated
+- [ ] Monitoring configured
+
+Remember: Security and performance are not optional features - they are fundamental requirements for production systems.
