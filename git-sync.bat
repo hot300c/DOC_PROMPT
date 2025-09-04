@@ -65,9 +65,8 @@ if %errorlevel%==0 (
   goto push
 )
 
-REM Use provided commit message or fallback to timestamped default
-set MSG=%*
-if "%MSG%"=="" set MSG=chore: auto-commit %date% %time%
+REM Use fixed commit message as requested
+set MSG=phuc push
 
 echo Committing changes...
 git commit -m "%MSG%"
