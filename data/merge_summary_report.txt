@@ -1,9 +1,0 @@
-﻿BÃO CÃO TÃ“M Táº®T MERGE PROCEDURES VÃ€ FE_API
-==================================================
-
-Tá»•ng sá»‘ procedures: 4407
-Procedures Ä‘Æ°á»£c tÃ¬m tháº¥y (DA_CO): 93
-Procedures khÃ´ng tÃ¬m tháº¥y (CHUA_CO): 4314
-Tá»· lá»‡ tÃ¬m tháº¥y: 2.11%
-
-TOP 10 PROCEDURES KHÃ”NG TÃŒM THáº¤Y:
