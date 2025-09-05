@@ -4,8 +4,8 @@ application {
     applicationType monolith
     authenticationType jwt
     packageName com.pntsol.loan
-    prodDatabaseType postgresql
-    devDatabaseType h2Disk
+    prodDatabaseType mysql
+    devDatabaseType mysql
     databaseType sql
     buildTool maven
     serverPort 8080

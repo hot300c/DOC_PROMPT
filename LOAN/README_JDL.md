@@ -7,7 +7,7 @@ This folder contains a JHipster JDL to generate a backend monolith for the LOAN 
 Derived from:
 - `BU_User.md`: unique email as login, Google sign-in metadata, registered vs. guest users.
 - `BU_Notification.md`: campaigns, multi-channel (Email | Push | In-app), templates, activation, send-now flows, history logging, device tokens with platform.
-- `BU_Reminder_Payment.md`: daily scheduled reminder before due date, configurable schedule and limits, template caching, logging history.
+- https://github.com/PNTSOL/LMA_BACKEND/issues/5: daily scheduled reminder before due date, configurable schedule and limits, template caching, logging history.
 
 ## Model Overview
 
