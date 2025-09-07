@@ -1,0 +1,69 @@
+cloud-architecture-diagram
+
+// Loan Management System Architecture
+
+Client [icon: users] {
+  Customer [icon: user, note: "End Users"]
+  Administrator [icon: user-tie, note: "System Admin"]
+  Broker [icon: user-tie, note: "Loan Broker"]
+  Staff [icon: user-tie, note: "Staff Member"]
+}
+
+Mobile Apps [icon: mobile] {
+  iOS App [icon: apple]
+  Android App [icon: android]
+}
+
+Web Admin [icon: browser] {
+  Admin Dashboard [icon: monitor]
+}
+
+group PNT Infrastructure {
+  BACKEND {
+    loan-backend-service [icon: k8s-pod, note: "Spring Boot", color: blue]
+    reminder-service [icon: k8s-pod, note: "Reminder Service", color: green]
+    database-loan [icon: database, color: red]
+  }
+  
+  S3 Storage [icon: aws-s3, note: "Document Storage"]
+}
+
+group External Services {
+  lend.com.au [icon: building, note: "Loan Data API"]
+  Firebase [icon: firebase, note: "Push Notifications"]
+  Email Server [icon: mail, note: "Email Service"]
+  Sentry [icon: sentry, note: "Error Monitoring"]
+  Google Analytics [icon: google-analytics, note: "Analytics"]
+}
+
+
+
+
+// User Connections
+Customer > Mobile Apps
+Administrator > Web Admin
+Broker > Web Admin
+Staff > Web Admin
+
+// Application Connections
+Mobile Apps > loan-backend-service
+Web Admin > loan-backend-service
+loan-backend-service > database-loan
+reminder-service > database-loan
+
+// File Storage
+Mobile Apps -> S3 Storage: upload documents
+loan-backend-service -> S3 Storage: store documents
+
+// External API Connections
+loan-backend-service -> lend.com.au: import-export data
+loan-backend-service -> Firebase: push notifications
+loan-backend-service -> Email Server: send emails
+
+// Reminder Service
+reminder-service -> Email Server: send reminder emails
+reminder-service -> Firebase: send push notifications
+
+// Monitoring
+Mobile Apps -> Sentry: error tracking
+Mobile Apps -> Google Analytics: user analytics

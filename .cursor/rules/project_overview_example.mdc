@@ -1,9 +1,6 @@
 ---
-description: Aladdin Project Overview
-globs:
-alwaysApply: true
+alwaysApply: false
 ---
-
 # Aladdin Project Overview
 
 ## Project Structure
