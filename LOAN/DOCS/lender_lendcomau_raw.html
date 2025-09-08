@@ -1,0 +1,3362 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>LenderAPI Documentation | Lend Capital</title>
+		<style>
+  *{font-family:"Helvetica Neue",Arial,sans-serif;color:#424242;line-height:1.4;margin:0;padding:0}
+  #header{background:#162D5A;color:#fff;padding:10px 20px;position:fixed;z-index:2;top:0;width:100%;box-shadow:0 4px 12px rgba(50,50,50,0.30)}
+  #header .container{position: relative;}
+  .headerlogo{max-height:16px;filter:grayscale(1) invert(1);opacity:0.6;position:absolute;right:40px;top:6px;}
+  .imglessLogo{font-size:1.1em;color:#9aa5ba}
+  .imglessLogo span{font-weight:700;color:#fff;display:inline-block;border-right:1px solid #9aa5ba;padding:3px 15px 3px 0;margin-right:8px}
+  #main{background:#f6f6f6}
+  #mainContent,#nav{display:inline-block;vertical-align:top;width:250px}
+  #mainContent{padding:80px 20px 60px;border-left:1px solid #d9d9d9;background:#fff;margin-left:250px;width:calc(100% - 291px);border-bottom:1px solid #d9d9d9}
+  #nav{padding-top:5px;background:#f6f6f6;height:100%;position:fixed;left:0;top:55px;bottom:0;overflow-y:scroll;z-index:1}
+  #nav::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.1);border-radius:6px;background-color:#f6f6f6}
+  #nav::-webkit-scrollbar{width:6px;background-color:#f6f6f6}
+  #nav::-webkit-scrollbar-thumb{border-radius:6px;-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,.1);background-color:#bebebe}
+  #nav ul{list-style:none;padding:0 0 220px}
+  #nav li{margin-bottom:0}
+  #nav a{text-decoration:none;display:block}
+  #nav a.h1{font-size:1.2em;padding:3px 10px 3px 20px;margin-top:10px}
+  #nav a.h2{font-size:1em;padding:3px 10px 6px 20px}
+  #nav a.h3{font-size:.9em;padding:3px 10px 3px 28px}
+  .jumplink{border-bottom:1px solid #36b873;color:#36b873;display:inline-block;padding:0 2px;text-decoration:none}
+  .noStyleMarkup{font-family:"Courier New",Courier,monospace!important;font-size:.9em}
+  .markup{color:#584773;background-color:#fafafc;border-color:#e3e4e7;display:inline-block;border-radius:3px;padding:0 4px;border-width:1px;border-style:solid;font-family:"Courier New",Courier,monospace!important;font-weight:700;font-size:.9em}
+  .markup.post{color:#d2a73c;background-color:#fffbf0;border-color:#f1e7ce}
+  .markup.get{color:#6470a3;background-color:#f4faff;border-color:#dfe6f5}
+  .markup.green{color:#494;background-color:#f4fcf5;border-color:#d9eedb}
+  .markup.red{color:#aa3030;background-color:#fcfafa;border-color:#eed5d5}
+  hr{border:none;border-top:1px solid #e7e7e7;margin:2.4em auto 2em}
+  h2,h3,h4,h5{margin-top:1.4em;margin-bottom:.3em;color:#162D5A}
+  h2{margin-top:2em}
+  h3{color:#36b873}
+  h4,h5{color:#424242;border-left:3px solid #36b873;padding:4px 0 4px 10px;margin-top:2em}
+  p{margin-bottom:.5em}
+  table{max-width:100%;text-align:left;border-collapse:collapse;margin-top:1em}
+  table td,table th{border-right:1px solid #e7e7e7;border-bottom:1px solid #e7e7e7;padding:4px 15px 5px}
+  table td:last-of-type,table th:last-of-type{border-right:none}
+  table th{color:#584773;background:#fafafc}
+  table tr:last-of-type td{border-bottom:none}
+  table .objectSeperatorBorder td{border-top:2px solid #c3c3c3;}
+  ul{margin:0;padding:1em 0 0 1.6em}
+  ul li{margin-bottom:.5em}
+  pre{background:#303030;color:#fff;font-size:16px;border:1px solid #262626;box-shadow:0 0 20px rgba(38,38,38,0.3);margin:1em 0 2em;width:calc(100% - 40px);border-left:8px solid #1c1c1c;border-radius:4px;padding:14px;line-height:20px;background-image:linear-gradient(180deg,#383838 50%,#303030 50%);background-size:100% 40px;background-position:0 14px;font-family:"Courier New",Courier,monospace!important}
+  pre .highlightWithinPre{font-family:inherit; font-size:inherit; color: rgb(255, 245, 32);}
+  .deprecatedComment{font-size:0.9em; color:rgb(255, 103, 176);}
+  .urlhighlight{color:#c42222;font-family:"Courier New",Courier,monospace!important}
+  .tick,.cross{font-size:1.2em}
+  .tick{color:#36b873}
+  .cross{color:#c42222}
+  .requestType{display:inline;padding:4px 10px;margin:0 10px;font-family:"Courier New",Courier,monospace!important;border-radius:4px;background:#f5f5f5;border:1px solid #e0e0e0;color:#757575}
+  .requestType.small{font-size:.8em;margin:0;padding:2px 3px;font-weight:700}
+  .requestType.get{background:#f4faff;border:1px solid #dfe6f5;color:#6470a3}
+  .requestType.post{background:#fffbf0;border:1px solid #f1e7ce;color:#d2a73c}
+  .requestPath,.requestPath .highlight{display:inline;font-family:"Courier New",Courier,monospace!important}
+  .requestPath .highlight{color:#c42222}
+  .pulloutNotice{margin:15px 0;background: rgb(254, 255, 242);border:1px solid rgb(227, 230, 171);border-left:4px solid rgb(227, 230, 171);padding:10px 15px 5px;border-radius:4px;font-size:0.9em;}
+  .pulloutNotice .noticeTitle{font-weight:bold;margin-bottom:8px;}
+  #footer{background:#f6f6f6;padding:20px}
+  #footer .copy,#footer .logo{display:inline-block;width:50%;vertical-align:middle;color:#939393;font-size:12px}
+  #footer .logo{text-align:right}
+  #footer .logo img{max-height:16px;filter:grayscale(1);opacity:.5}
+</style>
+	</head>
+	<body>
+		<header id="header">
+  <div class="container">
+    <div class="imglessLogo">
+      <span>LenderAPI</span> Docs
+    </div>
+    <img class="headerlogo" src="https://files.lend.com.au/images/logo-b.svg" />
+  </div>
+</header>
+		<main id="main">
+      <nav id="nav">
+				<div class="holder">
+					<ul>
+  <li><a class="h1" href="#h_title">LenderAPI</a></li>
+  <li><a class="h2" href="#h_intro">Introduction</a></li>
+  <li><a class="h2" href="#h_getstarted">Getting Started</a></li>
+  <li><a class="h3" href="#h_headers">- Headers</a></li>
+  <li><a class="h3" href="#h_envs">- Environments</a></li>
+  <li><a class="h3" href="#h_versioning">- Versioning</a></li>
+  <li><a class="h2" href="#h_auth">Authentication</a></li>
+  <li><a class="h3" href="#h_auth">- API KEY</a></li>
+  <li><a class="h2" href="#h_monitoring">Monitoring</a></li>
+  <li><a class="h3" href="#h_monitoringprocesses">- Our Processes</a></li>
+  <li><a class="h3" href="#h_monitoringapi"><span class="requestType get small">GET</span> System Status</a></li>
+  <li><a class="h1" href="#h_collectleads">Collecting Leads</a></li>
+  <li><a class="h2" href="#h_collect_mthods">Two Methods</a></li>
+  <li><a class="h3" href="#h_collect_webhook"><span class="requestType small">1</span> Webhook</a></li>
+  <li><a class="h3" href="#h_collect_api"><span class="requestType small">2</span> API</a></li>
+  <li><a class="h1" href="#h_resources">Resources</a></li>
+  <li><a class="h2" href="#h_leads">Leads</a></li>
+  <li><a class="h3" href="#h_getleads"><span class="requestType get small">GET</span> Get Leads</a></li>
+  <li><a class="h3" href="#h_getfulllead"><span class="requestType get small">GET</span> Get Full Lead</a></li>
+  <li><a class="h3" href="#h_getattachments"><span class="requestType get small">GET</span> File Attachments</a></li>
+  <li><a class="h2" href="#h_productspecificdetails">Product Specific Data</a></li>
+  <li><a class="h3" href="#h_assetfinanceobject"><span class="requestType small">{}</span> Asset Finance</a></li>
+  <li><a class="h2" href="#h_updating">Updating</a></li>
+  <li><a class="h3" href="#h_statusupdate"><span class="requestType post small">POST</span> Status Update</a></li>
+  <li><a class="h3" href="#h_loanoffer"><span class="requestType post small">POST</span> Loan Offer</a></li>
+  <li><a class="h3" href="#h_fundedstatus"><span class="requestType post small">POST</span> Funded</a></li>
+  <li><a class="h1" href="#h_misc">Miscellaneous</a></li>
+  <li><a class="h2" href="#h_objects">Objects</a></li>
+  <li><a class="h3" href="#h_noteobjects"><span class="requestType small">{}</span> Note Objects</a></li>
+  <li><a class="h2" href="#h_statuses">Statuses</a></li>
+  <li><a class="h3" href="#h_getstatuses"><span class="requestType get small">GET</span> Get Statuses</a></li>
+  <li><a class="h2" href="#h_picklists">Picklists</a></li>
+  <li><a class="h3" href="#h_getallpicklists"><span class="requestType get small">GET</span> Get All Picklists</a></li>
+  <li><a class="h3" href="#h_getpicklist"><span class="requestType get small">GET</span> Get Picklist</a></li>
+  <li><a class="h2" href="#h_testleads">Test Leads</a></li>
+  <li><a class="h3" href="#h_sandbox_yourwebhook">- Your Webhook</a></li>
+  <li><a class="h3" href="#h_sandbox_test_leads">- Sandbox</a></li>
+  <li><a class="h2" href="#h_errors">Errors</a></li>
+  <li><a class="h3" href="#h_errorsdatastructure">- Data-Structure</a></li>
+  <li><a class="h3" href="#h_errorlist">- Error List</a></li>
+  <li><a class="h1" href="#h_changelog">Changelog</a></li>
+  <li><a class="h3" href="#h_fullchangelog">- All Updates</a></li>
+</ul>
+				</div>
+      </nav><div id="mainContent">
+        <div class="container">
+          <h1 id="h_title">LenderAPI</h1>
+
+
+<h2 id="h_intro">Introduction</h2>
+<p>Welcome to our LenderAPI documentation. This API allows lenders to integrate with <a target="_blank" href="https://www.lend.com.au">Lend</a> and join our panel of lenders.</p>
+<p>This documentation is aimed at <strike><i>developers / programmers / engineers</i></strike> tech-savvy people, however if there is anything you need assistance with, feel free to reach out to one of the Lend team. See our <a href="#h_changelog">See Changelog</a> for a history of changes.</p>
+<h2 id="h_getstarted">Getting Started</h2>
+<p>To access our LenderAPI, you will need an account set up and a corresponding API Key. If you do not have either of these you will need to contact Lend to get started. If you do have them, you can continue below.</p>
+
+
+
+<h3 id="h_headers">Headers</h3>
+<p>All requests must contain a set of headers, they are as followed:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+      <th>Additional Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Accept</td>
+      <td><span class="markup">application/json</span></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Content-Type</td>
+      <td><span class="markup">application/json</span></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>x-api-key</td>
+      <td><span class="markup">xxxxxxxxxxx</span></td>
+      <td>See "<i>Authentication</i>" (below) for more details</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<h3 id="h_envs">Environments</h3>
+<p>We have two environments for the API: Sandbox and Production. They use different API Keys, and the <b>base URL's</b> are noted below:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Environment</th>
+      <th>Base URL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Production</td>
+      <td><span class="markup">https://lenders-api.lend.com.au/v1/</span></td>
+    </tr>
+    <tr>
+      <td>Sandbox</td>
+      <td><span class="markup">https://sandbox-lenders-api.lend.com.au/v1/</span></td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+<h3 id="h_versioning">Versioning</h3>
+<p>Our LenderAPI is versioned, currently in production we only have version 1, and this is used within the URL.</p>
+<p><b>Example:</b> <span class="markup">https://lenders-api.lend.com.au/<span class="urlhighlight">v1</span>/xxxxxx</span></p>
+
+
+
+
+          <h2 id="h_auth">Authentication</h2>
+          <p>All requests to the API will need to contain your API Key. You provide this by including an <span class="markup">x-api-key</span> header, and the value of this header is your API Key. If for any reason you need to revoke an API Key, contact Lend and we can do this for you.</p>
+          <p><b>Note:</b> By default we will only provide you with one API Key (per environment), however if you require multiple just let us know.</p>
+<h2 id="h_monitoring">Monitoring</h2>
+
+<h3 id="h_monitoringprocesses">Our Processes</h3>
+<p>Our API is being monitored 24/7, and we have procedures in place to ensure maximum up-time, <b>to name a few of the processes, they include:</b></p>
+
+<ul>
+  <li>Routined Automated Testing</li>
+  <li>Error Log Monitoring</li>
+  <li>Network Monitoring</li>
+  <li>Load Balancing</li>
+  <li>Auto-Scaling Instances</li>
+  <li>Plus more...</li>
+</ul>
+
+<br>
+
+<p>In the event that any of the above procedures detect an issue, we are instantly alerted to resolve the matter ASAP.</p>
+
+
+<h3 id="h_monitoringapi">
+  System Status
+  <span class="requestType get">GET</span>
+  <span class="requestPath">/</span>
+</h3>
+<p>You can check the status of our API at any point by making a <span class="markup">GET</span> request to our API's base url. You will be provided with a <span class="markup">success</span> bool, and a status message (found in the <span class="markup">message</span> field).</p>
+<p><b>Example:</b> <span class="markup">https://lenders-api.lend.com.au/</span></p>
+
+<pre>{
+  "success": true,
+  "message": "The LendersAPI is currently available and no status issues, for documentation please visit https://lenders-api-docs.lend.com.au"
+}</pre>
+
+<p><b>Note:</b> If at any point the <span class="markup">success</span> bool is <span class="markup red">false</span>, it means we have detected an issue with our API and we are resolving it. Any corresponding information about the error will still be found in the <span class="markup">message</span> field.</p>
+
+
+<hr id="h_collectleads">
+
+<h1>Collecting Leads</h1>
+
+
+
+  <h2 id="h_collect_mthods">Two Methods</h2>
+  <p>When we send you a lead you have two methods of discovering this, either we notify you via a <i>Webhook</i> (recommended), or, you can check for any new leads via our <i>Get Leads API</i> (detailed below).</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Recommended</th>
+        <th>Event Driven</th>
+        <th>Info</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Webhook</td>
+        <td><span class="tick">&#10003;</span></td>
+        <td><span class="tick">&#10003;</span></td>
+        <td>As soon as we (or one of our brokers) sends you a lead, we'll send a <span class="markup post">POST</span> request to an endpoint that you provide on your account.</td>
+      </tr>
+      <tr>
+        <td>API</td>
+        <td><span class="cross">&#10007;</span></td>
+        <td><span class="cross">&#10007;</span></td>
+        <td>As this is not event driven, it involves you periodically checking our <span class="markup">/leads</span> API for new leads that we have sent to you. More details below.</td>
+      </tr>
+    </tbody>
+  </table>
+<h3 id="h_collect_webhook">Webhook</h3>
+<p>If you have an endpoint set up in your account, we'll <span class="markup post">POST</span> a very small payload of data to the endpoint.</p>
+<p>This payload <b>does not</b> contain any sensitive data, it is simply a notification to let you know a lead is waiting for you, and a <i>reference</i> for that lead.<br> <b>Note:</b> As this data is of a non-sensitive nature, we do not add any signatures/apikeys/authentication to the request.</p>
+
+<h4>Example Payload</h4>
+<p>Here is an example of the data we would post to your endpoint.</p>
+<pre>{
+  "message": "You have a new lead from Lend",
+  "lead_ref": "abc1234",
+  "sent_to_you": "1594043167",
+  "been_retrieved": false
+}</pre>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>What is it?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="markup">message</span></td>
+      <td>Just a human-friendly message to let you know a lead has been sent to you. This will be the same everytime.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead_ref</span></td>
+      <td>A 7-character <b>case-sensitive</b> string - it's the <i>reference</i> for the lead we have sent to you. It's the <b>unique identifier</b> that you'll use for all future API requests regarding this particular lead.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">sent_to_you</span></td>
+      <td>This is a Unix timestamp - it's the exact time we sent you the lead.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">been_retrieved</span></td>
+      <td>By default, this will always be false - it let's you know if you have already collected this lead.<br>The <b>only</b> time this will be true, is if you're <b>also</b> using the API method to collect leads, and have already collected this lead (we do not recommended running both in conjunction with eachother).</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<h4>What do I need to return to the request?</h4>
+<p>The <b>only thing we are interested in</b> is a http status <span class="markup green">200</span>. If we receive a <span class="markup green">200</span> status back, we'll class that as a success.</p>
+<p>If you're not familiar with http status code standards, you can read about them <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">here</a>.</p>
+
+<h4>What happens in the case of a failure?</h4>
+<p>If you do not return a status <span class="markup green">200</span>, we'll class this as a failed request. Thankfully, we do have processes in place to handle this.</p>
+<p>We will attempt to re-send the request to your endpoint a further two (2) times, if each one fails, we'll contact you to let you know that <b>a)</b> you have a lead waiting for you, and that <b>b)</b> your server is experiencing issues accepting leads.</p>
+<p>Below, is our process for each time attempt:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Attempt</th>
+      <th>Delay</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>0 mins</td>
+      <td>This is instant (event driven), the moment we (or one of our brokers) sends you a lead, we'll attempt to notify your endpoint.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>15 mins</td>
+      <td>If attempt 1 failed, we'll attempt to send again (15 minutes after the first attempt).</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>45 mins</td>
+      <td>If attempt 2 failed, we'll attempt to send again (45 minutes after the second attempt).</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+<h4>What do I do once I receive the payload?</h4>
+<p>Once you have been notified of a new lead, using the <i>reference</i> in the payload we sent, you can now "collect" this lead from our <span class="markup">/leads/xxxxxxx</span> API.
+
+
+
+<h3 id="h_collect_api">API</h3>
+<p>If you would prefer to periodically check for new leads, you can use our <i>Get Leads</i> API.</p>
+<p>This API has a mandatory <span class="markup">since</span> parameter, and the result will provide you with an array of all leads sent to you <b>since</b> the date and time you provided. The <span class="markup">been_retrieved</span> field will be useful here to identify which leads you have and have-not collected yet.</p>
+<p><a class="jumplink" href="#h_getleads">Jump to the "Get Leads" API</a></p>
+<hr id="h_resources">
+
+<h1>Resources</h1>
+
+
+<h2 id="h_leads">Leads</h2>
+<p>We have a range of APIs to integrate with our leads. We have a <i>Get Leads</i> API as an overview of all leads we have sent to you, and, we have a <i>Get Full Lead</i> API, where you can retrieve all the data we have on a lead.</p>
+<p>Each API is detailed below.</p>
+
+
+<hr>
+
+<h3 id="h_getleads">
+  Get Leads
+  <span class="requestType get">GET</span>
+  <span class="requestPath">
+    /leads?since=<span class="highlight">[timestamp]</span>
+  </span>
+</h3>
+<p>The <i>Get Leads</i> API allows you to retrieve all the leads we have sent you <b>since</b> a date time you provide.</p>
+
+<p>This API has a mandatory <span class="markup">since</span> parameter, and the result will provide you with an array of all leads sent you you <b>since</b> the date and time you provided.</p>
+
+<p class="pulloutMsg"><b>Sandbox Test Leads:</b> We have a range of test leads you can use in our sandbox environment. Jump down to our <a class="jumplink" href="#h_testleads">Test Leads</a> section for more details.</p>
+
+
+<h4>Request Details</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Required</th>
+      <th>Value</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>since</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>unix timestamp</td>
+      <td>All the leads we have sent to you <b>since</b> the date time you provide</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+<h4>Response</h4>
+<p>Here's a breakdown of the data you'd expect back in the response.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Length</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="markup">success</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td>Whether this request was successful or not. Follows the same data-structure for all APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data</span></td>
+      <td>Array</td>
+      <td></td>
+      <td>Contains all the leads.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data[i]lead_ref</span></td>
+      <td>String</td>
+      <td>7</td>
+      <td>The unique identifier for each lead.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data[i]sent_to_you</span></td>
+      <td>String</td>
+      <td>13</td>
+      <td>Unix timestamp (date time) of when we first sent this lead to you.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data[i]been_retrieved</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td>A boolean which highlights which leads you have "collected". To retrieve/collect a lead, use the <i>Get Full Lead</i> API.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<h4>Pseudo Response</h4>
+<p>Here's a pseudo example of the response you'd expect to see.</p>
+
+<pre>{
+  "success": true,
+  "data": [
+    {
+      "lead_ref": "abc1234",
+      "sent_to_you": "1594043167",
+      "been_retrieved": false
+    },
+    {
+      "lead_ref": "xyz5678",
+      "sent_to_you": "1594043167",
+      "been_retrieved": true
+    }
+  ]
+}</pre>
+<hr>
+
+<h3 id="h_getfulllead">
+  Get Full Lead
+  <span class="requestType get">GET</span>
+  <span class="requestPath">
+    /leads/<span class="highlight">[lead_ref]</span>
+  </span>
+</h3>
+<p><b>Example URL:</b> <span class="markup">https://lenders-api.lend.com.au/v1/leads/<span class="urlhighlight">abc1234</span></span></p>
+
+<p>If you want to access the full data for an individual lead, you can use this API. You use the lead_ref passed to you from one of the <a class="jumplink" href="#h_collect_mthods">two methods</a> mentioned previously (webhook or <i>Get Leads</i> API).</p>
+
+<p class="pulloutMsg"><b>Sandbox Test Leads:</b> We have a range of test leads you can use in our sandbox environment. Jump down to our <a class="jumplink" href="#h_testleads">Test Leads</a> section for more details.</p>
+
+
+<h4>Request Details</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>URI</th>
+      <th>Required</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>lead_ref</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The unique identifier for the lead you're trying to access.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<h4>Response</h4>
+<p>Here's a breakdown of the data you'd expect back in the response.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Length</th>
+      <th>Mandatory</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="markup">success</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>Whether this request was successful or not. Follows the same data-structure for all APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data</span></td>
+      <td>Array</td>
+      <td></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>Contains all the lead data</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data.lead_ref</span></td>
+      <td>String</td>
+      <td>7</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The reference (unique identifier) for this lead.</td>
+    </tr>
+    <!--
+    <tr>
+      <td><span class="markup">data.lend_score</span></td>
+      <td>Int</td>
+      <td>3</td>
+      <td></td>
+      <td>The <i>Lend Score</i> for this lead, graded from 0-100. You can read more about lend score <a href="#">here</a>.</td>
+    </tr>
+    -->
+    <tr>
+      <td><span class="markup">data.number_of_file_attachments</span></td>
+      <td>Int</td>
+      <td>3</td>
+      <td></td>
+      <td>We allow brokers to upload files for a lead (e.g. PDFs, a copy of a driving licence, etc), this will show the total number of files we have for this lead.<br><b>Note:</b> A "file collection" API is coming soon for you to be able to download these files.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">data.who_to_contact</span></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The person you should be contacting regarding this lead, and the source of this lead.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">who_to_contact.who</span></td>
+      <td>Picklist</td>
+      <td>9</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The possible values are: <span class="markup">Broker</span> (you can look at the <span class="markup">data.broker_details</span> object for contact details), and the other value is <span class="markup">Applicant</span> (you can look at the <span class="markup">data.owner</span> object for contact details). </td>
+    </tr>
+    <tr>
+      <td><span class="markup">who_to_contact.call_on_behalf_of</span></td>
+      <td>String</td>
+      <td>255</td>
+      <td></td>
+      <td>This is essentially the source of the lead. This will likely only be populated if <span class="markup">who_to_contact.who</span> is <span class="markup">Applicant</span>. You may want to use this during your initial phone call (e.g. <i>"Hello, we are calling on behalf of 'Aus Biz Loans', they have forwarded your application to us..."</i>)</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">data.broker_details</span></td>
+      <td></td>
+      <td>Details about the broker who sent this lead.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">broker_details.name</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>The point of contact's <b>full</b> name.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">broker_details.number</span></td>
+      <td>String</td>
+      <td>10</td>
+      <td></td>
+      <td>Australian 10-digit valid phone number. This can be a mobile or landline.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">broker_details.company</span></td>
+      <td>String</td>
+      <td>255</td>
+      <td></td>
+      <td>This will be the name of the broker's company.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">data.lead</span></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The applicant's company details for this lead.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.business_name</span></td>
+      <td>String</td>
+      <td>255</td>
+      <td></td>
+      <td>The business name for this lead, for example our's is "Lend".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.organisation_name</span></td>
+      <td>String</td>
+      <td>255</td>
+      <td></td>
+      <td>The legal entity name for this lead, for example our's is "Lend Capital Pty Ltd".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.amount_requested</span></td>
+      <td>Decimal</td>
+      <td>10,2</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The loan amount the applicant is requesting.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.purpose</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>Loan Purpose - What the loan funds will be used for.<br> <b>Note:</b> If you wish, you can access all our purpose values from our <i>Picklist</i> APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.loan_term_requested</span></td>
+      <td>Int</td>
+      <td>2</td>
+      <td></td>
+      <td>Months - The applicant's <i>preferred</i> loan term in months.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.company_registration_date</span></td>
+      <td>Date</td>
+      <td></td>
+      <td></td>
+      <td>YYYY-MM-DD - The company's registration date. This is the date from the ABN record.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">lead.industry</span></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>Details on what industry this applicant is in.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">industry.parent</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>A general industry description. e.g. "Construction". <br><b>Note:</b> If you wish, you can access all our parent/child values from our <i>Picklist</i> APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">industry.child</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>More specific details for this lead. e.g. "Electrician". <br><b>Note:</b> If you wish, you can access all our parent/child values from our <i>Picklist</i> APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.product_type</span></td>
+      <td>String</td>
+      <td>128</td>
+      <td></td>
+      <td>This is the <i>preferred</i> type of product that the applicant is interested in (e.g. "Unsecured Loan"). <br><b>Note:</b> If you wish, you can access all the product type values from our <i>Picklist</i> APIs.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">lead.equipment</span></td>
+      <td></td>
+      <td>If this is an equipment finance lead, we'll provide you with details regarding the equipment.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">equipment.type</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>The type of equipment this applicant wants. (e.g. "Car/Van/Ute"). <br><b>Note:</b> If you wish, you can access all the equipment type values from our <i>Picklist</i> APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">equipment.condition</span></td>
+      <td>Picklist</td>
+      <td></td>
+      <td></td>
+      <td>Possible values are: <span class="markup">New</span>, <span class="markup">Used</span>, or <span class="markup">Other</span>.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">equipment.already_found</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td></td>
+      <td>If the applicant has already found their equipment or not.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">equipment.details</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>A short <i>free-text</i> description from the broker/applicant about the equipment. (e.g. "This is a 2020 Toyota Hilux")</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">lead.business_address</span></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The registered address of the business.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">business_address.address</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>The street address for this business. e.g. "Suite 3, Level 2, 1 Taylor Street".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">business_address.suburb</span></td>
+      <td>String</td>
+      <td>50</td>
+      <td></td>
+      <td>The suburb for this business.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">business_address.state</span></td>
+      <td>String</td>
+      <td>3</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The Australian state for this business. We use short names: <span class="markup">WA, VIC, etc</span> </td>
+    </tr>
+    <tr>
+      <td><span class="markup">business_address.postcode</span></td>
+      <td>String</td>
+      <td>4</td>
+      <td></td>
+      <td>The 4-character Australian postcode for this business. e.g. "3189".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.abn</span></td>
+      <td>String</td>
+      <td>14</td>
+      <td></td>
+      <td>The 11-character ABN for this business, can contain spaces. e.g. "12 612 877 442" and "12612877442".</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">lead.abn_lookup</span></td>
+      <td></td>
+      <td>If we have a value in <span class="markup">lead.abn</span>, then an ABN Lookup search will have been done. These are the details from that search.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">abn_lookup.state</span></td>
+      <td>String</td>
+      <td>3</td>
+      <td></td>
+      <td>The short australian state for this entity from the ABN lookup. e.g. "WA, VIC" etc</td>
+    </tr>
+    <tr>
+      <td><span class="markup">abn_lookup.postcode</span></td>
+      <td>String</td>
+      <td>4</td>
+      <td></td>
+      <td>The 4-character australian postcode for this entity from the ABN lookup. e.g. "3189".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">abn_lookup.entity_type</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>The full description string for this entity type from the ABN lookup. e.g. "Individual/Sole Trader"</td>
+    </tr>
+    <tr>
+      <td><span class="markup">abn_lookup.entity_type_code</span></td>
+      <td>String</td>
+      <td>3</td>
+      <td></td>
+      <td>The 3-4 character entity type code from the ABN lookup. e.g. "IND"</td>
+    </tr>
+    <tr>
+      <td><span class="markup">abn_lookup.asic_num</span></td>
+      <td>String</td>
+      <td>11</td>
+      <td></td>
+      <td>The corresponding ASIC number for this ABN.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">abn_lookup.acn</span></td>
+      <td>String</td>
+      <td>11</td>
+      <td></td>
+      <td>The corresponding ACN for this ABN.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.sales_monthly</span></td>
+      <td>Decimal</td>
+      <td>10,2</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>Average monthly sales for this business (average per month over the last 6 month period).</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.sales_annual</span></td>
+      <td>Decimal</td>
+      <td>10,2</td>
+      <td></td>
+      <td>Average annual sales (this is only answered if the company has been trading >12 months)</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.expenses_monthly</span></td>
+      <td>Decimal</td>
+      <td>10,2</td>
+      <td></td>
+      <td>Average monthly expenses for this business (average per month over the last 6 month period).</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.overdraft_loc_limit</span></td>
+      <td>Decimal</td>
+      <td>10,2</td>
+      <td></td>
+      <td>If the company has an arranged overdraft facility.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.tax_outstanding_arrangement</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td></td>
+      <td>If the company has an ATO debt outstanding and is on a payment arrangement.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">lead.gst_registered</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td></td>
+      <td>If the company is GST registered.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">data.owner</span></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>More personal details of the actual applicant.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.first_name</span></td>
+      <td>String</td>
+      <td>60</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The applicant's first name.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.middle_name</span></td>
+      <td>String</td>
+      <td>60</td>
+      <td></td>
+      <td>The applicant's middle name.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.last_name</span></td>
+      <td>String</td>
+      <td>60</td>
+      <td></td>
+      <td>The applicant's last name - <b>Most</b> leads will have a last name, but not 100% of the time.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.contact_number</span></td>
+      <td>String</td>
+      <td>20</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>A valid 10-digit Australian contact number, this is the applicant's preferred contact number. This can be either a mobile or landline.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.email</span></td>
+      <td>String</td>
+      <td>255</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>A valid email address for the applicant.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.home_owner</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>If the applicant (or the applicant's business) owns their home/property.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.lvr</span></td>
+      <td>String</td>
+      <td>7</td>
+      <td></td>
+      <td>The LVR decimal percentage this applicant has in their security (if applicable). Value will include a % symbol. e.g. "75.00%".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.dob</span></td>
+      <td>String</td>
+      <td>Date</td>
+      <td></td>
+      <td>YYYY-MM-DD - The applicant's Date of Birth.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.driving_licence_num</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>The applicant's Australian driving licence number.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.driving_licence_expiry</span></td>
+      <td>Date</td>
+      <td></td>
+      <td></td>
+      <td>YYYY-MM-DD - The date this driving licence expires.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.driving_licence_state</span></td>
+      <td>String</td>
+      <td>3</td>
+      <td></td>
+      <td>The shortcode Australian State from where this driving licence is from. e.g. "VIC, WA" etc.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">owner.address</span></td>
+      <td></td>
+      <td>Personal address of the applicant.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.address.address</span></td>
+      <td>String</td>
+      <td>100</td>
+      <td></td>
+      <td>The street address for the applicant. e.g. "Suite 3, Level 2, 1 Taylor Street".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.address.suburb</span></td>
+      <td>String</td>
+      <td>50</td>
+      <td></td>
+      <td>The suburb for the applicant.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.address.state</span></td>
+      <td>String</td>
+      <td>3</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The Australian state for the applicant. We use short names: <span class="markup">WA, VIC, etc</span> </td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.address.postcode</span></td>
+      <td>String</td>
+      <td>4</td>
+      <td></td>
+      <td>The Australian postcode for the applicant.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.owner_type</span></td>
+      <td>Picklist</td>
+      <td></td>
+      <td></td>
+      <td>If we have a value for this, the applicant is one of the following: <span class="markup">Director &amp; Shareholder</span>,		<span class="markup">Director Only</span>,		<span class="markup">Shareholder Only</span>,		<span class="markup">Partner</span>,		<span class="markup">Sole Trader</span>,		<span class="markup">Chairperson</span>,		<span class="markup">Treasurer</span>,		<span class="markup">Secretary</span>,		<span class="markup">Trust Trustee</span>,		<span class="markup">Trust Beneficiary</span>,		<span class="markup">Trust Beneficial Owner</span> and <span class="markup">Other</span>. If we do not have a value it will return <span class="markup red">false</span>.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.equity</span></td>
+      <td>String</td>
+      <td>6</td>
+      <td></td>
+      <td>The decimal percent of equity this applicant has in the business. Value will include a % symbol. e.g. "95.00%".</td>
+    </tr>
+    <tr>
+      <td><span class="markup">owner.credit_history</span></td>
+      <td>Picklist</td>
+      <td></td>
+      <td></td>
+      <td>The credit status of the applicant. Values can be <span class="markup">Good</span>, <span class="markup">No Credit History</span>, <span class="markup">Paid Defaults</span>, <span class="markup">Unpaid Defaults</span>, <span class="markup">Ex Bankrupt</span> and <span class="markup">Not Sure</span>.</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">lead.bank_statements</span></td>
+      <td></td>
+      <td>Bank Statement details for this lead. <b>Note:</b> We collect bank statements using the illion service <a href="https://bankfeeds.com.au" target="_blank">here</a>.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">bank_statements.collected</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td></td>
+      <td>Whether we have collected the bank statements from the illion service.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">bank_statements.bs_doc_id</span></td>
+      <td>Array</td>
+      <td></td>
+      <td></td>
+      <td>An array of strings (up-to 15 characters per string). You can use these strings to retrieve the bank statements from the "Broker Flow" service.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data.notes</span></td>
+      <td>String</td>
+      <td>1000</td>
+      <td></td>
+      <td>A free-text value - Notes left either by the applicant or the broker. e.g. "I am hoping to have these funds within 24 hours due to an unexpected spike in orders".</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span class="markup">asset_finance_data</span> *</td>
+      <td></td>
+      <td><b>This object is not always applicable and/or available.</b> Read more about the Asset Finance object <a class="jumplink" href="#h_assetfinanceobject">here</a> in the "Product-Specific Objects" section of the docs.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p style="padding:20px 15px;"><b>*</b> These objects are what we refer to as "Product-Specific Objects". They will <b>only</b> be available in the payload for specific Product Types (the Product Type field is found at <span class="markup">lead.product_type</span>). You can read more information about these objects in our <a class="jumplink" href="#h_productspecificdetails">Product-Specific Objects</a> section.
+
+
+<h4>Pseudo Response</h4>
+<p>Here's a pseudo example of the response you'd expect to see.</p>
+
+<pre>{
+  "success": true,
+  "data": {
+    "lead_ref": "abc1234",
+    "number_of_file_attachments": 2,
+    "who_to_contact": {
+      "who": "Broker",
+      "call_on_behalf_of": "Biz Loans"
+    },
+    "broker_details": {
+      "name": "Mr Broker Name",
+      "number": "0444333555",
+      "company": "Biz Loans Direct Pty Ltd"
+    },
+    "lead": {
+      "business_name": "Doe Gardening",
+      "organisation_name": "Doe Gardening Pty Ltd",
+      "amount_requested": 30000.00,
+      "purpose": "Inventory",
+      "loan_term_requested": 12,
+      "company_registration_date": "2018-12-31",
+      "industry": {
+        "parent": "Construction and Trades",
+        "child": ""
+      },
+      "product_type": "Unsecured Business Loan",
+      "equipment": {
+        "type": "Car/Van/Ute",
+        "condition": "New",
+        "already_found": true,
+        "details": "Free text description"
+      },
+      "business_address": {
+        "address": "1 Taylor Street",
+        "suburb": "Moorabbin",
+        "state": "VIC",
+        "postcode": "3201"
+      },
+      "abn": "12 612 877 442",
+      "abn_lookup": {
+        "state": "VIC",
+        "postcode": "3189",
+        "entity_type": "Individual/Sole Trader",
+        "entity_type_code": "IND",
+        "asic_num": "625531197",
+        "acn": "625531197"
+      },
+      "sales_monthly": 3000.00,
+      "sales_annual": 45000.00,
+      "expenses_monthly": 1500.00,
+      "overdraft_loc_limit": 500.00,
+      "tax_outstanding_arrangement": false,
+      "gst_registered": true
+    },
+    "owner": {
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Doe",
+      "contact_number": "0444444444",
+      "email": "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6aca9aea886a2a9a3a1a7b4a2a3a8afa8a1e8a5a9abe8a7b3">[email&#160;protected]</a>",
+      "home_owner": true,
+      "lvr": "70.00%",
+      "dob": "1988-12-31",
+      "driving_licence_num": "xxxxxxxxx",
+      "driving_licence_expiry": "2025-12-31",
+      "driving_licence_state": "VIC",
+      "address": {
+        "address": "1 Taylor Street",
+        "suburb": "Moorabbin",
+        "state": "VIC",
+        "postcode": "3189"
+      },
+      "owner_type": "Director and Shareholder",
+      "equity": "95.00%",
+      "credit_history": "No Credit History"
+    },
+    "bank_statements": {
+      "collected": true,
+      "bs_doc_id": ["Z9ND3K5D2","G8HG2K9S7"]
+    },
+    "notes": "These are some notes, they can be left by the broker or by the applicant themselves"
+  }
+}</pre>
+<hr>
+
+<h3 id="h_getattachments">
+  File Attachments
+  <span class="requestType get">GET</span>
+  <span class="requestPath">
+    /leads/get-attachments/<span class="highlight">[lead_ref]</span>?mins=<span class="highlight">[minutes]</span>
+  </span>
+</h3>
+<p><b>Example URL:</b> <span class="markup">https://lenders-api.lend.com.au/v1/leads/get-attachments/<span class="urlhighlight">abc1234</span>?mins=<span class="urlhighlight">2</span></span></p>
+
+<p>
+  Our brokers can upload files / documents to a lead (e.g. copies of a driving licence, certificates, trust documents, etc), by default <b><u>these files are protected and all access is unauthorised</u></b>.<br>
+  You can grant yourself access to these files for a short period of time using this API.
+</p>
+
+<h4>Should you call this API with every lead you collect?</h4>
+
+<p>You can, however it causes unnecessary overheads on both your side, and our side, so we suggest you don't.</p>
+<p>We recommend you only call this API if there are any files attached to the lead. When you use the <a class="jumplink" href="#h_getfulllead">Get Full Lead</a> API, there is an <span class="markup">int</span> field called <span class="markup">data.number_of_file_attachments</span>, if this value is 1 or more, then there are file attachments with this lead.</p>
+
+
+<h4>Request Details</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>URI / Query String</th>
+      <th>Required</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>lead_ref</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The unique identifier for the lead you're trying to access.</td>
+    </tr>
+    <tr>
+      <td>mins</td>
+      <td></td>
+      <td>
+        Number of minutes you want to grant yourself access to this lead's files.<br>
+        An integer value. Maximum value: <span class="markup">5</span>, Default value: <span class="markup">2</span>.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Response</h4>
+<p>Here's a breakdown of the data you'd expect back in the response.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Length</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="markup">success</span></td>
+      <td>Bool</td>
+      <td></td>
+      <td>Whether this request was successful or not. Follows the same data-structure for all APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data</span></td>
+      <td>Array</td>
+      <td></td>
+      <td>Contains all the file objects</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data[i]tag</span></td>
+      <td>string</td>
+      <td>250</td>
+      <td>We treat this as a "title", by default it's similar to the <span class="markup">file_name</span>, however, a broker can change this to be a more friendly readable name (e.g. <span class="markup">Scan of Driving Licence</span>).</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data[i]file_name</span></td>
+      <td>string</td>
+      <td>250</td>
+      <td>The cleansed filename for this file. It will contain the file-extension too (e.g. <span class="markup">example-file-1.png</span>)</td>
+    </tr>
+    <tr>
+      <td><span class="markup">data[i]link</span></td>
+      <td>longtext</td>
+      <td></td>
+      <td>A unique, <b>time-sensitive</b> link to the file. This link will expiry after the number of minutes you requested access for.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h4>Pseudo Response</h4>
+<p>Here's a pseudo example of the response you'd expect to see.</p>
+
+<pre>{
+  "success": true,
+  "data": [
+    {
+      "tag": "Diving Licence Front",
+      "file_name": "example-file-1.png",
+      "link": "https://s3.ap-southeast-2.amazonaws.com/path/to/file/example-file-1.png?..."
+    },
+    {
+      "tag": "Driving Licence Back",
+      "file_name": "example-file-2.png",
+      "link": "https://s3.ap-southeast-2.amazonaws.com/path/to/file/example-file-2.png?..."
+    }
+  ]
+}</pre>
+<hr>
+
+<h2 id="h_productspecificdetails">Product-Specific Objects</h2>
+<p>Occosionally, the <a class="jumplink" href="#h_getfulllead">Get Full Lead</a> API will contain an <b>additional</b> object depending on the Product Type. This section will detail a list of the additional data you can collect, which objects you can find them in, and when they will be available.</p>
+
+<hr>
+
+
+
+
+					<h3 id="h_assetfinanceobject">
+						Asset Finance
+						<span class="markup">asset_finance_data</span>
+					</h3>
+
+					<p>If a broker has completed a <b>full</b> application for Asset Finance, the <span class="markup">asset_finance_data</span> object will be available (by default, it will not exist).<br>
+					<b>For simplicity,</b> you could simply check if the <span class="markup">asset_finance_data</span> object exists, if it does, then you can reliably use the data.</p>
+
+
+
+					<h4>Object Location</h4>
+          <p>The <span class="markup">asset_finance_data</span> object is located in the same location as the <span class="markup">lead</span> object. Below, it is highlighted in yellow.</p>
+
+
+<pre>{
+  "success": true,
+  "data": {
+    "lead_ref": "abc1234",
+    "number_of_file_attachments": 0,
+    "who_to_contact": { ... },
+    "broker_details": { ... },
+    "lead": { ... },
+    "owner": { ... },
+    "bank_statements": { ... },
+    <span class="highlightWithinPre">"asset_finance_data": { ... },</span>
+    "notes": "..."
+  }
+}</pre>
+
+
+
+
+					<h4>The Object</h4>
+					<p>Here's a breakdown of the data you'd expect back in the <span class="markup">asset_finance_data</span> object.</p>
+					<p>You may notice some similarities with the <span class="markup">data.owner</span> object, this is because they are from the same source, <span class="markup">data.owner</span> is still the main "Point of Contact", and this <span class="markup">asset_finance_data</span> object is all people for the application.</p>
+
+					<table>
+						<thead>
+              <tr>
+                <th>Field</th>
+								<th>Type</th>
+                <th>Length</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+						<tbody>
+							<tr>
+								<td colspan="3"><span class="markup">the_purchase</span></td>
+								<td>
+									Details about the equipment purchase that this application is for.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.equipment</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									What category of equipment this purchase falls under.<br>
+									<b>Available Values</b>: <span class="markup">Car/Van/Ute</span>, <span class="markup">Machinery</span>, <span class="markup">Truck</span>, <span class="markup">Yellow Goods</span>, <span class="markup">Fitout</span>, <span class="markup">Computers</span> and <span class="markup">Other</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.description</span></td>
+								<td>String</td>
+								<td>255</td>
+								<td>A brief description of the equipment they would like to purchase. Freetext.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.year</span></td>
+								<td>String</td>
+								<td>4</td>
+								<td>The year the equipment was manufactured. e.g. <span class="markup">2021</span>.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.make</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The make / brand of the equipment, freetext. e.g. <span class="markup">Toyota</span>.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.model</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The make / brand of the equipment, freetext. e.g. <span class="markup">Hilux</span>.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.condition</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									What the condition of the equipment to be purchased?<br>
+									<b>Available Values</b>: <span class="markup">New</span>, <span class="markup">Demo</span>, <span class="markup">Used</span> and <span class="markup">Unsure</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.reason_for_purchase</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									The reason why they are purchasing this equipment.<br>
+									<b>Available Values:</b> <span class="markup">Additional</span>, <span class="markup">Replacement</span>, <span class="markup">Refinance</span> and <span class="markup">First Asset</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.sale_type</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									<p>What type of sale is this?</p>
+									<b>Available Values:</b> <span class="markup">Private Sale</span>, <span class="markup">Sale Hire Back</span>, <span class="markup">Inside Sales</span>,<span class="markup">Dealer</span>, <span class="markup">Other Sale</span>, <span class="markup">Balloon Refinance</span>, <span class="markup">Mid Term Refinance</span> and <span class="markup">Capital Refinance</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.reason_description</span></td>
+								<td>String</td>
+								<td>255</td>
+								<td>Any more details about the reason for purchase. Freetext.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.supplier_found</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>If they have found a supplier for the equipment yet.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.supplier</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The name of the supplier, e.g. "Melb CBD Toyota Dealership"</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.supplier_type</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									<b style="color:rgb(217, 17, 17);">DEPRECATED</b> - Please use <span class="markup">the_purchase.sale_type</span> instead.<br>
+									<b>Available Values:</b> <span class="markup">Dealer</span>,<span class="markup">Private without ABN</span>,<span class="markup">Private with ABN</span>,<span class="markup">Auction</span> and <span class="markup">Unsure</span>
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.supplier_address</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The "street address" for this supplier. e.g. "Suite 3, Level 2, 1 Taylor Street".</td>
+							</tr>
+              <tr>
+                <td><span class="markup">the_purchase.supplier_suburb</span></td>
+                <td>String</td>
+                <td>50</td>
+                <td>The suburb for this address.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">the_purchase.supplier_state</span></td>
+                <td>String</td>
+                <td>3</td>
+                <td>The Australian state for this address. We use short names: <span class="markup">WA, VIC, etc</span> </td>
+              </tr>
+              <tr>
+                <td><span class="markup">the_purchase.supplier_postcode</span></td>
+                <td>String</td>
+                <td>4</td>
+                <td>The 4-character Australian postcode for this business. e.g. "3189".</td>
+              </tr>
+              <tr>
+                <td><span class="markup">the_purchase.supplier_country</span></td>
+                <td>String</td>
+                <td>2</td>
+                <td>The 2-character country code for this address. e.g. "AU" for Australia.</td>
+              </tr>
+							<tr>
+								<td><span class="markup">the_purchase.purchase_price</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value for the equipment purchase, for example <span class="markup">45000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.deposit</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value for the equipment deposit, for example <span class="markup">5000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.tradein</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>
+									A decimal value for any equipment that is being traded in, for example <span class="markup">2000.00</span>.<br>
+									<b>Note:</b> This is the tradein_value minus the tradein_debt.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.tradein_value</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value for the value of any equipment being traded in, for example <span class="markup">5000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.tradein_debt</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value for any outstanding finance on equipment being traded in, for example <span class="markup">3000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.balloon</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value for any balloon payment they want to arrange, for example <span class="markup">10000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.vehicle_type</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td><b>Available Values:</b> <span class="markup">Hybrid</span> and <span class="markup">Electric</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.odometer</span></td>
+								<td>Int</td>
+								<td></td>
+								<td>If applicable, how many kilometers has the vehicle done. Example: <span class="markup">20000</span> </td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.hours</span></td>
+								<td>Int</td>
+								<td></td>
+								<td>If applicable, how many hours has the equipment been used for. <span class="markup">45</span> </td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.personal_service_use</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									<p>If applicable, what type of personal service will this be used for. </p>
+									<p><b>Available Values:</b> <span class="markup">Taxi</span>, <span class="markup">Courier</span>, <span class="markup">Hire</span> and <span class="markup">Ride Share</span> </p>
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">the_purchase.third_party_use</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									<p>If applicable, is this going to be used by a third party?</p>
+									<p><b>Available Values:</b> <span class="markup">Lease</span> and <span class="markup">Hire</span> </p>
+								</td>
+							</tr>
+
+
+
+							<!-- people objects -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">people</span></td>
+								<td>An <b>array</b> that contains all the people objects in this application.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]is_guarantor</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>If this person is a guarantor for the application.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]title</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									The title for this person.<br>
+									<b>Available Values:</b> <span class="markup">Dr</span>, <span class="markup">Mrs</span>, <span class="markup">Miss</span>, <span class="markup">Mr</span>, <span class="markup">Ms</span> and <span class="markup">Prefer not to say</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]first_name</span></td>
+								<td>String</td>
+								<td>60</td>
+								<td>This person's first name.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]middle_name</span></td>
+								<td>String</td>
+								<td>60</td>
+								<td>This person's middle name.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]last_name</span></td>
+								<td>String</td>
+								<td>60</td>
+								<td>This person's last name.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]sex</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									The sex for this person.<br>
+									<b>Available Values:</b> <span class="markup">Male</span>, <span class="markup">Female</span>, and <span class="markup">Prefer not to say</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]marital_status</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									The marital status for this person.<br>
+									<b>Available Values:</b> <span class="markup">Single</span>, <span class="markup">Married</span>, <span class="markup">De facto</span> and <span class="markup">Prefer not to say</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]contact_number</span></td>
+								<td>String</td>
+								<td>20</td>
+								<td>This person's preferred contact number. A valid 10-digit Australian contact number. This can be either a mobile or landline.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]email</span></td>
+								<td>String</td>
+								<td>255</td>
+								<td>A valid email address for this person.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]equity</span></td>
+								<td>String</td>
+								<td>7</td>
+								<td>The equity share of the business this person has. A decimal percentage. Value will include a % symbol. e.g. "75.00%".</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]dob</span></td>
+								<td>String</td>
+								<td>Date</td>
+								<td>YYYY-MM-DD - This person's Date of Birth.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]number_of_dependants</span></td>
+								<td>Int</td>
+								<td>2</td>
+								<td>Total number of dependants this person has that are under the age of 18.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]driving_licence_num</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>This person's Australian driving licence number.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]driving_licence_expiry</span></td>
+								<td>Date</td>
+								<td></td>
+								<td>YYYY-MM-DD - The date this driving licence expires.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]driving_licence_state</span></td>
+								<td>String</td>
+								<td>3</td>
+								<td>The shortcode Australian State from where this driving licence is from. e.g. "VIC, WA" etc.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]owner_type</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>If we have a value for this, this person is one of the following: <span class="markup">Director &amp; Shareholder</span>,		<span class="markup">Director Only</span>,		<span class="markup">Shareholder Only</span>,		<span class="markup">Partner</span>,		<span class="markup">Sole Trader</span>,		<span class="markup">Chairperson</span>,		<span class="markup">Treasurer</span>,		<span class="markup">Secretary</span>,		<span class="markup">Trust Trustee</span>,		<span class="markup">Trust Beneficiary</span>,		<span class="markup">Trust Beneficial Owner</span> and <span class="markup">Other</span>. If we do not have a value it will return <span class="markup red">false</span>.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]credit_score</span></td>
+								<td>Int</td>
+								<td></td>
+								<td>The Equifax credit score for this person. This is currently a value provided by the broker, it has not been verified by Lend.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]credit_history</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>The credit status of this person. Values can be <span class="markup">Good</span>, <span class="markup">No Credit History</span>, <span class="markup">Paid Defaults</span>, <span class="markup">Unpaid Defaults</span>, <span class="markup">Ex Bankrupt</span> and <span class="markup">Not Sure</span>.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">people[i]notes</span></td>
+								<td>String</td>
+								<td>250</td>
+								<td>Any short-note specifically about this person. Freetext. This can be a note left by the broker, or by the person themselves.</td>
+							</tr>
+
+
+
+							<!-- asset objects -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">people[i]assets</span></td>
+								<td>
+										An <b>array</b> that contains all <b>personal</b> asset objects (for that person).
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">assets[ii]asset_type_name</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									The type of asset this is, example: <span class="markup">Shares</span>.<br>
+									<b>Note:</b> If you wish, you can access all our asset type picklist values from our <i>Picklist</i> APIs. They are categorised as "personal" and "business", the ones relevent to this field are the "personal" ones.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">assets[ii]description</span></td>
+								<td>String</td>
+								<td>250</td>
+								<td>Freetext string contain a brief description of the asset.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">assets[ii]value</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value of the asset, for example <span class="markup">5000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">assets[ii]finance_outstanding</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>
+									If this asset has any finance outstanding on it.<br>
+									<b>Note:</b> If this value is true, there will <i>usually</i> be a liability (in the liabilities array) to "pair" up with this asset.
+								</td>
+							</tr>
+
+
+							<!-- liability objects -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">people[i]liabilities</span></td>
+								<td>
+										An <b>array</b> that contains all <b>personal</b> liability objects (for that person). <b>Note:</b> Fields in each liability object may not always be applicable, it depends on what the liability is.<br>
+										<b>Examples:</b> a Credit Card would use the <span class="markup">limit</span> and <span class="markup">used</span> fields, whereas a Home Loan would use the <span class="markup">loan_balance</span> and <span class="markup">repayment_pm</span> fields. There's two examples in the Pseudo Object below.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]liability_name</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									This is the type of liability this is, example: <span class="markup">Credit Card</span>.<br>
+									<b>Note:</b> If you wish, you can access all our liability type picklist values from our <i>Picklist</i> APIs. They are categorised as "personal" and "business", the ones relevent to this field are the "personal" ones.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]description</span></td>
+								<td>String</td>
+								<td>250</td>
+								<td>Freetext string contain a brief description of the liability.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]limit</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>The maximum limit the person was approved for. A decimal value, for example <span class="markup">10000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]used</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>The amount used (of their limit) the person was approved for. A decimal value, for example <span class="markup">250.30</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]loan_balance</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>If the liability is a loan, this is their remaining balance. A decimal value, for example <span class="markup">130000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]repayment_pm</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>The monthly repayment amount for this liability. A decimal value, for example <span class="markup">415.56</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]financier</span></td>
+								<td>String</td>
+								<td>50 </td>
+								<td>This is freetext. The financier of the liability.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">liabilities[ii]to_pay_out</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>If this loan application needs to "pay out" this liability. Can be null.</td>
+							</tr>
+
+
+							<!-- addresses object -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">people[i]addresses</span></td>
+								<td>An <b>array</b> of address objects for this person.<br> In total, the array should contain at least 3 years worth of data.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">addresses[ii]living_status</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									What their current living arrangements are.<br>
+									<b>Available Values</b>: <span class="markup">Owned Outright</span>, <span class="markup">Mortgaged</span>, <span class="markup">Renting</span>, <span class="markup">Boarding</span> and <span class="markup">Other</span>
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">addresses[ii]living_status_other</span></td>
+								<td>String</td>
+								<td>250</td>
+								<td>A freetext description of their living status. We ask this is their living status is "Other". Usually null.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">addresses[ii]landlord_name</span></td>
+								<td>String</td>
+								<td>50</td>
+								<td>The landlord's full name for this address.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">addresses[ii]landlord_contact_number</span></td>
+								<td>String</td>
+								<td>10</td>
+								<td>Valid AU phone number for the landlord.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">addresses[ii]address</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The "street address" for this address. e.g. "Suite 3, Level 2, 1 Taylor Street".</td>
+							</tr>
+              <tr>
+                <td><span class="markup">addresses[ii]suburb</span></td>
+                <td>String</td>
+                <td>50</td>
+                <td>The suburb for this address.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">addresses[ii]state</span></td>
+                <td>String</td>
+                <td>3</td>
+                <td>The Australian state for this address. We use short names: <span class="markup">WA, VIC, etc</span> </td>
+              </tr>
+              <tr>
+                <td><span class="markup">addresses[ii]postcode</span></td>
+                <td>String</td>
+                <td>4</td>
+                <td>The 4-character Australian postcode for this business. e.g. "3189".</td>
+              </tr>
+              <tr>
+                <td><span class="markup">addresses[ii]country</span></td>
+                <td>String</td>
+                <td>2</td>
+                <td>The 2-character country code for this address. e.g. "AU" for Australia.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">addresses[ii]date_from</span></td>
+                <td>Date</td>
+                <td></td>
+                <td>YYY-MM-DD - The date this person started living here.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">addresses[ii]date_to</span></td>
+                <td>Date</td>
+                <td></td>
+                <td>YYY-MM-DD - The date this person ended living here. Can be null.</td>
+              </tr>
+
+
+							<!-- employment object -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">people[i]employment</span></td>
+								<td>An <b>array</b> of employment objects for this person.<br> In total, the array should contain at least 3 years worth of data.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">employment[ii]employment_type</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									What type of employment is this.<br>
+									<b>Available Values</b>: <span class="markup">Permanent Full Time</span>, <span class="markup">Permanent Part Time</span>, <span class="markup">Casual Full Time</span>, <span class="markup">Casual Part Time</span>, <span class="markup">Self Employed Contractor</span>, <span class="markup">Pensioner</span>, <span class="markup">Self Funded Retiree</span> and <span class="markup">Other</span>.
+								</td>
+							</tr>
+              <tr>
+                <td><span class="markup">employment[ii]employer</span></td>
+                <td>String</td>
+                <td>50</td>
+                <td>Freetext string. The company name for this employment.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">employment[ii]position</span></td>
+                <td>String</td>
+                <td>50</td>
+                <td>Freetext string. The position this person held at this employment.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">employment[ii]date_from</span></td>
+                <td>Date</td>
+                <td></td>
+                <td>YYY-MM-DD - The date this person started this employment.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">employment[ii]date_to</span></td>
+                <td>Date</td>
+                <td></td>
+                <td>YYY-MM-DD - The date this person ended this employment. Can be null.</td>
+              </tr>
+
+
+
+							<!-- business asset objects -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">business_assets</span></td>
+								<td>An <b>array</b> of business-asset objects for the business in this application.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_assets[i]asset_type_name</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									The type of asset this is, example: <span class="markup">Property</span>.<br>
+									<b>Note:</b> If you wish, you can access all our asset type picklist values from our <i>Picklist</i> APIs. They are categorised as "personal" and "business", the ones relevent to this field are the "business" ones.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_assets[i]description</span></td>
+								<td>String</td>
+								<td>250</td>
+								<td>Freetext string contain a brief description of the asset.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_assets[i]value</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value of the asset, for example <span class="markup">5000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_assets[i]finance_outstanding</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>
+									If this asset has any finance outstanding on it.<br>
+									<b>Note:</b> If this value is true, there will <i>usually</i> be a liability (in the liabilities array) to "pair" up with this asset.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_assets[i]debtors_money_owed</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value of the money owed by debtors to the business, for example <span class="markup">15000.00</span></td>
+							</tr>
+
+
+
+							<!-- business liability objects -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">business_liabilities</span></td>
+								<td>
+									An <b>array</b> that contains all <b>business</b> liability objects (for the business in this application). <b>Note:</b> Fields in each liability object may not always be applicable, it depends on what the liability is.<br>
+									<b>Examples:</b> a OD/LOC would use the <span class="markup">limit</span> and <span class="markup">used</span> fields, whereas a Loan option would use the <span class="markup">loan_balance</span> and <span class="markup">repayment_pm</span> fields. There's two examples in the Pseudo Object below.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]liability_name</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									This is the type of liability this is, example: <span class="markup">ATO Debt</span>.<br>
+									<b>Note:</b> If you wish, you can access all our liability type picklist values from our <i>Picklist</i> APIs. They are categorised as "personal" and "business", the ones relevent to this field are the "business" ones.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]description</span></td>
+								<td>String</td>
+								<td>250</td>
+								<td>Freetext string contain a brief description of the liability.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]limit</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>The maximum limit the business was approved for. A decimal value, for example <span class="markup">10000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]used</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>The amount used (of the limit). A decimal value, for example <span class="markup">250.30</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]loan_balance</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>If the liability is a loan, this is the remaining balance. A decimal value, for example <span class="markup">130000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]repayment_pm</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>The monthly repayment amount for this liability. A decimal value, for example <span class="markup">415.56</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]financier</span></td>
+								<td>String</td>
+								<td>50 </td>
+								<td>This is freetext. The financier of the liability.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]amount</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>The total amount that was financed in this liability. This is usually assoiated with the Asset Finance liability types.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]commenced</span></td>
+								<td>Date</td>
+								<td></td>
+								<td>YYYY-MM-DD - This date value is the commencment date for the liability. This is usually assoiated with the Asset Finance liability types.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]term</span></td>
+								<td>Int</td>
+								<td>2</td>
+								<td>Months - This liabilities loan term in months, starting from the <span class="markup">business_liabilities[i]commenced</span> date.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]balance</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value for the remaining loan balance. e.g. <span class="markup">125800.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]balloon</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>A decimal value for any balloon arrangement on the loan. e.g. <span class="markup">5000.00</span></td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]num_of_assets</span></td>
+								<td>Int</td>
+								<td>4</td>
+								<td>If this liability was used to gain a number of assets, this is the amount of assets. e.g. the liability type is "Asset Finance (multiple)". Can be null.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">business_liabilities[i]to_pay_out</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>If this loan application needs to "pay out" this liability. Can be null.</td>
+							</tr>
+
+
+
+							<!-- reference objects -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">references</span></td>
+								<td>
+									An <b>array</b> of references for this application. <b>Note:</b> Fields in each object may not always be applicable, it depends on who the reference is.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]reference_type</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									Who / What type of referee this is.<br>
+									<b>Available Values</b>: <span class="markup">Accountant</span>, <span class="markup">Trade Reference</span>, <span class="markup">Personal Reference</span> and <span class="markup">Financier Reference</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]company_name</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The name of the company this referee is from. Freetext.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]full_name</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The referree's full name.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]email</span></td>
+								<td>String</td>
+								<td>150</td>
+								<td>The referree's valid email address.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]contact_number</span></td>
+								<td>String</td>
+								<td>10</td>
+								<td>A valid AU phone number for the referee.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]address</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The "street address" for this referee. e.g. "Suite 3, Level 2, 1 Taylor Street".</td>
+							</tr>
+              <tr>
+                <td><span class="markup">references[i]suburb</span></td>
+                <td>String</td>
+                <td>50</td>
+                <td>The suburb for this referee.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">references[i]state</span></td>
+                <td>String</td>
+                <td>3</td>
+                <td>The Australian state for this referee. We use short names: <span class="markup">WA, VIC, etc</span> </td>
+              </tr>
+              <tr>
+                <td><span class="markup">references[i]postcode</span></td>
+                <td>String</td>
+                <td>4</td>
+                <td>The 4-character Australian postcode for this referee. e.g. "3189".</td>
+              </tr>
+              <tr>
+                <td><span class="markup">references[i]country</span></td>
+                <td>String</td>
+                <td>2</td>
+                <td>The 2-character country code for this referee. e.g. "AU" for Australia.</td>
+              </tr>
+							<tr>
+								<td><span class="markup">references[i]financier</span></td>
+								<td>String</td>
+								<td>50</td>
+								<td>If the reference type is a Financier Reference, this is who the financier is. Freetext.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]financier_acc_num</span></td>
+								<td>String</td>
+								<td>50</td>
+								<td>If the reference type is a Financier Reference, this is the applicant's account number with that financier. Freetext.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">references[i]date_completed</span></td>
+								<td>Date</td>
+								<td>10</td>
+								<td>YYYY-MM-DD - This field is relevant <b>only</b> for the <span class="markup">Financier Reference</span> Reference Type. The date the finance term finished. If no data we will return <span class="markup red">null</span>.</td>
+							</tr>
+
+
+
+
+							<!-- trust_details object -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">trust_details</span></td>
+								<td>If applicable, an <b>object</b> detailing all information about the trust entity.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">trust_details.type</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									<p>What type of trust is this.</p>
+									<p><b>Available Values</b>: <span class="markup">Corporate</span>, <span class="markup">Individual</span> and <span class="markup">Partnership</span>.</p>
+								</td>
+							</tr>
+							<tr>
+                <td><span class="markup">trust_details.ABN</span></td>
+                <td>String</td>
+                <td></td>
+                <td>The 11-character ABN for this business, can contain spaces. e.g. "12 612 877 442" and "12612877442".</td>
+              </tr>
+							<tr>
+                <td><span class="markup">trust_details.ACN</span></td>
+                <td>String</td>
+                <td></td>
+                <td>The 9-character ABN for this business, can contain spaces. e.g. "612 877 442" and "612877442".</td>
+              </tr>
+							<tr>
+                <td><span class="markup">trust_details.trustee_name</span></td>
+                <td>String</td>
+                <td></td>
+                <td>If applicable, what the entity name for the trust is.</td>
+              </tr>
+							<tr>
+                <td><span class="markup">trust_details.settlor</span></td>
+                <td>String</td>
+                <td></td>
+                <td>
+									<b>Available Values:</b> <span class="markup">Settlor is Applying Trustee</span>,<span class="markup">Settlor is Deceased</span>,<span class="markup">Settlor contributed <$10k at Establishment</span> and <span class="markup">None of the Above</span>.
+								</td>
+              </tr>
+
+
+
+
+							<!-- business_addresses object -->
+							<tr class="objectSeperatorBorder">
+								<td colspan="3"><span class="markup">business_addresses</span></td>
+								<td>An <b>object</b> containing two values.</td>
+							</tr>
+
+							<tr>
+								<td colspan="3"><span class="markup">business_addresses.mailing_address</span></td>
+								<td>An <b>object</b> containing all the details for the business mailing address.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">mailing_address.address</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The "street address" for this address. e.g. "Suite 3, Level 2, 1 Taylor Street".</td>
+							</tr>
+							<tr>
+								<td><span class="markup">mailing_address.suburb</span></td>
+								<td>String</td>
+								<td>50</td>
+								<td>The suburb for this address.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">mailing_address.state</span></td>
+								<td>String</td>
+								<td>3</td>
+								<td>The Australian state for this address. We use short names: <span class="markup">WA, VIC, etc</span> </td>
+							</tr>
+							<tr>
+								<td><span class="markup">mailing_address.postcode</span></td>
+								<td>String</td>
+								<td>4</td>
+								<td>The 4-character Australian postcode for this business. e.g. "3189".</td>
+							</tr>
+							<tr>
+								<td><span class="markup">mailing_address.country</span></td>
+								<td>String</td>
+								<td>2</td>
+								<td>The 2-character country code for this address. e.g. "AU" for Australia.</td>
+							</tr>
+
+							<tr>
+								<td colspan="3"><span class="markup">business_addresses.registered_address</span></td>
+								<td>An <b>object</b> containing all the details for the businesses registered address.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">registered_address.address</span></td>
+								<td>String</td>
+								<td>100</td>
+								<td>The "street address" for this address. e.g. "Suite 3, Level 2, 1 Taylor Street".</td>
+							</tr>
+							<tr>
+								<td><span class="markup">registered_address.suburb</span></td>
+								<td>String</td>
+								<td>50</td>
+								<td>The suburb for this address.</td>
+							</tr>
+							<tr>
+								<td><span class="markup">registered_address.state</span></td>
+								<td>String</td>
+								<td>3</td>
+								<td>The Australian state for this address. We use short names: <span class="markup">WA, VIC, etc</span> </td>
+							</tr>
+							<tr>
+								<td><span class="markup">registered_address.postcode</span></td>
+								<td>String</td>
+								<td>4</td>
+								<td>The 4-character Australian postcode for this business. e.g. "3189".</td>
+							</tr>
+							<tr>
+								<td><span class="markup">registered_address.country</span></td>
+								<td>String</td>
+								<td>2</td>
+								<td>The 2-character country code for this address. e.g. "AU" for Australia.</td>
+							</tr>
+
+
+
+							<!-- has_a_quote flag -->
+							<tr class="objectSeperatorBorder">
+								<td><span class="markup">has_a_quote</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>This is purely a flag to inform you if a quote has been generated by the broker (and accepted by their client).</td>
+							</tr>
+
+							<!-- quote_details object -->
+							<tr>
+								<td colspan="3"><span class="markup">quote_details</span></td>
+								<td>
+									<p>An <b>object</b> containing the broker's quote details.</p>
+									<p><b>Note:</b> If <span class="markup">has_a_quote</span> is <span class="markup red">false</span> this key will be <span class="markup red">null</span>.</p>
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">quote_details.brokerage_fee</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>
+									The brokerage fee the broker would like to charge. This is a decimal value and can either be a <b>percentage</b> or a <b>set figure</b>. <b>Example:</b> <span class="markup">4.00</span> or <span class="markup">1200.00</span>. (Refer to <span class="markup">brokerage_fee_unit</span> to see which type it is).
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">quote_details.brokerage_fee_unit</span></td>
+								<td>Picklist</td>
+								<td></td>
+								<td>
+									<p>This is the type of unit that <span class="markup">brokerage_fee</span> is using.</p>
+									<p><b>Available Values</b>: <span class="markup">%</span> or <span class="markup">$</span>.</p>
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">quote_details.origination_fee</span></td>
+								<td>Decimal</td>
+								<td></td>
+								<td>
+									The broker's original fee. This is a $ decimal value. <b>Example:</b> <span class="markup">900.00</span>.
+								</td>
+							</tr>
+							<tr>
+								<td><span class="markup">quote_details.fees_included</span></td>
+								<td>Bool</td>
+								<td></td>
+								<td>Whether all fees were included in the quote or not.</td>
+							</tr>
+
+
+
+
+
+						</tbody>
+					</table>
+
+
+					<h4>Pseudo Object</h4>
+
+
+<pre>{
+  "the_purchase": {
+    "equipment": "Car\/Van\/Ute",
+    "description": "Brand new 2021 toyota hilux",
+    "year": "2021",
+    "make": "Toyota",
+    "model": "Hilux",
+    "condition": "New",
+    "reason_for_purchase": "Additional",
+    "reason_description": "I currently have 5, I need a 6th to keep up with demand.",
+    "sale_type": "Balloon Refinance",
+    "supplier_found": true,
+    "supplier": "Melb CBD Toyota Dealership",
+    "supplier_type": "Dealer",  <span class="deprecatedComment">// Deprecated - Do not use</span>
+    "supplier_address": "123 Collins Street",
+    "supplier_suburb": "Melbourne",
+    "supplier_state": "VIC",
+    "supplier_postcode": "3000",
+    "supplier_country": "AU",
+    "purchase_price": 45000.00,
+    "deposit": 5000.00,
+    "tradein": 2000.00,
+    "tradein_value": 5000.00,
+    "tradein_debt": 3000.00,
+    "balloon": 2000.00,
+    "vehicle_type": "Hybrid",
+    "odometer": 20000,
+    "hours": 45,
+    "personal_service_use": "Uber",
+    "third_party_use": "Lease"
+  },
+  "people": [
+    {
+      "title": "Mr",
+      "first_name": "John",
+      "middle_name": null,
+      "last_name": "Doe",
+      "is_guarantor": true,
+      "sex": "Male",
+      "marital_status": "Married",
+      "contact_number": "0444555666",
+      "email": "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c8bcadbbbca1a6af88bcadbbbca1a6afe6aba7a5">[email&#160;protected]</a>",
+      "equity": "70.00%",
+      "dob": "1988-05-17",
+      "number_of_dependants": 2,
+      "driving_licence_num": "12345678",
+      "driving_licence_expiry": "2024-05-01",
+      "driving_licence_state": "VIC",
+      "owner_type": "Director & Shareholder",
+      "credit_score": 720,
+      "credit_history": "Good",
+      "notes": "Any notes here about this person.",
+      "employment": [
+        {
+          "employer": "Doe Gardening Pty Ltd",
+          "employment_type": "Self Employed Contractor",
+          "position": "Director",
+          "date_from": "2015-01-01",
+          "date_to": null
+        }
+      ],
+      "addresses": [
+        {
+          "living_status": "Mortgaged",
+          "living_status_other": null,
+          "landlord_name": null,
+          "landlord_contact_number": null,
+          "address": "32 Odonohue Road",
+          "suburb": "ANGLESEA",
+          "state": "VIC",
+          "postcode": "3230",
+          "country": "AU",
+          "date_from": "2016-10-01",
+          "date_to": null
+        }
+      ],
+      "assets": [
+        {
+          "asset_type_name": "Motor Vehicle",
+          "description": "A ute, Ford",
+          "value": 20000.00,
+          "finance_outstanding": true
+        },
+        {
+          "asset_type_name": "Investment Property",
+          "description": "An apartment in Melbourne CBD",
+          "value": 630000.00,
+          "finance_outstanding": true
+        }
+      ],
+      "liabilities": [
+        {
+          "liability_name": "Motor Vehicle Loan",
+          "description": null,
+          "limit": null,
+          "used": null,
+          "loan_balance": 10000.00,
+          "financier": "CBA",
+          "repayment_pm": 700.00,
+          "to_pay_out": false
+        },
+        {
+          "liability_name": "Credit Card",
+          "description": null,
+          "limit": 1000.00,
+          "used": 100.00,
+          "loan_balance": null,
+          "financier": "ING Bank",
+          "repayment_pm": 500.00,
+          "to_pay_out": null
+        }
+      ]
+    }
+  ],
+  "business_assets": [
+    {
+      "asset_type_name": "Property",
+      "description": "Our day-to-day office",
+      "value": 600000.00,
+      "finance_outstanding": true,
+      "debtors_money_owed": null
+    },
+    {
+      "asset_type_name": "Debtors",
+      "description": "Who owe our business money",
+      "value": null,
+      "finance_outstanding": null,
+      "debtors_money_owed": 15000.00
+    }
+  ],
+  "business_liabilities": [
+    {
+      "liability_name": "Property Loan",
+      "description": "Day to Day office",
+      "loan_balance": "520000.00",
+      "repayment_pm": "1200.00",
+      "financier": "CBA",
+      "limit": null,
+      "used": null,
+      "amount": null,
+      "commenced": null,
+      "term": null,
+      "balance": null,
+      "to_pay_out": null,
+      "num_of_assets": null,
+      "balloon": null,
+      "ato_payplan_arranged": null
+    },
+    {
+      "liability_name": "Asset Finance (multiple)",
+      "description": "Our fleet of cars",
+      "loan_balance": "83000.00",
+      "repayment_pm": "2400.00",
+      "financier": "CBA",
+      "limit": null,
+      "used": null,
+      "amount": null,
+      "commenced": "2018-05-17",
+      "term": 48,
+      "balance": 42000.00,
+      "to_pay_out": false,
+      "num_of_assets": 4,
+      "balloon": 6000.00,
+      "ato_payplan_arranged": null
+    }
+  ],
+  "references": [
+    {
+      "reference_type": "Accountant",
+      "company_name": "Google Inc",
+      "full_name": "Joe Bloggs",
+      "email": "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d09180e0914131a3d09180e0914131a531e1210">[email&#160;protected]</a>",
+      "contact_number": "0444333222",
+      "address": "123B-123C King Road",
+      "suburb": "FAIRFIELD WEST",
+      "state": "NSW",
+      "postcode": "2165",
+      "country": "AU",
+      "financier": null,
+      "financier_acc_num": null,
+      "date_completed": null
+    }
+  ],
+  "trust_details": {
+    "type" : "Corportate",
+    "ACN": "123456789",
+    "ABN": "12345678910",
+    "trustee_name": "Trust Entity Name",
+    "settlor": "Settlor is Deceased"
+  },
+  "business_addresses": {
+    "mailing_address": {
+      "address": "32 Odonohue Road",
+      "suburb": "ANGLESEA",
+      "state": "VIC",
+      "postcode": "3230",
+      "country": "AU"
+    },
+    "registered_address": {
+      "address": "32 Odonohue Road",
+      "suburb": "ANGLESEA",
+      "state": "VIC",
+      "postcode": "3230",
+      "country": "AU"
+    }
+  },
+  "has_a_quote": true,
+  "quote_details": {
+    "brokerage_fee": 4.00,
+    "brokerage_fee_unit": "%",
+    "origination_fee": 120.00,
+    "fees_included": true
+  }
+}</pre>
+<hr>
+
+<h2 id="h_updating">Updating</h2>
+<p>A compulsory part of being a lender on our panel involves providing real-time (or as close-as) status updates back to us. This is for all leads we send to you. These <i>Updating</i> APIs can be used to achieve this.</p>
+
+<hr>
+
+
+<h3 id="h_statusupdate">
+  Status Update
+  <span class="requestType post">POST</span>
+  <span class="requestPath">
+    /leads/<span class="highlight">[lead_ref]</span>
+  </span>
+</h3>
+<p><b>Example URL:</b> <span class="markup">https://lenders-api.lend.com.au/v1/leads/<span class="urlhighlight">abc1234</span></span></p>
+
+<p>This same API can be used for posting any updates to us about the lead. Below you will find examples on updating the status and also <b>declining</b> the lead (you're not going to fund the application).</p>
+
+<p class="pulloutMsg"><b>Sandbox Test Leads:</b> We have a range of test leads you can use in our sandbox environment. Jump down to our <a class="jumplink" href="#h_testleads">Test Leads</a> section for more details.</p>
+
+
+
+<h4>Request - URI Details</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>URI</th>
+      <th>Required</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>lead_ref</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The unique identifier for the lead you're trying to update.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h4>Request - Body Details</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Required</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="markup">status</span></td>
+      <td>String</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>The status you are updating the application to, see our <i>Statuses</i> API <a class="jumplink" href="#h_statuses">here</a> for an up-to-date list of statuses you can use.<br> <b>This value <u>must</u> be one of the statuses from the <i>Statuses</i> API, otherwise your request will be rejected and an error will be returned.</b></td>
+    </tr>
+    <tr>
+      <td><span class="markup">status_changed</span></td>
+      <td>String</td>
+      <td><span class="tick">&#10003;</span></td>
+      <td>A Unix Timestamp of when this status was changed.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">notes</span></td>
+      <td>String</td>
+      <td></td>
+      <td>One or multiple <i>Note Objects</i> that you would like to push through to us. See the <a class="jumplink" href="#h_noteobjects">Note Objects</a> section for more details.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h4>Pseudo Request Body</h4>
+<p>Here's a pseudo example of the payload you'd expect to post to us to a <b>normal status update</b>.</p>
+
+<pre>{
+  "status": "Attempting Contact",
+  "status_changed": "1594043167",
+  "notes": []
+}</pre>
+
+
+<h4>Pseudo Request Body - Declined Reasons</h4>
+<p>Here's also a pseudo example of the payload you'd expect to post to us for a <b>declined status</b>. There is essentially no difference, it's just you have selected <b>the most accurate status</b> for this decline.</p>
+
+<pre>{
+  "status": "Declined - Serviceability",
+  "status_changed": "1594043167",
+  "notes": []
+}</pre>
+
+
+
+
+<hr>
+
+
+
+
+
+
+          <h3 id="h_loanoffer">
+            Loan Offer
+            <span class="requestType post">POST</span>
+            <span class="requestPath">
+              /leads/<span class="highlight">[lead_ref]</span>
+            </span>
+          </h3>
+          <p><b>Example URL:</b> <span class="markup">https://lenders-api.lend.com.au/v1/leads/<span class="urlhighlight">abc1234</span></span></p>
+
+          <p>This same API can be used for posting any <b>loan offers</b> you make to the applicant. Although you can add the <span class="markup">offer_amount</span> field at any time, we suggest using it in conjuction with the "<i>Offer Made</i>" status, as this provides clear transparency to the broker.</p>
+
+					<p class="pulloutMsg"><b>Sandbox Test Leads:</b> We have a range of test leads you can use in our sandbox environment. Jump down to our <a class="jumplink" href="#h_testleads">Test Leads</a> section for more details.</p>
+
+
+          <h4>Request - URI Details</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>URI</th>
+                <th>Required</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>lead_ref</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>The unique identifier for the lead you're trying to update.</td>
+              </tr>
+            </tbody>
+          </table>
+
+
+          <h4>Request - Body Details</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="markup">status</span></td>
+                <td>String</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>The status you are updating the application to, when making a loan offer, we suggest using the "<i>Offer Made</i>" status. <br>See our <i>Statuses</i> API <a class="jumplink" href="#h_statuses">here</a> for an up-to-date list of statuses you can use.<br> <b>This value <u>must</u> be one of the statuses from the <i>Statuses</i> API, otherwise your request will be rejected and an error will be returned.</b></td>
+              </tr>
+              <tr>
+                <td><span class="markup">status_changed</span></td>
+                <td>String</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>A Unix Timestamp of when this status was changed.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">offer_amount</span></td>
+                <td>Decimal</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>A decimal values of the loan amount you're offer the client. for example <span class="markup">46000.32</span></td>
+              </tr>
+              <tr>
+                <td><span class="markup">notes</span></td>
+                <td>String</td>
+                <td></td>
+                <td>One or multiple <i>Note Objects</i> that you would like to push through to us. See the <a class="jumplink" href="#h_noteobjects">Note Objects</a> section for more details.</td>
+              </tr>
+            </tbody>
+          </table>
+
+
+          <h4>Pseudo Request Body</h4>
+
+<pre>{
+  "status": "Offer Made",
+  "status_changed": "1594043167",
+  "offer_amount": 46000.00,
+  "notes": []
+}</pre>
+
+
+
+          <hr>
+
+
+
+          <h3 id="h_fundedstatus">
+            Funded
+            <span class="requestType post">POST</span>
+            <span class="requestPath">
+              /leads/<span class="highlight">[lead_ref]</span>
+            </span>
+          </h3>
+          <p><b>Example URL:</b> <span class="markup">https://lenders-api.lend.com.au/v1/leads/<span class="urlhighlight">abc1234</span></span></p>
+
+          <p>This same API can be used for posting back to us when a loan has been <b>funded</b>. You must pass us some basic details regarding this loan in the <span class="markup">funded_details</span> object. More details below.</p>
+
+					<p class="pulloutMsg"><b>Sandbox Test Leads:</b> We have a range of test leads you can use in our sandbox environment. Jump down to our <a class="jumplink" href="#h_testleads">Test Leads</a> section for more details.</p>
+
+
+          <h4>Request - URI Details</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>URI</th>
+                <th>Required</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>lead_ref</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>The unique identifier for the lead you're trying to update.</td>
+              </tr>
+            </tbody>
+          </table>
+
+
+          <h4>Request - Body Details</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="markup">status</span></td>
+                <td>String</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td><b>You must use one of our "<i>Funded</i>" statuses.</b><br> This is letting the broker know the application has been funded.<br><b>Note:</b> You can see what our funded statuses are by calling our <i>Statuses</i> API. These values rarely change, so you should be comfortable knowing the strings you see will always be accepted for your api version.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">status_changed</span></td>
+                <td>String</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>A Unix Timestamp of when the application was funded.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details</span></td>
+                <td>Object</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>More specific details of the loan provided, see fields below.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details.product</span></td>
+                <td>String</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>The name of the product the loan is for. e.g. "Unsecured Business Loan".</td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details.deal_type</span></td>
+                <td>Picklist</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>
+									The <b>type</b> of deal this is.<br>
+									<b>Accepted Values</b>: <span class="markup">New Deal</span> and <span class="markup">Refinance</span></td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details.funded_amount</span></td>
+                <td>Decimal</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>The loan amount the applicant was approved for. A decimal value, for example <span class="markup">46000.32</span></td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details.funded_date</span></td>
+                <td>String</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>A Unix Timestamp for when the loan was funded.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details.total_payback</span></td>
+                <td>Decimal</td>
+                <td></td>
+                <td>The total amount that the client has to pay back. A decimal value, for example <span class="markup">52620.90</span></td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details.broker_commission</span></td>
+                <td>Decimal</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>The total amount of commission we should pay our broker. A decimal value, for example <span class="markup">420.00</span></td>
+              </tr>
+              <tr>
+                <td><span class="markup">funded_details.lend_commission</span></td>
+                <td>Decimal</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>The total commission payment we should expect from you, (this means the total amount you will pay to Lend). A decimal value, for example <span class="markup">620.00</span>.
+                  <hr style="margin:5px auto;">
+                <b>Note:</b> In this example, if <span class="markup">lend_commission</span> is 620, and <span class="markup">broker_commission</span> is 420, that means we pay the broker 420 out of the 620 you pay to us, leaving a balance of 200 as our commission.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">notes</span></td>
+                <td>String</td>
+                <td></td>
+                <td>One or multiple <i>Note Objects</i> that you would like to push through to us. See the <a class="jumplink" href="#h_noteobjects">Note Objects</a> section for more details.</td>
+              </tr>
+            </tbody>
+          </table>
+
+
+          <h4>Pseudo Request Body</h4>
+
+<pre>{
+  "status": "Funded",
+  "status_changed": "1594043167",
+  "funded_details": {
+    "product": "Name of Product",
+    "deal_type": "Refinance",
+    "funded_amount": 45000.00,
+    "funded_date": "1594043167",
+    "total_payback": 54000.00,
+    "broker_commission": 400.00,
+    "lend_commission": 500.00
+  },
+  "notes": []
+}</pre>
+
+
+
+          <hr>
+<h1 id="h_misc">Miscellaneous</h2>
+
+<hr>
+
+<h2 id="h_objects">Objects</h2>
+<p>Throughout this documentation we make references to certain objects within our APIs. Below you can find the more detailed breakdown of these objects.</p>
+
+
+<h3 id="h_noteobjects">Note Objects</h3>
+<p>The "Note" object is a very small object, you can submit multiple of them at the same time to the "<i>Updating</i>" range of APIs. They consist of just two fields.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Length</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="markup">note</span></td>
+      <td>String</td>
+      <td>1000</td>
+      <td>Any free-text note you'd like to share with the broker about their lead.</td>
+    </tr>
+    <tr>
+      <td><span class="markup">note_added</span></td>
+      <td>String</td>
+      <td>13</td>
+      <td>the date time this note was added in Unix Timestamp format.</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre>{
+  "note": "Any free-text notes you would like to send to us.",
+  "note_added": "1594043167"
+}</pre>
+
+<hr>
+
+
+
+          <h2 id="h_statuses">Statuses</h2>
+          <p>To ensure the best possible experience for our brokers, we have a uniform set of statuses that all lenders must use. These statuses <u>do not</u> often change (however we do occasionally add some new ones), so you can rely on the values you see in the API response knowing it will be accepted.</p>
+
+          <hr>
+
+
+
+
+
+          <h3 id="h_getstatuses">
+            Get Statuses
+            <span class="requestType get">GET</span>
+            <span class="requestPath">
+              /statuses
+            </span>
+          </h3>
+
+          <p>This API will give you an up-to-date list of statuses we will accept in the "<i>Updating</i>" range of APIs.</p>
+
+
+          <h4>Response</h4>
+          <p>Here's a breakdown of the data you'd expect back in the response.</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Length</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="markup">success</span></td>
+                <td>Bool</td>
+                <td></td>
+                <td>Whether this request was successful or not. Follows the same data-structure for all APIs.</td>
+              </tr>
+              <tr>
+                <td><span class="markup">data[i]</span></td>
+                <td>Object</td>
+                <td></td>
+                <td>
+                  A multi-dimensional array of different statuses you can use in the "<i>Updating</i>" APIs.<br>
+                  You can not submit the key-name as a status, it must be one of the strings within the group.<br>
+                  Statuses are "grouped" by their key names, they are:<br> <span class="markup">Attempting</span>, <span class="markup">In Progress</span>, <span class="markup">Rejected</span> and <span class="markup">Settled</span>.<br>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+
+
+
+          <h4>Pseudo Response</h4>
+          <p>Here's a pseudo example of the response you'd expect to see.</p>
+
+<pre>{
+  "success": true,
+  "data": {
+     "Attempting": [
+        "Attempting contact",
+        "1st Attempted Call",
+        "2nd Attempted Call",
+        "3rd Attempted Call",
+        ....
+     ],
+     "In Progress": [
+        "Work in progress",
+        "Waiting on client",
+        "Docs requested",
+        ....
+     ],
+     "Rejected": [
+        "Unable to reach",
+        "Duplicate",
+        "Client declined - Do not contact",
+        "Client declined - Not interested",
+        "Client declined - No longer required",
+        "Declined - General",
+        ....
+     ],
+     "Settled": [
+        "Funded"
+        ....
+     ]
+  }
+}</pre>
+
+
+
+
+          <hr>
+
+
+
+          <h2 id="h_picklists">Picklists</h2>
+          <p>To ensure the best possible experience for our brokers, we have a uniform set of values that all lenders must use. These values <u>do not</u> often change, and so you can rely on the values you see in these API responses. You can either <span class="markup get">GET</span> <b>all</b> picklist values, or if you prefer, <b>individual</b> picklists.</p>
+          <p>See below for more details on each API.</p>
+
+          <hr>
+
+
+
+
+
+          <h3 id="h_getallpicklists">
+            Get All Picklists
+            <span class="requestType get">GET</span>
+            <span class="requestPath">
+              /picklists
+            </span>
+          </h3>
+
+          <p>If you want a full breakdown of all the picklists values we provide, this API will give you an up-to-date list. It includes all possible picklist values throughout our range of APIs (where detailed above).</p>
+
+          <h4>Pseudo Response</h4>
+          <p>Here's a pseudo example of the response you'd expect to see.</p>
+
+<pre>{
+  "success": true,
+  "data": {
+    "purpose": [ "Working Capital", "Inventory", ...  ],
+    "industry": [
+      {
+        "industry": "Arts &amp; Lifestyle",
+        "children": ["Health &amp; Fitness Centres, Gyms", "Other", ... ]
+      },
+      ...
+    ],
+    "product_type": [
+      {
+        "product_type_name": "Unsecured Loan",
+        "children": null
+      },
+      {
+        "product_type_name": "Private Lending",
+        "children": ["Bridging", "Term Loan", "Capitalised Interest", "Interest Only", ... ]
+      },
+      ...
+    ],
+    "equipment": ["Car/Ute/Van", "Truck", ... ],
+    "books_package": ["MYOB", "QuickBooks", "Xero", ... ],
+    "asset_type": {
+      "business": ["Property", "Savings", "Plant & Equipment", ... ],
+      "personal": ["Home", "Investment Property", "Savings", ... ]
+    },
+    "liability_type": {
+      "business": ["ATO Debt", "Loan", "OD\/LOC", ... ],
+      "personal": ["Credit Card", "Personal Loan", "Other Loan", ... ]
+    }
+  }
+}</pre>
+
+
+
+
+          <hr>
+
+
+          <h3 id="h_getpicklist">
+            Get Picklist
+            <span class="requestType get">GET</span>
+            <span class="requestPath">
+              /picklists/<span class="highlight">[picklist_type]</span>
+            </span>
+          </h3>
+          <p><b>Example URL:</b> <span class="markup">https://lenders-api.lend.com.au/v1/picklists/<span class="urlhighlight">purpose</span></span></p>
+
+          <p>If you don't want to retrieve <b>all</b> picklists (see <i>Get All Picklists</i> API), and instead you only want to retrieve a specific picklist, you can do so using this API. Simply append the type of picklist to the end of the URL. See below for possible values.</p>
+
+          <h4>Request Details</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th>URI</th>
+                <th>Required</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>picklist_type</td>
+                <td><span class="tick">&#10003;</span></td>
+                <td>
+                  The individual picklist values you want to retrieve. Possible values are:<br>
+									<span class="markup">purpose</span>,
+									<span class="markup">product_type</span>,
+									<span class="markup">equipment</span>,
+									<span class="markup">industry</span>,
+									<span class="markup">books_package</span>,
+									<span class="markup">asset_type</span> and
+									<span class="markup">liability_type</span>.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+
+          <h4>Pseudo Response (purpose)</h4>
+          <p>Here's a pseudo example of the response you'd expect to see if you was to request the <span class="markup">purpose</span> picklist.</p>
+
+<pre>{
+  "success": true,
+  "data": [ "Working Capital", "Inventory", ... ]
+}</pre>
+
+
+
+					<h4>Pseudo Response (product_type)</h4>
+					<p>Here's a pseudo example of the response you'd expect to see if you was to request the <span class="markup">product_type</span> picklist.</p>
+
+<pre>{
+  "success": true
+  "data": [
+    {
+      "product_type_name": "Unsecured Loan",
+      "children": null
+    },
+    {
+      "product_type_name": "Private Lending",
+      "children": ["Bridging", "Term Loan", "Capitalised Interest", "Interest Only"]
+    },
+    ...
+  ]
+}</pre>
+
+
+
+					<hr>
+<h2 id="h_testleads">
+	Test Leads
+</h2>
+
+
+
+
+
+
+					<h3 id="h_sandbox_yourwebhook">Your Webhook</h3>
+
+					<p>As detailed in the <a class="jumplink" href="#h_collect_mthods">Collecting Leads</a> section, we can post lead refs to you. If you want to emulate this same behaviour, we suggest you use Postman (or a similar RESTful client such as "Insomnia") and <span class="markup post">POST</span> the payload to your webhook. You can use the payload detailed in the <a class="jumplink" href="#h_collect_webhook">Webhook</a> section, just simply change the <span class="markup">lead_ref</span> to one from the test leads table below.</p>
+
+
+
+					<h3 id="h_sandbox_test_leads">Sandbox Test Leads</h3>
+
+					<p>In our <i>Sandbox</i> environment we have a handful of test leads for you to experiment with. These leads will work across all APIs, and, one (1) particular lead will always return an error when you try to retrieve it. This is by design so you can test different scenarios.</p>
+
+					<p>Below are the <span class="markup">lead_refs</span> for these test leads, with some basic information and the expected behaviour from the APIs.</p>
+
+					<div class="pulloutNotice">
+						<div class="noticeTitle">Please Note</div>
+						<p>Sandbox leads are the same for all API users, this provides you a consistent and expected <i>behaviour</i>. The behaviour for each test lead is detailed in the table below.</p>
+						<p>To maintain this consistent and exact behaviour for Sandbox users, we instantly "cleanse" a lead once an API request has finished. We do this by terminating all data you posted and returning the lead back to it's previous state.</p>
+					</div>
+
+          <h4>Test Lead Refs</h4>
+
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">Lead Ref</th>
+                <th width="22%" rowspan="2">Info</th>
+								<th align="center" colspan="2"><span class="markup get">GET</span> APIs</th>
+                <th align="center"><span class="markup post">POST</span> APIs</th>
+              </tr>
+							<tr>
+								<th width="22%" align="center"><span class="noStyleMarkup">/leads</span></th>
+								<th width="22%" align="center"><span class="noStyleMarkup">/leads/xxxxxxx</span></th>
+                <th width="22%" align="center"><span class="noStyleMarkup">All Endpoints</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="markup">abc1234</span></td>
+                <td>This is a lead that a <i>Broker</i> has sent to you, and that broker would like you to liaise with them directly (no communication with the applicant).</td>
+								<td>It will be listed in the API, and we always display a "sent to you" time of 30-mins ago. The <span class="markup">been_retrieved</span> field will be <span class="markup red">false</span>.</td>
+								<td>You will be able to access the full details (pseudo) of this lead.</td>
+								<td>You will be able to process status updates as normal.</td>
+              </tr>
+	            <tr>
+	              <td><span class="markup">def5678</span></td>
+	              <td>This is a lead that a <i>Broker</i> has sent to you, and that broker does not want any involvement with this lead (you contact the <i><u>applicant</u></i> directly).</td>
+								<td>It will be listed in the API, and we always display a "sent to you" time of 30-mins ago. The <span class="markup">been_retrieved</span> field will be <span class="markup red">false</span>.</td>
+								<td>You will be able to access the full details (pseudo) of this lead.</td>
+								<td>You will be able to process status updates as normal.</td>
+	            </tr>
+							<tr>
+	              <td><span class="markup">ghi1234</span></td>
+								<td>This is a lead that a <i>Broker</i> has sent to you, and that broker would like you to liaise with them directly (no communication with the applicant).</td>
+								<td>It will be listed in the API, and we always display a "sent to you" time of 30-mins ago. The <span class="markup">been_retrieved</span> field will be <span class="markup red">false</span>.</td>
+								<td>You will be able to access the full details (pseudo) of this lead.<br><br>
+									<b>Note:</b> The <span class="markup">asset_finance_data</span> object is available for this lead (you can read about it <a class="jumplink" href="#h_assetfinanceobject">here</a>).
+								</td>
+								<td>You will be able to process status updates as normal.</td>
+							</tr>
+	            <tr>
+	              <td><span class="markup">uvw5432</span></td>
+	              <td>On <i>rare</i> occasions, we may send you a lead with <u>no</u> broker details. This is usually collected from one of our edge-case flows, this lead would have come directly from Lend. The actual lead data is the same, however the source of the lead (<span class="markup">broker_details</span> field) will probably be missing.</td>
+								<td>It will be listed in the API, and we always display a "sent to you" time of 30-mins ago. The <span class="markup">been_retrieved</span> field will be <span class="markup green">true</span>.</td>
+								<td>You will be able to access the full details (pseudo) of this lead.</td>
+								<td>You will be able to process status updates as normal.</td>
+	            </tr>
+	            <tr>
+	              <td><span class="markup">xyz9876</span></td>
+	              <td>See comment in the <span class="markup get">GET</span> APIs column (right).</td>
+								<td>It will be listed in the API, and we always display a "sent to you" time of 30-mins ago. The <span class="markup">been_retrieved</span> field will be <span class="markup">false</span>.</td>
+								<td>You <b>will not</b> be able to retrieve this lead, and we will return an <span class="markup red">Error</span> to you. The error you'll receive is "<span class="noStyleMarkup">You are no longer the active lender on this lead</span>", you can read more info about this scenario in the <a class="jumplink" href="#h_errorlist">Errors List</a>.</td>
+								<td>You will be able to process status updates as normal.</td>
+	            </tr>
+            </tbody>
+          </table>
+
+					<hr>
+<h2 id="h_errors">
+	Errors
+</h2>
+
+<hr>
+
+
+<h3 id="h_errorsdatastructure">Data-Structure</h3>
+
+<p>All our API responses follow a uniformed data-structure, so you will always have a <span class="markup">success</span> key which is a boolean.</p>
+<p>If for some reason your request was unsuccessful, <span class="markup">success</span> will be <span class="markup">false</span>, and you will have an error message returned to you in the <span class="markup">error</span> field.
+
+
+<h4>Pseudo Response</h4>
+<p>Here's a pseudo example of the response you'd expect to see when your request was unsuccessful.</p>
+
+<pre>{
+   "success" : false,
+   "error" : "ERROR MESSAGE HERE"
+}</pre>
+
+
+
+<h3 id="h_errorlist">Error List</h3>
+
+<p>We also extensively use http status codes too. Below is a table of error messages and http status codes. If you're not familiar with http status code standards, you can read about them <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">here</a>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Error Message</th>
+      <th>HTTP Status Code</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="noStyleMarkup">Internal Server Error</span></td>
+      <td><span class="markup red">500</span></td>
+      <td>The one we all hate... a generic Internal Server Error.<br>
+        Hopefully you should never experience this, however, if you do, rest assured we <b>have</b> been alerted and we will be investigating it ASAP. If this error persists feel free to reach out to us.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">Unauthorised - Lender Account is disabled</span></td>
+      <td><span class="markup red">403</span></td>
+      <td>Your account with Lend is not active, you will need to get in touch with us.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">Unauthorised - API Key has been revoked</span></td>
+      <td><span class="markup red">403</span></td>
+      <td>The API key you are using is no longer active, you will need to get in touch with us to generate a new one.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">Unauthorised - Invalid API Key</span></td>
+      <td><span class="markup red">403</span></td>
+      <td>The API key you are using is not recognised with any account.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">You are unauthorised to access this lead</span></td>
+      <td><span class="markup red">403</span></td>
+      <td>You were never sent the lead you are trying to access, so you do not have permission to view it.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">You are unauthorised to update this lead</span></td>
+      <td><span class="markup red">403</span></td>
+      <td>You were never sent the lead you are trying to update, so you can not update it.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">You are no longer the active lender on this lead</span></td>
+      <td><span class="markup red">403</span></td>
+      <td>This error is specific to the <span class="markup get">GET</span> Full Lead API. In theory this scenario should <u>never</u> happen if you retrieve your leads in a timely manner.<br>
+        <b>Why would this happen?</b> You're essentially too late / slow at retrieving the lead (<i>e.g. a few hours+, sometimes days</i>). As part of your SLA Agreement you will have to attempt contact in a timely manner, if you haven't even retrieved a lead then it's evident you are not attempting contact, and so, the broker has revoked you (they no longer want you to work on this lead), and they sent it to another lender.<br>
+        <b>Note:</b> If for some mysterious reason you do have this lead in your system (e.g. manually added, or an old lead, etc) then you can still process status updates via the <span class="markup post">POST</span> APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">[FIELD_NAME] - This field is required</span></td>
+      <td><span class="markup red">422</span></td>
+      <td>The data you're submitting in your <span class="markup post">POST</span> request body is missing a field that is required.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">[NAME_OF_FIELD] - This field is required with a [STATUS_GROUP] status</span></td>
+      <td><span class="markup red">422</span></td>
+      <td>The data you're submitting in your <span class="markup post">POST</span> request body is missing a field that is required for this particular status group. All required fields for status updates are detailed in the <a class="jumplink" href="#h_updating">Updating</a> range of APIs.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">Invalid [URL_PARAM] parameter, should be a unix timestamp</span></td>
+      <td><span class="markup red">400</span></td>
+      <td>The [URL_PARAM] is the name of a parameter in your request URL.<br>
+        <b>Example:</b> Using <span class="markup">?since=Yesterday</span> would produce the following error: <i>"Invalid since parameter, should be a unix timestamp"</i>. </td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">[FIELD_NAME] - Invalid field name</span></td>
+      <td><span class="markup red">400</span></td>
+      <td>The data you're submitting in your <span class="markup post">POST</span> request body contains a field we do not accept.</td>
+    </tr>
+    <tr>
+      <td><span class="noStyleMarkup">The status provided is not a valid status</span></td>
+      <td><span class="markup red">400</span></td>
+      <td>We only accept statuses that are from our uniformed list. If you provide an incorrect/invalid status it will not be accepted. <a class="jumplink" href="#h_updating">Read here</a> for more details.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<hr>
+
+					<h1 id="h_changelog">Changelog</h2>
+
+					<h2 id="h_fullchangelog">All Updates</h2>
+					<p>Here you're going to find a full list of changes and improvements to the LenderAPI.</p>
+
+					<table style="width:100%;">
+						<thead>
+							<tr>
+								<th style="width:100px;">Date</th>
+								<th>API Version</th>
+								<th>Change</th>
+							</tr>
+						</thead>
+						<tbody>
+															<tr>
+									<td style="width:100px;">2021-05-12</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>The Product Specific Object "Asset Finance" is no longer Beta.</b><br>
+    The <a class="jumplink" href="#h_assetfinanceobject">Product Specific Object (Asset Finance)</a> has been in a Beta release since 25-11-2020, as of today this object has now <b>officially</b> been released and is no longer in Beta. As part of this official release we renamed the <span class="markup">trust_details.partnership_name</span> field to <span class="markup">trust_details.trustee_name</span>.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2021-04-22</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>Sandbox <span class="markup">ghi1234</span> test lead has been updated</b><br>
+    On the 12th Apr 2021 (the last changelog entry) we released additional fields to the <a class="jumplink" href="#h_assetfinanceobject">"Asset Finance Data"</a> object. All those new additional fields are available in our Sandbox environment using the <span class="markup">ghi1234</span> test lead. You can read more about this test lead <a class="jumplink" href="#h_sandbox_test_leads">here</a>.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2021-04-12</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>Additional Data available in the Asset Finance object</b> <br>
+    The Product Specific <a class="jumplink" href="#h_assetfinanceobject">Asset Finance object</a> has been updated. These include <i>Credit Scores</i>, and three new categories of data: <i>Trust Details, Business Addresses, Finance Quote Details</i>.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2021-04-12</td>
+									<td><span class="markup">v1</span></td>
+									<td><b><span style="color:rgb(217, 17, 17);">DEPRECATION NOTICE:</span> A field in the Asset Finance object has been deprecated</b> <br>
+    We have deprecated the <span class="markup">the_purchase.supplier_type</span> field from the Product Specific <a class="jumplink" href="#h_assetfinanceobject">Asset Finance object</a>.<br>
+    As of <b>2022-04-11 (Monday)</b> this field will no longer we available, instead we encourage you to use the new <span class="markup">the_purchase.sale_type</span> field.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2021-01-25</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>1800 &amp; 1300 phone numbers</b> <br>
+    For all phone numbers in this documentation, we describe the fields as "<i>Australian 10-digit valid phone number</i>", this description is still true, however, the API now supports Australian 1800 &amp; 1300 phone numbers.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2021-01-13</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>Bug Fix for an edge-case scenario</b> <br>
+    The <a class="jumplink" href="#h_getfulllead">Get Full Lead API</a> had a rare edge-case scenario, where a field in the API which is usually mandatory was throwing an error because no data existed for it. No integrations are impacted as this field will continue to be mandatory. <b>We quickly resolved this within 2 business-hours of being alerted</b>.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2020-12-10</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>Attachments API is finally here!</b> <br>
+    You can now download any files attached to a lead by using the new "Get Attachments" API. These files are uploaded by our Brokers and can include sensitive data (e.g. Copies of a Driving Licence, etc). For this reason, once you make a request for the files, the links are time-sensitive and will expire. You can read more about it in the Get Attachments API <a class="jumplink" href="#h_getattachments">here</a>.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2020-12-07</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>We've added an additional test lead to sandbox.</b> <br>
+    On the 25th Nov 2020 we launched the <a class="jumplink" href="#h_assetfinanceobject">"Asset Finance Data"</a> object (see changelog below), you now have a test lead in the sandbox environment to test this new object. Simply use lead ref <span class="markup">ghi1234</span> to access it. You can read more about this test lead <a class="jumplink" href="#h_sandbox_test_leads">here</a>.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2020-12-04</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>Monitoring - We've added a System Status API</b> <br>
+    You now have the ability to live-monitor the API to check our system status. Have a look at the <a class="jumplink" href="#h_monitoring">Monitoring</a> section for more details.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2020-11-26</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>We extended the Picklist APIs by adding three new types.</b> <br>
+    Those new types are:
+    <span class="markup">books_package</span> gives you the accounting software options,
+    <span class="markup">asset_type</span> gives you a breakdown of the different type of assets that can be added to a lead, they are categorised by business (for business assets) and personal (for personal assets), and finally, we added
+    <span class="markup">liability_type</span> to see what liabilities we collect (again, these are categorised by business and personal). <a class="jumplink" href="#h_picklists">Click Here</a> to see them.</td>
+								</tr>
+															<tr>
+									<td style="width:100px;">2020-11-25</td>
+									<td><span class="markup">v1</span></td>
+									<td><b>Added the new "Asset Finance Data" object.</b><br>
+    Our brokers were introduced to a huge update, part of this update is the ability for Brokers to submit much more detailed information when the lead is for "Asset Finance". <a class="jumplink" href="#h_assetfinanceobject">Click here</a> to read about the new <span class="markup">asset_finance_data</span> object, and when you can access it.</td>
+								</tr>
+														<tr>
+								<td colspan="3"><i>Beginning of changelog - changes prior this this are undocumented</i></td>
+							</tr>
+						</tbody>
+					</table>
+        </div>
+      </div>
+		</main>
+		<footer id="footer">
+  <div class="container">
+    <div class="copy">
+    </div><div class="logo">
+      <img src="https://files.lend.com.au/images/logo-b.svg" />
+    </div>
+  </div>
+</footer>
+	<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>
