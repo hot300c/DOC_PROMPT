@@ -11,10 +11,13 @@ application {
     serverPort 8080
     enableHibernateCache true
     dtoSuffix DTO
-    serviceSuffix Service
+    entitySuffix service
+    jhiPrefix phn
+    languages [en]
     enableSwaggerCodegen true
-    skipClient true
-    withAdminUi true
+    skipClient false
+    skipServer false
+    skipUserManagement false
   }
   entities *
 }
@@ -41,7 +44,7 @@ entity CustomerProfile {
   phone String,
   loanCode String unique,
   googleSubject String,
-  googleAccount Boolean required default false,
+  googleAccount Boolean required,
   registeredAt Instant
 }
 
@@ -56,11 +59,11 @@ entity DeviceToken {
 
 entity NotificationCampaign {
   name String required unique,
-  active Boolean required default true,
+  active Boolean required,
   audience AudienceType required,
-  channelActiveEmail Boolean required default true,
-  channelActivePush Boolean required default true,
-  channelActiveInApp Boolean required default true,
+  channelActiveEmail Boolean required,
+  channelActivePush Boolean required,
+  channelActiveInApp Boolean required,
   // Email content
   emailSubject String,
   emailBody TextBlob,
@@ -73,7 +76,7 @@ entity NotificationCampaign {
   imageUrl String
 }
 
-// NotificationHistory consolidated into NotificationDelivery
+// NotificationHistory consolidated into NotificationDelivery (no entity)
 
 // Deduplication-friendly notification model
 entity NotificationContent {
@@ -122,7 +125,7 @@ entity NotificationDelivery {
 }
 
 entity ReminderConfig {
-  enabled Boolean required default true,
+  enabled Boolean required,
   runAt String required,
   daysBeforeDue Integer required min(1),
   maxReminders Integer required min(1)
@@ -137,9 +140,7 @@ entity ReminderHistory {
   templateSnapshot TextBlob
 }
 
-relationship OneToOne {
-  CustomerProfile{user(login)} to User
-}
+// Removed relation to built-in User to simplify import; can be wired post-generation
 
 relationship OneToMany {
   CustomerProfile{deviceTokens} to DeviceToken{customerProfile},
@@ -147,20 +148,20 @@ relationship OneToMany {
 }
 
 relationship ManyToOne {
-  ReminderHistory{customerProfile(fullName)} to CustomerProfile,
-  ReminderHistory{campaign(name)} to NotificationCampaign,
-  NotificationBatch{campaign(name)} to NotificationCampaign,
-  NotificationBatch{content(contentHash)} to NotificationContent,
-  NotificationContentVariant{content(contentHash)} to NotificationContent
+  ReminderHistory to CustomerProfile,
+  ReminderHistory to NotificationCampaign,
+  NotificationBatch to NotificationCampaign,
+  NotificationBatch to NotificationContent,
+  NotificationContentVariant to NotificationContent
 }
 
 relationship OneToMany {
-  NotificationBatch{deliveries} to NotificationDelivery{batch}
+  NotificationBatch to NotificationDelivery
 }
 
 relationship ManyToOne {
-  NotificationDelivery{customerProfile(fullName)} to CustomerProfile,
-  NotificationDelivery{deviceToken(deviceToken)} to DeviceToken
+  NotificationDelivery to CustomerProfile,
+  NotificationDelivery to DeviceToken
 }
 
 paginate NotificationCampaign, DeviceToken, CustomerProfile, ReminderHistory with pagination
@@ -338,27 +339,22 @@ entity CommercialProfile {
 }
 
 relationship OneToOne {
-  Lead{owner} to LeadOwner,
-  Lead{assetFinance} to LeadAssetFinance,
-  Lead{marketing} to LeadMarketing,
-  Lead{commercialProfile} to CommercialProfile
+  Lead to LeadOwner,
+  Lead to LeadAssetFinance,
+  Lead to LeadMarketing,
+  Lead to CommercialProfile
 }
 
 relationship OneToMany {
-  Lead{notes} to LeadNote{lead},
-  Lead{statusHistories} to LeadStatusHistory{lead},
-  Lead{revisions} to LeadRevision{lead},
-  LeadOwner{employments} to LeadOwnerEmployment{owner},
-  LeadOwner{incomes} to LeadOwnerIncome{owner},
-  LeadOwner{addresses} to LeadOwnerAddress{owner}
+  Lead to LeadNote,
+  Lead to LeadStatusHistory,
+  Lead to LeadRevision,
+  LeadOwner to LeadOwnerEmployment,
+  LeadOwner to LeadOwnerIncome,
+  LeadOwner to LeadOwnerAddress
 }
 
-relationship ManyToOne {
-  LeadNote{lead(ref)} to Lead,
-  LeadOwnerEmployment{owner(firstName)} to LeadOwner,
-  LeadOwnerIncome{owner(firstName)} to LeadOwner,
-  LeadOwnerAddress{owner(firstName)} to LeadOwner
-}
+// Note: One-to-many above already defines back-references; avoid duplicating ManyToOne to prevent property conflicts
 
 paginate Lead, LeadNote, LeadOwner, LeadOwnerEmployment, LeadOwnerIncome, LeadOwnerAddress, LeadAssetFinance, LeadMarketing, CommercialProfile with pagination
  
@@ -400,9 +396,7 @@ entity ApiAuditLog {
 dto ApiAuditLog with mapstruct
 paginate ApiAuditLog with pagination
 
-// =============================
-// Picklist entities (cache from Broker API)
-// Docs: https://broker-api-docs.lend.com.au/api/#picklist-apis
+// Picklist entities (cached locally)
 
 // Industries (supports parent/children)
 entity Industry {
