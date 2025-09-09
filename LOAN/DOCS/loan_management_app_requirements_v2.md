@@ -3,14 +3,16 @@
 ## 1. Executive Summary
 
 ### 1.1 Project Overview
-The Loan Management App is a comprehensive mobile application designed to streamline the loan management process for brokers and customers. The app serves multiple user types including customers, brokers, and administrators, providing a secure, efficient, and user-friendly platform for loan application, tracking, and management.
+The Loan Management App is a comprehensive mobile application designed to streamline both lead management and loan management processes for brokers and customers. The app serves multiple user types including customers, brokers, and administrators, providing a secure, efficient, and user-friendly platform for lead capture, loan application, tracking, and management. The system integrates seamlessly with the existing Dealer Admin Portal to maintain data consistency and provide a unified experience.
 
 ### 1.2 Business Objectives
+- **Streamline Lead Management**: Efficiently capture and manage customer leads from initial contact to loan application
 - **Streamline Loan Processing**: Reduce loan application and approval processing time
-- **Improve Broker Efficiency**: Provide brokers with efficient tools for loan management
-- **Enhance Customer Experience**: Provide real-time loan status tracking and notifications
-- **Reduce Manual Work**: Automate loan status updates and notifications
+- **Improve Broker Efficiency**: Provide brokers with efficient tools for lead and loan management
+- **Enhance Customer Experience**: Provide real-time lead and loan status tracking with comprehensive notifications
+- **Reduce Manual Work**: Automate lead processing, loan status updates, and notifications
 - **Ensure Data Accuracy**: Maintain single source of truth through Dealer Admin Portal integration
+- **Optimize Conversion**: Convert leads to successful loan applications through streamlined processes
 
 ### 1.3 Success Metrics
 - Loan application completion rate: > 85%
@@ -23,49 +25,57 @@ The Loan Management App is a comprehensive mobile application designed to stream
 
 ### 2.1 Primary Users
 
-#### 2.1.1 Customer (Borrower)
-**Profile**: Individual seeking loans through broker network
+#### 2.1.1 Customer (Borrower/LeadApplication)
+**Profile**: Individual seeking loans through broker network, can be either a new lead application or existing customer
 **Goals**:
-- Apply for loans easily and quickly
-- Track application status in real-time
-- Receive timely notifications about loan updates
+- Submit loan inquiries and applications easily
+- Track lead application and loan application status in real-time
+- Receive timely notifications about status updates
 - View repayment schedules and due dates
-- Access loan information and history
+- Access loan application information and history
+- Complete profile information efficiently
 
 **Pain Points**:
-- Lack of transparency in loan status
+- Lack of transparency in lead application and loan application status
 - Difficulty tracking application progress
 - Poor communication from brokers
 - Complex repayment tracking
+- Repetitive form filling for lead application capture
 
 #### 2.1.2 Broker
-**Profile**: Loan broker managing customer applications and loans
+**Profile**: Loan broker managing lead applications, customer applications and loan applications
 **Goals**:
-- Efficiently manage loan applications and customer data
-- Track and update loan statuses
-- Access customer information quickly
-- Export data for reporting
+- Efficiently manage lead applications and convert them to loan applications
+- Track and update lead application and loan application statuses
+- Access comprehensive customer information quickly
+- Export data for reporting and analysis
 - Communicate with customers effectively
+- Manage workload and lead application assignments
 
 **Pain Points**:
-- Manual data entry and processing
-- Difficulty managing multiple applications
+- Manual data entry and lead application processing
+- Difficulty managing multiple lead applications and loan applications
 - Lack of centralized customer information
 - Time-consuming status updates
+- Poor lead application qualification and scoring
+- Inefficient lead application assignment processes
 
 #### 2.1.3 Administrator
-**Profile**: System administrator managing the platform
+**Profile**: System administrator managing the platform and data integration
 **Goals**:
 - Monitor system performance and usage
 - Manage user accounts and permissions
-- Generate reports and analytics
-- Configure system settings
-- Ensure data integrity
+- Generate comprehensive reports and analytics
+- Configure system settings and integrations
+- Ensure data integrity and synchronization
+- Monitor lead application and loan application processing metrics
 
 **Pain Points**:
 - Complex system administration
 - Limited reporting capabilities
 - User management overhead
+- Data synchronization issues
+- Integration monitoring complexity
 
 ## 3. Functional Requirements
 
@@ -127,31 +137,68 @@ The Loan Management App is a comprehensive mobile application designed to stream
 - Case assignment functionality
 - Customer data management interface
 
-### 3.3 Loan Application & Management
+### 3.3 LeadApplication Management
 
-#### 3.3.1 Loan Application Process
-**REQ-LOAN-001**: Application Creation
-- Streamlined application form
+#### 3.3.1 Lead Capture & Processing
+**REQ-LEAD-001**: LeadApplication Creation
+- Capture lead application information from multiple sources (web forms, phone calls, referrals)
+- Support both Consumer and Commercial lead application types
+- Real-time lead application validation and data quality checks
+- Integration with external lead sources (Google Ads, Facebook, etc.)
+- Automatic lead application assignment to brokers based on criteria
+
+**REQ-LEAD-002**: LeadApplication Information Management
+- Comprehensive lead application profile with personal, employment, and financial details
+- Support for multiple addresses and employment history
+- Asset finance information for commercial lead applications
+- Marketing attribution tracking (UTM parameters, Google Analytics)
+- Lead application notes and communication history
+
+**REQ-LEAD-003**: LeadApplication Status Management
+- Lead application status workflow: NEW → IN_PROGRESS → PENDING_INFO → SUBMITTED → APPROVED → DECLINED → WITHDRAWN
+- Status change notifications to relevant parties
+- Lead application status history and audit trail
+- Automatic status updates based on actions
+- Lead application conversion tracking to loan applications
+
+#### 3.3.2 LeadApplication Qualification & Assessment
+**REQ-LEAD-004**: LeadApplication Scoring
+- Automated lead application scoring based on predefined criteria
+- Risk assessment for lead application qualification
+- Priority assignment for lead application follow-up
+- Lead application quality indicators and metrics
+
+**REQ-LEAD-005**: LeadApplication Assignment
+- Automatic broker assignment based on lead application type, location, or capacity
+- Manual lead application reassignment capabilities
+- Broker workload balancing
+- Lead application assignment history tracking
+
+### 3.4 LoanApplication Management
+
+#### 3.4.1 LoanApplication Process
+**REQ-LOAN-001**: LoanApplication Creation
+- Streamlined loan application form
 - Integration with Dealer Admin Portal
 - Real-time form validation
-- Application submission and confirmation
+- Loan application submission and confirmation
 
-**REQ-LOAN-002**: Status Tracking
-- Real-time application status updates
+**REQ-LOAN-002**: LoanApplication Status Tracking
+- Real-time loan application status updates
 - Status change notifications
-- Timeline view of application progress
+- Timeline view of loan application progress
 - Communication history with brokers
 
-#### 3.3.2 Loan Status Management
-**REQ-STATUS-001**: Status Updates
-- Broker can update loan status (Active → Paid-off)
+#### 3.4.2 LoanApplication Status Management
+**REQ-STATUS-001**: LoanApplication Status Updates
+- Broker can update loan application status (Active → Paid-off)
 - Automatic customer notifications
 - Status change audit trail
 - Integration with Dealer Admin Portal
 
-### 3.4 Repayment Management
+### 3.5 Repayment Management
 
-#### 3.4.1 Repayment Schedule
+#### 3.5.1 Repayment Schedule
 **REQ-REPAY-001**: Schedule Display
 - Visual repayment calendar
 - Upcoming installments list
@@ -164,9 +211,9 @@ The Loan Management App is a comprehensive mobile application designed to stream
 - Configurable reminder settings
 - Escalation for overdue payments
 
-### 3.5 Communication & Notifications
+### 3.6 Communication & Notifications
 
-#### 3.5.1 Push Notifications
+#### 3.6.1 Push Notifications
 **REQ-NOTIFY-001**: System Notifications
 - Loan approval updates
 - Repayment due reminders
@@ -179,16 +226,16 @@ The Loan Management App is a comprehensive mobile application designed to stream
 - Read/unread status tracking
 - Notification history
 
-### 3.6 Data Management & Reporting
+### 3.7 Data Management & Reporting
 
-#### 3.6.1 Data Export
+#### 3.7.1 Data Export
 **REQ-EXPORT-001**: Export Functionality
 - CSV/Excel export by status (All/Active/Paid-off)
 - Export by broker or all brokers
 - Filtered data export
 - Scheduled report generation
 
-#### 3.6.2 Admin Panel
+#### 3.7.2 Admin Panel
 **REQ-ADMIN-001**: Administrative Functions
 - User and loan management
 - System status monitoring
@@ -253,17 +300,38 @@ The Loan Management App is a comprehensive mobile application designed to stream
 
 #### 4.4.1 System Integration
 **REQ-INTEG-001**: Dealer Admin Portal Integration
-- Real-time data synchronization
-- Single source of truth for customer data
-- Bi-directional data updates
-- Conflict resolution mechanisms
+- Real-time data synchronization for customer profiles, leads, and loans
+- Single source of truth for customer data with master-slave architecture
+- Bi-directional data updates with conflict resolution
+- API-based integration with RESTful endpoints
+- Data mapping and transformation between systems
+- Error handling and retry mechanisms for failed synchronizations
+- Audit logging for all integration activities
+- Data validation and integrity checks before synchronization
+
+**REQ-INTEG-002**: LeadApplication Data Integration
+- Automatic lead application import from Dealer Admin Portal
+- Lead application status synchronization between systems
+- Customer profile updates from portal changes
+- Lead application assignment and broker information sync
+- Marketing attribution data integration
+
+**REQ-INTEG-003**: LoanApplication Data Integration
+- Loan application status synchronization
+- Customer loan application history import
+- Repayment schedule and payment data sync
+- Loan application document and attachment integration
+- Financial data and calculation synchronization
 
 #### 4.4.2 Third-Party Services
-**REQ-INTEG-002**: External Services
-- SMS/email notification services
-- Push notification providers
-- Data export services
-- Authentication services
+**REQ-INTEG-004**: External Services
+- SMS/email notification services (Twilio, SendGrid)
+- Push notification providers (Firebase, OneSignal)
+- Data export services (CSV, Excel, PDF generation)
+- Authentication services (OAuth, JWT)
+- Payment gateway integration (for future payment processing)
+- Document management services (for loan documents)
+- Analytics and tracking services (Google Analytics, marketing attribution)
 
 ## 5. Technical Requirements
 
@@ -290,29 +358,61 @@ The Loan Management App is a comprehensive mobile application designed to stream
 #### 5.2.1 Data Synchronization
 **REQ-SYNC-001**: Data Management
 - Real-time synchronization with Dealer Admin Portal
-- Offline data caching
-- Conflict resolution strategies
-- Data backup and recovery
-- Audit logging
+- Offline data caching for critical functionality
+- Conflict resolution strategies with last-write-wins and manual resolution
+- Data backup and recovery with point-in-time restoration
+- Comprehensive audit logging for all data changes
+- Data versioning and change tracking
+- Incremental synchronization to minimize bandwidth usage
+
+#### 5.2.2 Database Requirements
+**REQ-DB-001**: Database Architecture
+- MySQL database with JPA/Hibernate ORM
+- Support for complex relationships between leads, customers, and loans
+- Optimized indexing for lead and loan queries
+- Data partitioning for large datasets
+- Connection pooling and performance optimization
+- Database replication for high availability
+
+**REQ-DB-002**: Data Models
+- Lead application management entities (LeadApplication, LeadOwner, LeadAssetFinance, etc.)
+- Customer profile management (CustomerProfile, DeviceToken)
+- Loan application management entities (LoanApplication, RepaymentSchedule, Payment)
+- Notification system entities (NotificationCampaign, NotificationDelivery)
+- Audit and logging entities (ApiAuditLog, LeadStatusHistory)
+- Picklist and reference data entities (Industry, ProductType, etc.)
 
 ## 6. User Stories
 
 ### 6.1 Customer User Stories
 
-#### 6.1.1 Loan Application
-**As a customer, I want to:**
-- Apply for a loan through the mobile app
-- Track my application status in real-time
-- Receive notifications about status changes
-- View my loan details and repayment schedule
+#### 6.1.1 LeadApplication Submission
+**As a potential customer, I want to:**
+- Submit my loan inquiry through the mobile app
+- Provide my personal and financial information easily
+- Track my lead application status and progress
+- Receive updates about my inquiry
 
 **Acceptance Criteria:**
-- Application form is easy to complete
+- Lead application form is intuitive and easy to complete
+- Information is validated in real-time
+- Lead application status is clearly communicated
+- Follow-up communications are timely
+
+#### 6.1.2 LoanApplication Management
+**As a customer, I want to:**
+- Apply for a loan through the mobile app
+- Track my loan application status in real-time
+- Receive notifications about status changes
+- View my loan application details and repayment schedule
+
+**Acceptance Criteria:**
+- Loan application form is easy to complete
 - Status updates are real-time and accurate
 - Notifications are timely and informative
-- Loan information is clearly displayed
+- Loan application information is clearly displayed
 
-#### 6.1.2 Repayment Management
+#### 6.1.3 Repayment Management
 **As a customer, I want to:**
 - View my repayment schedule
 - Receive reminders for upcoming payments
@@ -327,11 +427,24 @@ The Loan Management App is a comprehensive mobile application designed to stream
 
 ### 6.2 Broker User Stories
 
-#### 6.2.1 Loan Management
+#### 6.2.1 LeadApplication Management
+**As a broker, I want to:**
+- View and manage my assigned lead applications
+- Update lead application information and status
+- Convert lead applications to loan applications
+- Track lead application conversion metrics
+
+**Acceptance Criteria:**
+- Lead application worklist is organized and efficient
+- Lead application data can be updated easily
+- Lead application status updates are tracked
+- Conversion tracking is accurate
+
+#### 6.2.2 LoanApplication Management
 **As a broker, I want to:**
 - View and manage my assigned loan applications
 - Update customer information
-- Change loan statuses
+- Change loan application statuses
 - Export data for reporting
 
 **Acceptance Criteria:**
@@ -340,7 +453,7 @@ The Loan Management App is a comprehensive mobile application designed to stream
 - Status updates trigger customer notifications
 - Export functionality works correctly
 
-#### 6.2.2 Customer Communication
+#### 6.2.3 Customer Communication
 **As a broker, I want to:**
 - Access customer information quickly
 - Update customer profiles

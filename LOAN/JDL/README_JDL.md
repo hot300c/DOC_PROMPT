@@ -1,6 +1,6 @@
 # LOAN Notification JDL
 
-This folder contains a JHipster JDL to generate a backend monolith for the LOAN notification and reminder features. The frontend is developed separately, so generation skips the client code.
+This folder contains a JHipster JDL to generate a backend monolith for the LOAN notification and reminder features, including comprehensive LeadApplication and LoanApplication management. The frontend is developed separately, so generation skips the client code.
 
 ## Sources Analyzed
 
@@ -16,12 +16,23 @@ Key enums:
 - `SendStatus`: PENDING, SUCCESS, FAILED
 - `Platform`: ANDROID, IOS, WEB
 - `AudienceType`: REGISTERED, UNREGISTERED
+- `LeadStatus`: NEW, IN_PROGRESS, PENDING_INFO, SUBMITTED, APPROVED, DECLINED, WITHDRAWN
+- `LoanStatus`: PENDING, APPROVED, ACTIVE, PAID_OFF, DEFAULTED, CANCELLED
+- `PaymentStatus`: PENDING, PAID, OVERDUE, PARTIAL
+- `PaymentMethod`: BANK_TRANSFER, CASH, CHEQUE, CARD
+- `LoanType`: PERSONAL, BUSINESS, MORTGAGE, AUTO, EQUIPMENT
+- `InterestType`: FIXED, VARIABLE
 
 Key entities and relations:
 - `CustomerProfile` 1–1 `User` (JHipster built-in user), holds profile and registration markers.
 - `DeviceToken` many per `CustomerProfile`, stores device/platform and optional email/username/loanCode snapshots to detect registration per rules.
-- `NotificationCampaign` with activation flags per channel and template fields per channel, 1–many `NotificationHistory`.
-- `NotificationHistory` stores per-send record with recipient snapshots and channel/status.
+- `Broker` manages lead applications and loan applications.
+- `LeadApplication` core lead data with comprehensive customer information and status tracking.
+- `LoanApplication` created from approved LeadApplication with contract details and snapshot data.
+- `RepaymentSchedule` and `Payment` entities for loan management.
+- `NotificationCampaign` with activation flags per channel and template fields per channel, 1–many `NotificationBatch`.
+- `NotificationBatch` groups sends using specific content.
+- `NotificationDelivery` stores per-send record with recipient snapshots and channel/status.
 - `ReminderConfig` stores scheduler parameters (enabled, run time, daysBeforeDue, maxReminders).
 - `ReminderHistory` stores reminder sends with template snapshots, linked to `CustomerProfile` and `NotificationCampaign`.
 
@@ -52,10 +63,10 @@ Notes:
 - Integrate Firebase/APNs for push and email provider for email.
 - Expose APIs required by separate frontend.
 
-## Lead Management (Consumer & Commercial)
+## LeadApplication Management (Consumer & Commercial)
 
-Entities added to support submitting and managing Lend leads:
-- `Lead`: core lead data, amounts, requested terms/purpose/product, industry, notes, and audit fields.
+Entities added to support submitting and managing Lend lead applications:
+- `LeadApplication`: core lead application data, amounts, requested terms/purpose/product, industry, notes, and audit fields.
   - Status tracking: `status` (enum `LeadStatus`), `statusReason`, `statusUpdatedAt`, `statusUpdatedBy`.
   - Generic audit: `createdAt`, `updatedAt`, `updatedBy`.
   - Owner/Finance/Marketing/Notes via 1–1 or 1–many relations.
@@ -64,11 +75,11 @@ Entities added to support submitting and managing Lend leads:
 - `LeadAssetFinance`: vehicle/equipment details and finance parameters.
 - `LeadMarketing`: GA/UTM tracking fields.
 - `LeadNote`: arbitrary notes.
-- `CommercialProfile`: business profile for commercial leads.
+- `CommercialProfile`: business profile for commercial lead applications.
 
 Status and backup flow:
-1. Before updating a lead, create `LeadRevision` with a full JSON snapshot.
-2. Apply changes to `Lead` and set `updatedBy/updatedAt`.
+1. Before updating a lead application, create `LeadRevision` with a full JSON snapshot.
+2. Apply changes to `LeadApplication` and set `updatedBy/updatedAt`.
 3. If status changes, set `status/statusReason/statusUpdatedBy/statusUpdatedAt` and insert `LeadStatusHistory`.
 
 Related entities:
@@ -87,6 +98,36 @@ References:
   - Consumer: https://broker-api-docs.lend.com.au/api/#submit-new-consumer-lead
   - Commercial: https://broker-api-docs.lend.com.au/api/#submit-new-commercial-lead
 
+## LoanApplication Management
+
+Entities for managing approved loan applications and contracts:
+- `LoanApplication`: created from approved LeadApplication with contract details and snapshot data.
+  - Contract fields: `loanNumber`, `amount`, `interestRate`, `termMonths`, `loanType`, `interestType`.
+  - Status tracking: `status` (enum `LoanStatus`), `approvedAt`, `disbursedAt`, `maturityDate`.
+  - Snapshot strategy: `leadSnapshotJson` contains complete LeadApplication data at creation time.
+  - Denormalized fields: `customerName`, `customerEmail`, `customerPhone`, `brokerName`, `leadType`, `purpose` for easy querying.
+- `RepaymentSchedule`: installment schedule for each loan application.
+  - Fields: `installmentNumber`, `dueDate`, `principalAmount`, `interestAmount`, `totalAmount`, `status`.
+  - Payment tracking: `paidAt`, `paidAmount`, `lateFee`.
+- `Payment`: actual payment records.
+  - Fields: `paymentNumber`, `amount`, `paymentDate`, `paymentMethod`, `reference`, `status`, `notes`.
+
+Business workflow:
+1. LeadApplication status: NEW → IN_PROGRESS → PENDING_INFO → SUBMITTED → APPROVED → DECLINED → WITHDRAWN
+2. When LeadApplication status = APPROVED, create LoanApplication with:
+   - Complete snapshot of LeadApplication data (leadSnapshotJson)
+   - Denormalized key fields for querying
+   - Loan-specific contract details
+3. LoanApplication status: PENDING → APPROVED → ACTIVE → PAID_OFF/DEFAULTED/CANCELLED
+4. When LoanApplication becomes ACTIVE, generate RepaymentSchedule
+5. Record actual payments in Payment entity
+
+Data optimization strategy:
+- `leadSnapshotJson`: Complete JSON snapshot of LeadApplication + all related entities at loan creation
+- Denormalized fields: Key fields extracted for easy querying and reporting
+- Benefits: Data integrity + Query performance + No redundancy
+- Flexible constraints: Removed required constraints for better user experience
+
 ## Picklist Caches (from Lend Broker API)
 
 Entities used to cache and validate picklist values returned by Lend:
@@ -103,7 +144,7 @@ Entities used to cache and validate picklist values returned by Lend:
 Mapping guidelines:
 - Use `externalId` to store the Lend ID (string-safe if API returns numeric as string).
 - Use `name` or `description` to store display text (matching `industry`, `purpose`, `loan_term`, `product_type_name`, `description`, etc.).
-- In `Lead`, the following fields map to picklists:
+- In `LeadApplication`, the following fields map to picklists:
   - `purposeId` → `LoanPurpose.externalId`
   - `loanTermRequested` → `LoanTerm.externalId`
   - `productTypeId` → `ProductType.externalId`
@@ -115,7 +156,7 @@ Mapping guidelines:
 Sync strategy (recommended):
 - Scheduled job calls the picklist APIs and upserts by `externalId`.
 - Preserve existing values in use; avoid destructive deletes; mark obsolete rows inactive if needed.
-- Validate incoming `Lead` data against cached picklists and return precise errors if mismatched.
+- Validate incoming `LeadApplication` data against cached picklists and return precise errors if mismatched.
 
 References:
 - Picklist APIs: https://broker-api-docs.lend.com.au/api/#picklist-apis
@@ -295,7 +336,7 @@ Query/UI tips:
 }
 ```
 
-- Lead (core)
+- LeadApplication (core)
 ```json
 {
   "ref": "22nPwwU",
@@ -307,6 +348,27 @@ Query/UI tips:
   "industryId": 189,
   "status": "NEW",
   "createdAt": "2025-08-10T00:00:00Z"
+}
+```
+
+- LoanApplication (created from approved LeadApplication)
+```json
+{
+  "loanNumber": "LOAN-2025-001",
+  "leadApplicationId": 123,
+  "customerId": 456,
+  "brokerId": 789,
+  "amount": 56000,
+  "interestRate": 8.5,
+  "termMonths": 12,
+  "status": "ACTIVE",
+  "loanType": "PERSONAL",
+  "interestType": "FIXED",
+  "customerName": "Nguyen Van A",
+  "customerEmail": "[email protected]",
+  "brokerName": "John Smith",
+  "leadSnapshotJson": "{\"leadApplication\": {...}, \"leadOwner\": {...}}",
+  "createdAt": "2025-08-10T01:00:00Z"
 }
 ```
 
@@ -335,12 +397,27 @@ Query/UI tips:
 3) Dispatch send job per batch; update each delivery status/sentAt and batch counters.
 4) UI list joins Delivery → Batch → Content → Campaign; show short fields (subject/inAppShort*). Detail loads long fields.
 
+### LeadApplication to LoanApplication Flow
+1) Customer submits LeadApplication (status: NEW).
+2) Broker reviews and updates LeadApplication (status: IN_PROGRESS → PENDING_INFO → SUBMITTED).
+3) LeadApplication approved (status: APPROVED).
+4) System creates LoanApplication with:
+   - Complete snapshot of LeadApplication data (leadSnapshotJson)
+   - Denormalized fields for querying
+   - Contract-specific details
+5) LoanApplication activated (status: ACTIVE) and RepaymentSchedule generated.
+6) Customer makes payments tracked in Payment entity.
+
 ### Admin UI
-- Enabled via `withAdminUi true` in JDL. After generation, use the JHipster admin to CRUD campaigns, contents, batches, deliveries, leads, picklists, and audit logs.
+- Enabled via `withAdminUi true` in JDL. After generation, use the JHipster admin to CRUD campaigns, contents, batches, deliveries, lead applications, loan applications, picklists, and audit logs.
 
 ### Index/partition suggestions (for large scale)
 - Delivery: (recipient_email), (recipient_username), (recipient_loan_code), (batch_id), (status, sent_at desc), (sent_at desc)
 - Batch: (campaign_id), (content_id), (sent_at desc)
 - Content: (content_hash unique)
 - ApiAuditLog: (performed_at desc), (user_id), (endpoint)
-- Partition Delivery/ApiAuditLog by time if volume is very large.
+- LeadApplication: (status), (broker_id), (created_at desc), (ref unique)
+- LoanApplication: (status), (broker_id), (customer_id), (created_at desc), (loan_number unique)
+- RepaymentSchedule: (loan_application_id), (due_date), (status)
+- Payment: (loan_application_id), (payment_date desc), (status)
+- Partition Delivery/ApiAuditLog/LeadApplication/LoanApplication by time if volume is very large.

@@ -1,5 +1,5 @@
-# LOAN MANAGEMENT APP (LMA) - COST BREAKDOWN & REQUIREMENTS
-## Tài liệu cơ sở cho hợp đồng outsource
+# LOAN MANAGEMENT APP (LMA) - COST BREAKDOWN & REQUIREMENTS V2
+## Tài liệu cơ sở cho hợp đồng outsource - Phiên bản 2
 
 ---
 
@@ -8,7 +8,7 @@
 **Tên dự án:** Loan Management App (LMA)  
 **Loại dự án:** P2P Lending Platform  
 **Mục tiêu:** Phát triển ứng dụng quản lý khoản vay toàn diện  
-**Thời gian dự kiến:** 6 tháng  
+**Thời gian dự kiến:** 2-3 tháng  
 
 ---
 
@@ -16,22 +16,23 @@
 
 ### 1. CHI PHÍ HOSTING VÀ INFRASTRUCTURE
 
-| STT | Danh mục | Chi phí | Ghi chú | Khuyến nghị |
-|-----|----------|---------|---------|-------------|
-| 1 | **AWS EC2 t3.large (Admin Backend)** | ~$47/tháng | 2 vCPU, 8 GiB RAM cho Admin CMS backend | Cân bằng chi phí vs hiệu suất |
-| 2 | **Apple Developer Program (Organization)** | ~$99/năm | Bắt buộc để publish iOS apps dưới tên công ty | Khuyến nghị cho thương hiệu công ty |
-| 3 | **Google Play Developer Account** | ~$25 (một lần) | Phí một lần để upload Android apps | Bắt buộc cho triển khai Android |
-| 4 | **Push Notification (Firebase FCM)** | $0 | Free tier có sẵn | Sử dụng free tier ban đầu |
-| 5 | **Maintenance & Support (10%)** | ~$195/tháng | Bug fixing, updates, monitoring | Khuyến nghị tối thiểu 12 tháng |
+| STT | Danh mục | Chi phí | Ghi chú | Khuyến nghị | Sức chứa người dùng |
+|-----|----------|---------|---------|-------------|-------------------|
+| 1 | **AWS EC2 t3.large (Admin Backend)** | ~$200/tháng | 4 vCPU, 16 GiB RAM, 100 GB gp3 - Thêm tài nguyên để xử lý Application, Export Excel, traffic 20 user Update Form, Status,... | Cân bằng chi phí vs hiệu suất | ~20 admin users |
+| 2 | **Database (RDS)** | ~$85-95/tháng | db.t3.medium, Single-AZ, 100 GB gp3 | Lưu trữ dữ liệu khách hàng | Toàn bộ hệ thống |
+| 3 | **Apple Developer Program (Organization)** | ~$99/năm | Bắt buộc để publish iOS apps dưới tên công ty. Yêu cầu: D-U-N-S Number, Legal Entity Status, Apple ID với 2FA | Khuyến nghị cho thương hiệu công ty | Unlimited app users |
+| 4 | **Google Play Developer Account** | ~$25 (một lần) | Phí một lần để upload Android apps | Bắt buộc cho triển khai Android | Unlimited app users |
+| 5 | **Push Notification (Firebase FCM)** | $0 | Free tier có sẵn | Sử dụng free tier ban đầu | Unlimited app users |
+| 6 | **Maintenance & Support (10%)** | ~$195/tháng | Bug fixing, updates, working-hour monitoring | Khuyến nghị tối thiểu 12 tháng | Toàn bộ hệ thống |
 
-**Tổng chi phí infrastructure hàng tháng:** ~$242/tháng  
-**Tổng chi phí infrastructure năm đầu:** ~$2,904/năm
+**Tổng chi phí infrastructure hàng tháng:** ~$480-490/tháng  
+**Tổng chi phí infrastructure năm đầu:** ~$5,760-5,880/năm
 
 ### 2. YÊU CẦU TỪ ĐỐI TÁC (KHÔNG TÍNH VÀO CHI PHÍ VENDOR)
 
 | STT | Danh mục | Cung cấp bởi | Ghi chú | Yêu cầu | Tác động chi phí |
 |-----|----------|--------------|---------|---------|------------------|
-| 1 | **Domain & SSL** | Partner | Cung cấp subdomain (app.company.com) và cấu hình DNS | Phải setup trước khi release app | Không tính vào chi phí vendor |
+| 1 | **Domain & SSL** | Partner | Cung cấp subdomain (app.company.com) và cấu hình DNS trỏ đến backend server | Phải setup trước khi release app | Không tính vào chi phí vendor |
 | 2 | **Email Service (SMTP/API)** | Partner | Cung cấp API key từ email service (SendGrid, Mailgun, AWS SES) | Cần thiết cho gửi transactional emails | Không tính vào chi phí vendor |
 | 3 | **License API Key (Lend.com.au)** | Partner | Sandbox API key cho development/testing | Phải có sẵn để tích hợp và test loan workflows | Không tính vào chi phí vendor |
 
@@ -81,7 +82,7 @@
 - **Cross-platform:** Flutter framework
 
 ### 2. Backend Requirements
-- **Database:** MySQL/PostgreSQL
+- **Database:** MySQL/PostgreSQL (RDS)
 - **API:** RESTful + GraphQL
 - **Authentication:** JWT + OAuth2
 - **Real-time:** WebSocket connections
@@ -105,40 +106,6 @@
 
 ---
 
-## 📋 FEATURE REQUIREMENTS
-
-### 1. Core Features
-- **User Authentication:** Registration, Login, Social login
-- **Loan Application:** Multi-step process, Document upload
-- **Credit Assessment:** Scoring, Risk analysis
-- **Payment Processing:** Multiple methods, Scheduling
-- **Notification System:** Push, Email, In-app
-- **Document Management:** Upload, Verification, Storage
-
-### 2. Admin Features
-- **Dashboard:** Analytics, Reports
-- **User Management:** Roles, Permissions
-- **Loan Management:** Approval, Monitoring
-- **System Configuration:** Settings, Rules
-- **Audit Trail:** Complete logging
-
----
-
-## 💼 BUSINESS REQUIREMENTS
-
-### 1. Compliance
-- **Financial Regulations:** PCI DSS, SOX
-- **Data Privacy:** GDPR, CCPA
-- **Anti-Money Laundering:** AML requirements
-- **Know Your Customer:** KYC regulations
-
-### 2. Reporting
-- **Customer Reports:** Loan summary, Payment history
-- **Admin Reports:** Portfolio analytics, Performance metrics
-- **Regulatory Reports:** Compliance, Audit
-- **Real-time Dashboard:** Live monitoring
-
----
 
 ## 🚀 DEPLOYMENT REQUIREMENTS
 
@@ -164,15 +131,33 @@
 - **Development Setup:** $0 (included)
 
 ### 2. Monthly Costs
-- **AWS EC2:** $47
+- **AWS EC2:** $200
+- **Database (RDS):** $85-95
 - **Maintenance & Support:** $195
 - **Firebase FCM:** $0 (free tier)
-- **Total Monthly:** $242
+- **Total Monthly:** $480-490
 
 ### 3. Annual Costs
-- **Infrastructure:** $2,904
+- **Infrastructure:** $5,760-5,880
 - **Apple Developer:** $99
-- **Total Annual:** $3,003
+- **Total Annual:** $5,859-5,979
+
+---
+
+## 📈 COST COMPARISON V1 vs V2
+
+| Danh mục | V1 (USD/tháng) | V2 (USD/tháng) | Thay đổi |
+|----------|----------------|----------------|----------|
+| **AWS EC2** | $47 | $200 | +$153 (+325%) |
+| **Database** | $0 | $85-95 | +$85-95 (mới) |
+| **Maintenance** | $195 | $195 | Không đổi |
+| **Tổng cộng** | $242 | $480-490 | +$238-248 (+98-102%) |
+
+**Lý do tăng chi phí:**
+- Nâng cấp AWS EC2 từ t3.large (2 vCPU, 8 GiB) lên t3.large (4 vCPU, 16 GiB) để xử lý tốt hơn
+- Thêm RDS database riêng biệt để lưu trữ dữ liệu khách hàng
+- Hỗ trợ traffic cao hơn với 20 admin users đồng thời
+- Tăng khả năng xử lý Excel export và form updates
 
 ---
 
@@ -223,7 +208,7 @@
 ## 📞 NEXT STEPS
 
 ### 1. Immediate Actions
-- [ ] Review and approve cost breakdown
+- [ ] Review and approve cost breakdown V2
 - [ ] Finalize technical requirements
 - [ ] Prepare contract documentation
 - [ ] Set up project timeline
@@ -242,4 +227,9 @@
 
 ---
 
-**Tài liệu này cung cấp cơ sở hoàn chỉnh để tạo hợp đồng outsource cho dự án Loan Management App, bao gồm tất cả chi phí, yêu cầu kỹ thuật và rủi ro cần xem xét.**
+## 🔄 VERSION HISTORY
+
+**V1 (Original):** $242/tháng - Basic infrastructure setup
+**V2 (Current):** $480-490/tháng - Enhanced infrastructure with dedicated database and improved performance
+
+**Tài liệu này cung cấp cơ sở hoàn chỉnh để tạo hợp đồng outsource cho dự án Loan Management App V2, bao gồm tất cả chi phí cập nhật, yêu cầu kỹ thuật và rủi ro cần xem xét.**

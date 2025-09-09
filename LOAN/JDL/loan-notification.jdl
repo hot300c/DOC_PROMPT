@@ -11,11 +11,10 @@ application {
     serverPort 8080
     enableHibernateCache true
     dtoSuffix DTO
-    entitySuffix service
-    jhiPrefix phn
+    jhiPrefix pnt
     languages [en]
     enableSwaggerCodegen true
-    skipClient false
+    skipClient true
     skipServer false
     skipUserManagement false
   }
@@ -33,11 +32,18 @@ enum AudienceType { REGISTERED, UNREGISTERED }
 // Rendering strategy for notification content
 enum RenderingStrategy { STATIC, PER_RECIPIENT }
 
-// Lead management enums
+// LeadApplication management enums
 enum LeadType { CONSUMER, COMMERCIAL }
 enum GenderType { MALE, FEMALE }
 enum MaritalStatusType { SINGLE, MARRIED, DE_FACTO }
-enum LeadStatus { NEW, IN_PROGRESS, PENDING_INFO, SUBMITTED, APPROVED, DECLINED, WITHDRAWN, SETTLED }
+enum LeadStatus { NEW, IN_PROGRESS, PENDING_INFO, SUBMITTED, APPROVED, DECLINED, WITHDRAWN }
+
+// LoanApplication management enums
+enum LoanStatus { PENDING, APPROVED, ACTIVE, PAID_OFF, DEFAULTED, CANCELLED }
+enum PaymentStatus { PENDING, PAID, OVERDUE, PARTIAL }
+enum PaymentMethod { BANK_TRANSFER, CASH, CHEQUE, CARD }
+enum LoanType { PERSONAL, BUSINESS, MORTGAGE, AUTO, EQUIPMENT }
+enum InterestType { FIXED, VARIABLE }
 
 entity CustomerProfile {
   fullName String required,
@@ -46,6 +52,18 @@ entity CustomerProfile {
   googleSubject String,
   googleAccount Boolean required,
   registeredAt Instant
+}
+
+entity Broker {
+  brokerCode String required unique,
+  fullName String required,
+  email String required,
+  phone String,
+  licenseNumber String,
+  active Boolean required,
+  createdAt Instant required,
+  updatedAt Instant,
+  updatedBy String maxlength(100)
 }
 
 entity DeviceToken {
@@ -140,10 +158,74 @@ entity ReminderHistory {
   templateSnapshot TextBlob
 }
 
+// Core LoanApplication Management Entities
+entity LoanApplication {
+  loanNumber String unique,
+  leadApplicationId Long,
+  customerId Long,
+  brokerId Long,
+  amount BigDecimal,
+  interestRate BigDecimal,
+  termMonths Integer,
+  status LoanStatus,
+  loanType LoanType,
+  interestType InterestType,
+  approvedAt Instant,
+  disbursedAt Instant,
+  maturityDate LocalDate,
+  // Snapshot of LeadApplication data at loan creation time
+  leadSnapshotJson TextBlob,
+  // Key fields for easy querying (denormalized from snapshot)
+  customerName String,
+  customerEmail String,
+  customerPhone String,
+  brokerName String,
+  leadType LeadType,
+  purpose String,
+  createdAt Instant,
+  updatedAt Instant,
+  updatedBy String maxlength(100)
+}
+
+
+entity RepaymentSchedule {
+  loanApplicationId Long,
+  installmentNumber Integer,
+  dueDate LocalDate,
+  principalAmount BigDecimal,
+  interestAmount BigDecimal,
+  totalAmount BigDecimal,
+  status PaymentStatus,
+  paidAt Instant,
+  paidAmount BigDecimal,
+  lateFee BigDecimal,
+  createdAt Instant,
+  updatedAt Instant
+}
+
+entity Payment {
+  paymentNumber String unique,
+  loanApplicationId Long,
+  amount BigDecimal,
+  paymentDate Instant,
+  paymentMethod PaymentMethod,
+  reference String,
+  status PaymentStatus,
+  notes TextBlob,
+  createdAt Instant,
+  updatedAt Instant,
+  updatedBy String maxlength(100)
+}
+
 // Removed relation to built-in User to simplify import; can be wired post-generation
 
 relationship OneToMany {
   CustomerProfile{deviceTokens} to DeviceToken{customerProfile},
+  CustomerProfile{loanApplications} to LoanApplication{customer},
+  Broker{loanApplications} to LoanApplication{broker},
+  Broker{leadApplications} to LeadApplication{broker},
+  LoanApplication{repaymentSchedules} to RepaymentSchedule{loanApplication},
+  LoanApplication{payments} to Payment{loanApplication},
   NotificationCampaign{batches} to NotificationBatch{campaign}
 }
 
@@ -152,7 +234,12 @@ relationship ManyToOne {
   ReminderHistory to NotificationCampaign,
   NotificationBatch to NotificationCampaign,
   NotificationBatch to NotificationContent,
-  NotificationContentVariant to NotificationContent
+  NotificationContentVariant to NotificationContent,
+  LoanApplication to CustomerProfile,
+  LoanApplication to Broker,
+  LoanApplication to LeadApplication,
+  RepaymentSchedule to LoanApplication,
+  Payment to LoanApplication
 }
 
 relationship OneToMany {
@@ -168,23 +255,43 @@ paginate NotificationCampaign, DeviceToken, CustomerProfile, ReminderHistory wit
 
 paginate NotificationContent, NotificationContentVariant, NotificationBatch, NotificationDelivery with pagination
 
+paginate Broker, LoanApplication, RepaymentSchedule, Payment with pagination
+
 service all with serviceClass
 
 dto all with mapstruct
 
 dto NotificationContent, NotificationContentVariant, NotificationBatch, NotificationDelivery with mapstruct
 
+dto Broker, LoanApplication, RepaymentSchedule, Payment with mapstruct
+
 // Constraints and validations derived from business rules
 // - Email must be unique when used as login (handled by built-in User)
 // - DeviceToken may include email/username/loanCode to indicate registered users
 // - Campaigns can target REGISTERED or UNREGISTERED audiences
 //
+// Business Workflow:
+// 1. LeadApplication: Customer submits inquiry (NEW → IN_PROGRESS → PENDING_INFO → SUBMITTED → APPROVED/DECLINED/WITHDRAWN)
+// 2. LoanApplication: When LeadApplication status = APPROVED, create LoanApplication entity with:
+//    - Snapshot of complete LeadApplication data (leadSnapshotJson)
+//    - Denormalized key fields for querying (customerName, brokerName, etc.)
+//    - Loan-specific contract details (amount, interestRate, termMonths, etc.)
+// 3. LoanApplication: PENDING → APPROVED → ACTIVE → PAID_OFF/DEFAULTED/CANCELLED
+// 4. RepaymentSchedule: Generated when LoanApplication becomes ACTIVE
+// 5. Payment: Records actual payments against RepaymentSchedule
+//
+// Data Optimization Strategy:
+// - leadSnapshotJson: Complete JSON snapshot of LeadApplication + all related entities at loan creation
+// - Denormalized fields: Key fields extracted for easy querying and reporting
+// - Benefits: Data integrity + Query performance + No redundancy
+// - Flexible constraints: Removed required constraints for better user experience
+//
 // =============================
-// Lead Management (Consumer & Commercial)
+// LeadApplication Management (Consumer & Commercial)
 // Consumer URL: https://broker-api-docs.lend.com.au/api/submit-new-consumer-lead
 // Commercial URL: https://broker-api-docs.lend.com.au/api/submit-new-commercial-lead
 
-entity Lead {
+entity LeadApplication {
   // 7-char unique ref returned by Lend
   ref String unique maxlength(7),
   leadType LeadType required,
@@ -339,16 +446,20 @@ entity CommercialProfile {
 }
 
 relationship OneToOne {
-  Lead to LeadOwner,
-  Lead to LeadAssetFinance,
-  Lead to LeadMarketing,
-  Lead to CommercialProfile
+  LeadApplication to LeadOwner,
+  LeadApplication to LeadAssetFinance,
+  LeadApplication to LeadMarketing,
+  LeadApplication to CommercialProfile
 }
 
 relationship OneToMany {
-  Lead to LeadNote,
-  Lead to LeadStatusHistory,
-  Lead to LeadRevision,
+  LeadApplication to LoanApplication
+}
+
+relationship OneToMany {
+  LeadApplication to LeadNote,
+  LeadApplication to LeadStatusHistory,
+  LeadApplication to LeadRevision,
   LeadOwner to LeadOwnerEmployment,
   LeadOwner to LeadOwnerIncome,
   LeadOwner to LeadOwnerAddress
@@ -356,7 +467,11 @@ relationship OneToMany {
 
 // Note: One-to-many above already defines back-references; avoid duplicating ManyToOne to prevent property conflicts
 
-paginate Lead, LeadNote, LeadOwner, LeadOwnerEmployment, LeadOwnerIncome, LeadOwnerAddress, LeadAssetFinance, LeadMarketing, CommercialProfile with pagination
+relationship ManyToOne {
+  LeadApplication to Broker
+}
+
+paginate LeadApplication, LeadNote, LeadOwner, LeadOwnerEmployment, LeadOwnerIncome, LeadOwnerAddress, LeadAssetFinance, LeadMarketing, CommercialProfile with pagination
  
 // Status change audit trail
 entity LeadStatusHistory {
