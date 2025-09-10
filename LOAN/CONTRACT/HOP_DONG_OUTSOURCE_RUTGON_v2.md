@@ -3,8 +3,8 @@
 
 ---
 
-**Số hợp đồng:** PTN-LMA-2024-001  
-**Ngày ký:** [Ngày] tháng [Tháng] năm [Năm]  
+**Số hợp đồng:** PTN-Dealer-LMA-2025-002
+**Ngày ký:** 10 tháng 9 năm 2025  
 **Địa điểm ký:** [Địa điểm]
 
 ---
@@ -19,16 +19,17 @@
 - **Email:** [Email]
 - **Tài khoản ngân hàng:** [Số tài khoản]
 
-## BÊN B (BÊN GIA CÔNG): CÔNG TY TNHH PT&N SOLUTION
-- **Tên công ty:** Công ty TNHH PT&N Solution
-- **Địa chỉ:** [Địa chỉ công ty PT&N Solution]
+## BÊN B (BÊN GIA CÔNG): CÔNG TY TNHH PT&N COMPANY LIMITED
+- **Tên công ty:** PN&T COMPANY LIMITED
+- **Địa chỉ:** 0314786024
 - **Mã số thuế:** [MST]
-- **Đại diện:** [Tên đại diện]
-- **Chức vụ:** [Chức vụ]
-- **Điện thoại:** [SĐT]
-- **Email:** [Email]
-- **Tài khoản ngân hàng:** [Số tài khoản]
-
+- **Đại diện:** Nguyễn Ngô Duy Phúc
+- **Chức vụ:** Giám đốc Công nghệ (CTO)
+- **Điện thoại:** 0974554565
+- **Email:** phucng2001@gmail.com
+- **Tên ngân hàng:** Tiên Phong bank
+- **Tài khoản ngân hàng:** 0974554565
+- **Tên Chủ tài khoản:** NGUYỄN  
 ---
 
 ## ĐIỀU 1: ĐỊNH NGHĨA VÀ GIẢI THÍCH
@@ -38,7 +39,7 @@
 - **"Giai đoạn 1"** có nghĩa là giai đoạn phát triển các tính năng cơ bản của ứng dụng LMA theo phạm vi công việc đã thỏa thuận.
 - **"Yêu cầu phát sinh"** có nghĩa là bất kỳ yêu cầu bổ sung, thay đổi hoặc mở rộng nào ngoài phạm vi công việc ban đầu đã được thỏa thuận.
 - **"Deliverables"** có nghĩa là tất cả các sản phẩm, tài liệu và dịch vụ mà Bên B phải cung cấp theo hợp đồng này.
-- **"Source Code"** có nghĩa là mã nguồn của phần mềm, bao gồm tất cả các file code, database schema, configuration files và documentation.
+
 
 ### 1.2 Tài liệu tham chiếu
 - Tất cả các yêu cầu kỹ thuật, chi phí và timeline được mô tả trong tài liệu đính kèm sẽ được áp dụng cho hợp đồng này.
@@ -54,7 +55,6 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 - **Flutter Framework** cho cross-platform development
 - **iOS:** Hỗ trợ iOS 13.0+ (iPhone, iPad)
 - **Android:** Hỗ trợ Android 8.0+ (API level 26)
-- **Web:** Progressive Web App (PWA) support
 
 #### 2.1.3 Core Features
 - **User Account Management**
@@ -71,11 +71,8 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
   - Approval updates
   - Submission + feedback loop; UI flow matches Credora style
 
-- **Repayment Schedule**
-  - Repayment calendar, Upcoming installments, Total due
-  - Visual calendar or list user-friendly view, mirror Credora styling
-
-- **Repayment Reminder**
+- **Repayment Schedule & Reminders**
+  - Repayment calendar basics, Upcoming installments, Total due overview
   - Email/SMS reminders, Alert banners in dashboard for due dates
   - Keep users on track with due repayment alerts
 
@@ -84,7 +81,7 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
   - Enhances UX, instant feedback to user
 
 - **Admin Panel**
-  - User/loan management, View status, Reports, CSV export
+  - User/loan management, View status, Reports, CSV export (web-based admin system)
   - Dashboard-like view; clear tables/cards for managing backend
 
 - **Wallet / Balance View**
@@ -92,16 +89,15 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
   - Balance card & transactions (similar to Credora's wallet card)
 
 #### 2.1.4 Integration Requirements
-- **Loan APIs** (loan.com.au)
+- **Dealer Admin Portal**: Đồng bộ dữ liệu real-time (profile, leads, loans), 2 chiều với audit log và xử lý xung đột
+- **Loan/Lead APIs** theo yêu cầu nghiệp vụ
 - **Email services**
-- **Firebase** cho authentication và analytics
+- **Firebase** cho authentication, analytics và push notification (FCM)
 
 ### 2.2 Phạm vi không bao gồm
 - **Server Infrastructure:** Bên B không chịu trách nhiệm cung cấp, quản lý hoặc duy trì server infrastructure
 - **Third-party Service Costs:** Chi phí các dịch vụ bên thứ ba (ngoài free tier)
 - **Domain & SSL:** Bên A tự cung cấp domain và SSL certificate
-- **API Keys:** Bên A tự cung cấp các API keys cần thiết
-
 ---
 
 ## ĐIỀU 3: TIMELINE VÀ MILESTONE
@@ -110,7 +106,7 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 
 ### 3.2 Các giai đoạn chính:
 
-#### **Phase 1: Project Setup & Core Infrastructure (3 tuần)**
+#### **Project Setup & Core Infrastructure (3 tuần)**
 - Thiết lập project structure
 - Cài đặt development environment
 - Database design và migration
@@ -124,7 +120,7 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 - Database schema
 - User Account Management features
 
-#### **Phase 2: Core Features & Loan Management (4 tuần)**
+#### **Core Features & Loan Management (4 tuần)**
 - Profile Edit và dashboard entry point
 - Dashboard (Home) với loan summary cards, total balance, active loans count
 - Quick action buttons
@@ -132,15 +128,11 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 - Document upload system
 - Status tracking
 - Approval updates
-- Repayment Schedule với calendar view
 - Upcoming installments display
-- Total due calculation
 
 **Deliverables:**
 - Complete dashboard system
 - Loan application & approval system
-- Repayment schedule functionality
-- Document management
 - 50% progress completion
 
 #### **Phase 3: Advanced Features & Finalization (3 tuần)**
@@ -149,11 +141,8 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 - Push Notifications (Firebase FCM)
 - Admin Panel với user/loan management
 - Reports và CSV export
-- Wallet / Balance View
-- Fund disbursal tracking
 - Transaction history
 - Mobile app development
-- Responsive web interface
 - UI/UX implementation (Credora style)
 - Cross-platform testing
 - Performance optimization
@@ -165,35 +154,33 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 **Deliverables:**
 - Complete notification & reminder system
 - Admin panel functionality
-- Wallet & balance features
 - Complete mobile applications
-- Web application
 - Fully tested application
 - Production deployment
 - Complete documentation
 - 80% progress completion
 
-### 3.3 Milestone Payments
+### 3.3 Milestone Payments (MVP - Version 2)
+
+Tổng giá trị: 4,000 AUD (hoặc USD tương đương theo tỷ giá tại thời điểm xuất hóa đơn)
 
 | Phase | Payment % | Amount (AUD) | Condition / Deliverable | Notes |
-|-------|-----------|--------------|------------------------|-------|
-| Phase 1 | 60% | 1,800 AUD | Agreement on scope & requirements; project kick-off | Initial development begins |
-| Phase 2 | 20% | 600 AUD | 50% progress OR completion of User Management & Loan modules | Core features in place |
-| Phase 3 | 20% | 600 AUD | 80% progress and delivery of remaining functionalities | Final handover, testing & closure |
+|-------|-----------|--------------|-------------------------|-------|
+| Phase 1 | 60% | 2,400 AUD | Project setup & core infra; User Account Management; Dashboard; Loan Application cơ bản; Repayment cơ bản; Notifications setup | Nghiệm thu tạm thời |
+| Phase 2 | 20% | 800 AUD | Hoàn thiện core workflows: lead/loan status tracking & updates; timeline/progress; integration hooks | Tiến độ 50% |
+| Phase 3 | 20% | 800 AUD | Advanced & finalization: reminders, admin panel essentials, CSV export, QA, deployment | Nghiệm thu cuối |
 
 ---
 
 ## ĐIỀU 4: CHI PHÍ VÀ THANH TOÁN
 
-### 4.1 Tổng giá trị hợp đồng: **3,000 AUD**
+### 4.1 Tổng giá trị hợp đồng (MVP - Version 2): **4,000 AUD**
 
 ### 4.2 Chi phí breakdown:
 
-#### **4.2.1 Development Cost: 3,000 AUD**
-- Backend development: 1,500 AUD
-- Mobile app development: 1,000 AUD
-- Web application: 300 AUD
-- Integration & testing: 200 AUD
+#### **4.2.1 Development Cost: 4,000 AUD**
+- User Account Management & Core App: 3,000 AUD
+- Lead/Loan workflows (LeadApplication, LoanApplication), cập nhật trạng thái loan, và quản trị bộ danh mục (picklists/reference data), kèm Export Excel: 1,000 AUD
 
 #### **4.2.2 Chi phí không bao gồm trong hợp đồng:**
 - **Server Infrastructure:** Bên A tự chịu trách nhiệm
@@ -201,26 +188,29 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 - **Domain & SSL:** Bên A tự cung cấp
 - **API Keys:** Bên A tự cung cấp
 
-### 4.3 Chi phí server (Bên A tự chịu):
+### 4.3 Chi phí hạ tầng (Bên A tự chịu) - Theo Version 2 (USD)
+
+| STT | Danh mục | Chi phí | Ghi chú | Khuyến nghị |
+|-----|----------|---------|---------|-------------|
+| 1 | **AWS EC2 (Admin Backend)** | ~$200/tháng | 4 vCPU, 16 GiB RAM, 100 GB gp3 | Cân bằng chi phí/hiệu suất |
+| 2 | **Database (Amazon RDS - MySQL)** | ~$85-95/tháng | db.t3.medium, Single-AZ, 100 GB gp3 | Lưu trữ dữ liệu khách hàng |
+| 3 | **Push Notification (Firebase FCM)** | $0 | Free tier | Bắt đầu với free tier |
+
+**Tổng chi phí hạ tầng hàng tháng:** ~$480-490/tháng  
+**Tổng chi phí hạ tầng năm đầu:** ~$5,760-5,880/năm
+
+Các chi phí tài khoản:
+- **Apple Developer Program (Organization):** ~$99/năm  
+- **Google Play Developer Account:** ~$25 (một lần)
+
+### 4.4 Chi phí vận hành & hỗ trợ (Bên A tự chịu)
 
 | STT | Danh mục | Chi phí | Ghi chú |
 |-----|----------|---------|---------|
-| 1 | **AWS EC2 t3.large (Admin Backend)** | ~$47 USD/tháng | 2 vCPU, 8 GiB RAM |
-| 2 | **Apple Developer Program (Organization)** | ~$99 USD/năm | Bắt buộc cho iOS |
-| 3 | **Google Play Developer Account** | ~$25 USD (một lần) | Bắt buộc cho Android |
-| 4 | **Push Notification (Firebase FCM)** | $0 | Free tier |
+| 1 | **Maintenance & Support** | $195/tháng | Bug fixing, updates, working-hour monitoring. Khuyến nghị tối thiểu 12 tháng |
 
-**Tổng chi phí server hàng tháng:** ~$47 USD/tháng  
-**Tổng chi phí server năm đầu:** ~$564 USD/năm
-
-### 4.4 Chi phí vận hành & hỗ trợ (Bên A tự chịu):
-
-| STT | Danh mục | Chi phí | Ghi chú |
-|-----|----------|---------|---------|
-| 1 | **Maintenance & Support** | 300 AUD/tháng | Bug fixing, updates, working-hour monitoring. Recommended minimum 12-month contract. |
-
-**Tổng chi phí vận hành & hỗ trợ:** 300 AUD/tháng  
-**Tổng chi phí vận hành & hỗ trợ năm đầu:** 3,600 AUD/năm
+**Tổng chi phí vận hành & hỗ trợ:** $195/tháng  
+**Tổng chi phí vận hành & hỗ trợ năm đầu:** $2,340/năm
 
 ### 4.5 Phương thức thanh toán:
 - **Bank transfer** hoặc **PayPal**
@@ -341,7 +331,7 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 - **Documentation** và **user manuals** thuộc sở hữu của Bên A sau khi thanh toán đầy đủ
 - Bên B được quyền sử dụng **open-source libraries** và **frameworks**
 - **Third-party licenses** phải tuân thủ terms of use
-- Bên B có quyền sử dụng source code cho các dự án khác
+
 
 ### 7.3 Confidentiality Agreement:
 - Bên B ký NDA riêng biệt
@@ -352,8 +342,6 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 ### 7.4 Work Product:
 - **Source code** thuộc sở hữu của Bên B
 - **Documentation** và **user manuals** thuộc về Bên A
-- Bên B có quyền sử dụng source code cho các dự án khác
-- Bên B có quyền sử dụng trong portfolio với sự đồng ý của Bên A
 
 ---
 
@@ -436,108 +424,108 @@ Bên B sẽ phát triển ứng dụng LMA với các tính năng sau:
 
 ## ĐIỀU 10: RỦI RO VÀ BẢO HIỂM
 
-### 10.1 Risk Management:
-- **Technical risks:** Backup plans và fallback options
-- **Timeline risks:** Buffer time và resource allocation
-- **Quality risks:** Comprehensive testing strategy
-- **Security risks:** Regular audits và monitoring
+### 10.1 Quản lý rủi ro:
+- **Rủi ro kỹ thuật:** Có phương án dự phòng và giải pháp thay thế
+- **Rủi ro tiến độ:** Dự phòng thời gian và phân bổ nguồn lực hợp lý
+- **Rủi ro chất lượng:** Áp dụng chiến lược kiểm thử toàn diện
+- **Rủi ro bảo mật:** Kiểm tra, đánh giá bảo mật và giám sát thường xuyên
 
-### 10.2 Force Majeure:
-- **Natural disasters, war, pandemic**
-- **Government regulations changes**
-- **Third-party service outages**
-- **Economic crisis** affecting operations
+### 10.2 Bất khả kháng:
+- **Thiên tai, chiến tranh, đại dịch**
+- **Thay đổi quy định của nhà nước**
+- **Sự cố dịch vụ bên thứ ba**
+- **Khủng hoảng kinh tế** ảnh hưởng đến hoạt động
 
-### 10.3 Mitigation Strategies:
-- **Regular communication** và status updates
-- **Risk assessment** hàng tuần
-- **Contingency plans** cho critical issues
-- **Alternative solutions** cho key dependencies
+### 10.3 Chiến lược giảm thiểu rủi ro:
+- **Giao tiếp thường xuyên** và cập nhật tiến độ
+- **Đánh giá rủi ro** hàng tuần
+- **Kế hoạch dự phòng** cho các vấn đề nghiêm trọng
+- **Giải pháp thay thế** cho các phụ thuộc quan trọng
 
-### 10.4 Insurance:
+### 10.4 Bảo hiểm:
 - Bên B có bảo hiểm trách nhiệm nghề nghiệp
-- Coverage cho errors và omissions
-- Minimum coverage: $1,000,000
+- Bảo hiểm bao gồm lỗi và thiếu sót
+- Mức bảo hiểm tối thiểu: $1,000,000
 
 ---
 
 ## ĐIỀU 11: CHẤM DỨT HỢP ĐỒNG
 
-### 11.1 Termination by Mutual Agreement:
-- Cả hai bên đồng ý chấm dứt
-- Thanh toán theo work completed
-- Return tất cả materials và data
-- Confidentiality obligations vẫn có hiệu lực
+### 11.1 Chấm dứt theo thỏa thuận:
+- Hai bên cùng đồng ý chấm dứt hợp đồng
+- Thanh toán dựa trên khối lượng công việc đã hoàn thành
+- Trả lại toàn bộ tài liệu và dữ liệu
+- Nghĩa vụ bảo mật vẫn tiếp tục có hiệu lực
 
-### 11.2 Termination for Breach:
-- **Bên A:** Không thanh toán sau 30 ngày notice
-- **Bên B:** Không deliver theo timeline sau 15 ngày notice
-- **Material breach** của confidentiality agreement
-- **Quality issues** không được fix sau 30 ngày
+### 11.2 Chấm dứt do vi phạm:
+- **Bên A:** Không thanh toán sau 30 ngày kể từ khi nhận được thông báo
+- **Bên B:** Không bàn giao đúng tiến độ sau 15 ngày kể từ khi nhận được thông báo
+- **Vi phạm nghiêm trọng** nghĩa vụ bảo mật thông tin
+- **Vấn đề chất lượng** không được khắc phục sau 30 ngày
 
-### 11.3 Termination Process:
-1. **Written notice** 30 ngày trước
-2. **Cure period** 15 ngày (nếu có thể)
-3. **Final settlement** trong 30 ngày
-4. **Return materials** và data
-5. **Confidentiality** obligations continue
+### 11.3 Quy trình chấm dứt hợp đồng:
+1. **Thông báo bằng văn bản** trước 30 ngày
+2. **Thời gian khắc phục** là 15 ngày (nếu có thể)
+3. **Thanh toán, quyết toán cuối cùng** trong vòng 30 ngày
+4. **Trả lại tài liệu** và dữ liệu
+5. **Nghĩa vụ bảo mật** tiếp tục có hiệu lực
 
-### 11.4 Termination Fees:
-- **Early termination by Bên A:** 50% của remaining contract value
-- **Termination by Bên B:** Hoàn trả 100% của unearned fees
-- **Force majeure:** No termination fees
+### 11.4 Phí chấm dứt hợp đồng:
+- **Bên A chấm dứt sớm:** Phải thanh toán 50% giá trị hợp đồng còn lại
+- **Bên B chấm dứt:** Hoàn trả 100% phần phí chưa thực hiện
+- **Trường hợp bất khả kháng:** Không áp dụng phí chấm dứt
 
 ---
 
 ## ĐIỀU 12: GIẢI QUYẾT TRANH CHẤP
 
-### 12.1 Negotiation:
-- Cố gắng giải quyết qua **direct negotiation**
-- **Escalation** lên management level
-- **Mediation** nếu cần thiết
+### 12.1 Thương lượng:
+- Nỗ lực giải quyết thông qua **thương lượng trực tiếp**
+- **Chuyển cấp** lên ban lãnh đạo nếu cần
+- **Hòa giải** nếu không đạt được thỏa thuận
 
-### 12.2 Arbitration:
-- **Arbitration** theo quy định của Trung tâm Trọng tài Quốc tế Việt Nam
-- **Language:** Tiếng Việt
-- **Location:** Hà Nội
-- **Costs:** Chia đều giữa hai bên
+### 12.2 Trọng tài:
+- **Trọng tài** theo quy định của Trung tâm Trọng tài Quốc tế Việt Nam (VIAC)
+- **Ngôn ngữ:** Tiếng Việt
+- **Địa điểm:** Hồ Chí Minh
+- **Chi phí:** Hai bên chia đều
 
-### 12.3 Governing Law:
-- **Vietnamese Law** áp dụng
-- **Dispute resolution** theo pháp luật Việt Nam
-- **Jurisdiction:** Tòa án có thẩm quyền tại Hà Nội
+### 12.3 Luật điều chỉnh:
+- **Luật Việt Nam** được áp dụng
+- **Giải quyết tranh chấp** theo quy định pháp luật Việt Nam
+- **Thẩm quyền:** Tòa án có thẩm quyền tại Hồ Chí Minh
 
 ---
 
 ## ĐIỀU 13: ĐIỀU KHOẢN CHUNG
 
-### 13.1 Amendment:
-- Chỉ được sửa đổi bằng **written agreement**
-- **Both parties** phải ký tên
-- **Effective date** từ ngày ký
+### 13.1 Sửa đổi hợp đồng:
+- Mọi sửa đổi, bổ sung hợp đồng chỉ có giá trị khi được lập thành văn bản.
+- Hai bên phải cùng ký tên xác nhận vào văn bản sửa đổi.
+- Thời điểm hiệu lực của sửa đổi là từ ngày ký văn bản đó.
 
-### 13.2 Severability:
-- Nếu điều khoản nào **invalid**, các điều khoản khác vẫn có hiệu lực
-- **Replacement** với điều khoản hợp lệ tương đương
+### 13.2 Hiệu lực từng điều khoản:
+- Nếu bất kỳ điều khoản nào của hợp đồng này bị tuyên bố vô hiệu, các điều khoản còn lại vẫn giữ nguyên hiệu lực.
+- Các bên sẽ thay thế điều khoản vô hiệu bằng một điều khoản hợp lệ có giá trị tương đương.
 
-### 13.3 Entire Agreement:
-- Hợp đồng này **supersedes** tất cả agreements trước đó
-- **Complete agreement** giữa hai bên
-- **No oral modifications** được chấp nhận
+### 13.3 Toàn bộ thỏa thuận:
+- Hợp đồng này thay thế tất cả các thỏa thuận, cam kết trước đây giữa hai bên liên quan đến nội dung hợp đồng.
+- Đây là thỏa thuận đầy đủ và duy nhất giữa hai bên về nội dung hợp đồng này.
+- Mọi sửa đổi miệng đều không có giá trị pháp lý.
 
-### 13.4 Notices:
-- **Written notices** gửi qua email và registered mail
-- **Effective date:** 3 ngày sau khi gửi
-- **Addresses** như trong hợp đồng
+### 13.4 Thông báo:
+- Mọi thông báo liên quan đến hợp đồng phải được thực hiện bằng văn bản, gửi qua email và thư bảo đảm.
+- Thời điểm thông báo có hiệu lực là sau 3 ngày kể từ ngày gửi.
+- Địa chỉ nhận thông báo là địa chỉ ghi trong hợp đồng này.
 
-### 13.5 Assignment:
-- **Không được assign** hợp đồng mà không có written consent
-- **Successors** và **assigns** bị ràng buộc bởi hợp đồng
+### 13.5 Chuyển nhượng:
+- Không bên nào được chuyển nhượng hợp đồng này cho bên thứ ba nếu không có sự đồng ý bằng văn bản của bên còn lại.
+- Người kế thừa và bên nhận chuyển nhượng (nếu có) phải tuân thủ các điều khoản của hợp đồng này.
 
-### 13.6 Force Majeure:
-- **Excuse performance** trong trường hợp force majeure
-- **Notice requirement** trong 48 giờ
-- **Mitigation efforts** required
+### 13.6 Bất khả kháng:
+- Các bên được miễn trừ trách nhiệm thực hiện nghĩa vụ hợp đồng trong trường hợp xảy ra sự kiện bất khả kháng.
+- Bên gặp sự kiện bất khả kháng phải thông báo cho bên còn lại trong vòng 48 giờ kể từ khi xảy ra sự kiện.
+- Các bên phải nỗ lực tối đa để giảm thiểu thiệt hại và khắc phục hậu quả do sự kiện bất khả kháng gây ra.
 
 ---
 
@@ -565,38 +553,19 @@ Hợp đồng này có hiệu lực từ ngày ký và được lập thành **0
 
 ## PHỤ LỤC
 
-### Phụ lục A: Technical Specifications
-- Detailed technical requirements
-- Architecture diagrams
-- Database schema
-- API specifications
+### Phụ lục A: Architecture Diagrams
+- System architecture overview
+- Architecture diagram (tham chiếu: `LOAN/diagram/diagram-export-10-09-2025-14_42_42.png`)
 
-### Phụ lục B: Project Timeline
-- Detailed milestone breakdown
-- Resource allocation
-- Dependencies và critical path
-
-### Phụ lục C: Cost Breakdown
+### Phụ lục B: Cost Breakdown
 - Detailed cost analysis
 - Third-party service costs
 - Infrastructure requirements
 
-### Phụ lục D: Testing Plan
-- Test cases và scenarios
-- Performance benchmarks
-- Security testing procedures
-
-### Phụ lục E: Documentation Requirements
-- User manuals
-- Technical documentation
-- API documentation
-- Deployment guides
-
-### Phụ lục F: Server Infrastructure Requirements
-- AWS EC2 specifications
-- Database requirements
-- Security configurations
-- Backup procedures
+### Phụ lục C: User Manuals
+- Ghi chú: Cung cấp gần giai đoạn triển khai
+- Phạm vi: User guide (mobile app), Admin guide (web-based admin)
+- Định dạng: PDF (tiếng Việt/tiếng Anh theo thỏa thuận)
 
 ---
 

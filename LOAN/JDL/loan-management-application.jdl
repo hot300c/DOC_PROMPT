@@ -1,14 +1,44 @@
+// // =============================
+// // APPLICATION 1: NOTIFICATION SERVICE (Microservice)
+// // =============================
+// application {
+//   config {
+//     baseName notificationService
+//     applicationType microservice
+//     authenticationType jwt
+//     packageName com.pntsol.notification
+//     prodDatabaseType mysql
+//     devDatabaseType mysql
+//     databaseType sql
+//     buildTool maven
+//     serverPort 8083
+//     enableHibernateCache true
+//     dtoSuffix DTO
+//     jhiPrefix pnt
+//     languages [en]
+//     enableSwaggerCodegen true
+//     skipClient true
+//     skipServer false
+//     skipUserManagement true
+//     serviceDiscoveryType consul
+//   }
+//   entities NotificationCampaign, NotificationContent, NotificationBatch, NotificationDelivery, NotificationContentVariant, ReminderConfig, ReminderHistory, ApiAuditLog
+// }
+
+// =============================
+// APPLICATION 2: LOAN MANAGEMENT SERVICE (Microservice)
+// =============================
 application {
   config {
-    baseName loanNotification
-    applicationType monolith
+    baseName loanManagementService
+    applicationType microservice
     authenticationType jwt
     packageName com.pntsol.loan
     prodDatabaseType mysql
     devDatabaseType mysql
     databaseType sql
     buildTool maven
-    serverPort 8080
+    serverPort 8082
     enableHibernateCache true
     dtoSuffix DTO
     jhiPrefix pnt
@@ -16,10 +46,39 @@ application {
     enableSwaggerCodegen true
     skipClient true
     skipServer false
-    skipUserManagement false
+    skipUserManagement true
+    serviceDiscoveryType consul
   }
-  entities *
+  entities CustomerProfile, DeviceToken, Broker, LeadApplication, LeadOwner, LeadOwnerEmployment, LeadOwnerIncome, LeadOwnerAddress, LeadAssetFinance, LeadMarketing, LeadNote, CommercialProfile, LeadStatusHistory, LeadRevision, LoanApplication, RepaymentSchedule, Payment, Industry, LoanPurpose, LoanTerm, OwnerType, HomeOwnerOption, ProductType, EquipmentType, Occupation, EmploymentType
 }
+
+// // =============================
+// // APPLICATION 3: GATEWAY (Monolith with NextJS Frontend)
+// // =============================
+// application {
+//   config {
+//     baseName loanGateway
+//     applicationType gateway
+//     authenticationType jwt
+//     packageName com.pntsol.gateway
+//     prodDatabaseType mysql
+//     devDatabaseType mysql
+//     databaseType sql
+//     buildTool maven
+//     serverPort 8080
+//     enableHibernateCache true
+//     dtoSuffix DTO
+//     jhiPrefix pnt
+//     languages [en]
+//     enableSwaggerCodegen true
+//     skipClient false
+//     skipServer false
+//     skipUserManagement false
+//     clientFramework react
+//     serviceDiscoveryType consul
+//   }
+//   entities *
+// }
 
 enum NotificationChannel { EMAIL, PUSH, IN_APP }
 
@@ -155,6 +214,7 @@ entity ReminderHistory {
   channel NotificationChannel required,
   status SendStatus required,
   loanCode String required,
+  customerId Long,
   templateSnapshot TextBlob
 }
 
@@ -226,11 +286,11 @@ relationship OneToMany {
   Broker{leadApplications} to LeadApplication{broker},
   LoanApplication{repaymentSchedules} to RepaymentSchedule{loanApplication},
   LoanApplication{payments} to Payment{loanApplication},
-  NotificationCampaign{batches} to NotificationBatch{campaign}
+  NotificationCampaign{batches} to NotificationBatch{campaign},
+  NotificationBatch{deliveries} to NotificationDelivery{batch}
 }
 
 relationship ManyToOne {
-  ReminderHistory to CustomerProfile,
   ReminderHistory to NotificationCampaign,
   NotificationBatch to NotificationCampaign,
   NotificationBatch to NotificationContent,
@@ -239,17 +299,12 @@ relationship ManyToOne {
   LoanApplication to Broker,
   LoanApplication to LeadApplication,
   RepaymentSchedule to LoanApplication,
-  Payment to LoanApplication
+  Payment to LoanApplication,
+  NotificationDelivery to NotificationBatch
 }
 
-relationship OneToMany {
-  NotificationBatch to NotificationDelivery
-}
-
-relationship ManyToOne {
-  NotificationDelivery to CustomerProfile,
-  NotificationDelivery to DeviceToken
-}
+// Note: NotificationDelivery relationships removed as they cross application boundaries
+// These will be handled via API calls between services
 
 paginate NotificationCampaign, DeviceToken, CustomerProfile, ReminderHistory with pagination
 
@@ -267,16 +322,16 @@ dto Broker, LoanApplication, RepaymentSchedule, Payment with mapstruct
 
 // Constraints and validations derived from business rules
 // - Email must be unique when used as login (handled by built-in User)
-// - DeviceToken may include email/username/loanCode to indicate registered users
+// - DeviceToken may include email-username-loanCode to indicate registered users
 // - Campaigns can target REGISTERED or UNREGISTERED audiences
 //
 // Business Workflow:
-// 1. LeadApplication: Customer submits inquiry (NEW → IN_PROGRESS → PENDING_INFO → SUBMITTED → APPROVED/DECLINED/WITHDRAWN)
+// 1. LeadApplication: Customer submits inquiry (NEW → IN_PROGRESS → PENDING_INFO → SUBMITTED → APPROVED DECLINED WITHDRAWN)
 // 2. LoanApplication: When LeadApplication status = APPROVED, create LoanApplication entity with:
 //    - Snapshot of complete LeadApplication data (leadSnapshotJson)
 //    - Denormalized key fields for querying (customerName, brokerName, etc.)
 //    - Loan-specific contract details (amount, interestRate, termMonths, etc.)
-// 3. LoanApplication: PENDING → APPROVED → ACTIVE → PAID_OFF/DEFAULTED/CANCELLED
+// 3. LoanApplication: PENDING → APPROVED → ACTIVE → PAID_OFF DEFAULTED CANCELLED
 // 4. RepaymentSchedule: Generated when LoanApplication becomes ACTIVE
 // 5. Payment: Records actual payments against RepaymentSchedule
 //
@@ -513,7 +568,7 @@ paginate ApiAuditLog with pagination
 
 // Picklist entities (cached locally)
 
-// Industries (supports parent/children)
+// Industries (supports parent children)
 entity Industry {
   externalId Integer required unique,
   name String required maxlength(160)
@@ -543,7 +598,7 @@ entity HomeOwnerOption {
   description String required maxlength(160)
 }
 
-// Product Types (supports parent/children)
+// Product Types (supports parent children)
 entity ProductType {
   externalId Integer required unique,
   name String required maxlength(160)

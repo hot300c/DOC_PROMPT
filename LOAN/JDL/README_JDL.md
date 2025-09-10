@@ -1,6 +1,9 @@
-# LOAN Notification JDL
+# LOAN 3-Application Architecture JDL
 
-This folder contains a JHipster JDL to generate a backend monolith for the LOAN notification and reminder features, including comprehensive LeadApplication and LoanApplication management. The frontend is developed separately, so generation skips the client code.
+This folder contains a JHipster JDL to generate 3 applications in a single file:
+1. **Notification Service** (Microservice) - Notifications & reminders
+2. **Loan Management Service** (Microservice) - Core business logic
+3. **Gateway** (Gateway) - User Management + NextJS frontend
 
 ## Sources Analyzed
 
@@ -36,20 +39,108 @@ Key entities and relations:
 - `ReminderConfig` stores scheduler parameters (enabled, run time, daysBeforeDue, maxReminders).
 - `ReminderHistory` stores reminder sends with template snapshots, linked to `CustomerProfile` and `NotificationCampaign`.
 
-See `loan-notification.jdl` for full spec.
+See `loan-management-application.jdl` for full spec.
 
 ## Generation Instructions
 
-Backend (monolith, skip client):
-
+### Single JDL File with 3 Applications
 ```bash
-jhipster import-jdl loan-notification.jdl
+jhipster import-jdl loan-management-application.jdl
+jhipster import-jdl C:\PROJECTS\DOCS_PROMPT\LOAN\JDL\loan-management-application.jdl
 ```
 
+This will generate 3 applications:
+1. **notificationService** (Microservice, Port 8083)
+2. **loanManagementService** (Microservice, Port 8082)
+3. **loanGateway** (Gateway with NextJS Frontend, Port 8080)
+
 Notes:
-- `skipClient true` in the JDL keeps the frontend separate.
-- Authentication set to `jwt` by default; adjust if using OAuth2.
-- Database defaults to Postgres in prod and H2 for dev.
+- **Notification Service**: `skipClient true` - Backend-only microservice
+- **Loan Management Service**: `skipClient true` - Backend-only microservice
+- **Gateway Service**: `skipClient false` - Gateway with NextJS frontend
+- Authentication set to `jwt` by default; adjust if using OAuth2
+- Database defaults to MySQL for all applications
+- Service Discovery: Consul for all applications
+- Each application runs on its own port
+
+## Database Configuration
+
+### Development Environment
+Each application will use its own MySQL database:
+- **Notification Service**: `notification_service` database
+- **Loan Management Service**: `loan_management_service` database  
+- **Gateway**: `loan_gateway` database
+
+Default connection strings:
+```
+jdbc:mysql://localhost:3306/notification_service?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+
+jdbc:mysql://localhost:3306/loan_management_service?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+
+jdbc:mysql://localhost:3306/loan_gateway?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+```
+
+### Production Environment
+For production deployment with Docker, use separate MySQL containers:
+```
+jdbc:mysql://mysql-notification:3306/notification_service?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
+
+jdbc:mysql://mysql-loan:3306/loan_management_service?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
+
+jdbc:mysql://mysql-gateway:3306/loan_gateway?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
+```
+
+### Custom Database Configuration
+You can override database settings by modifying the generated `application.yml` files in each service:
+- `src/main/resources/config/application-dev.yml` (Development)
+- `src/main/resources/config/application-prod.yml` (Production)
+
+## 3-Application Architecture
+
+### Application Overview:
+
+#### 1. **Notification Service** (`notificationService`)
+- **Type**: Microservice (Backend-only)
+- **Port**: 8083
+- **Frontend**: None (separate)
+- **Entities**: Notification-related entities
+  - NotificationCampaign, NotificationContent, NotificationBatch, NotificationDelivery, NotificationContentVariant
+  - ReminderConfig, ReminderHistory, ApiAuditLog
+- **Responsibility**: Notifications, reminders, campaign management
+
+#### 2. **Loan Management Service** (`loanManagementService`)
+- **Type**: Microservice (Backend-only)
+- **Port**: 8082
+- **Frontend**: None (separate)
+- **Entities**: All core business entities
+  - CustomerProfile, DeviceToken, Broker
+  - LeadApplication, LeadOwner, LeadOwnerEmployment, LeadOwnerIncome, LeadOwnerAddress, LeadAssetFinance, LeadMarketing, LeadNote, CommercialProfile, LeadStatusHistory, LeadRevision
+  - LoanApplication, RepaymentSchedule, Payment
+  - Industry, LoanPurpose, LoanTerm, OwnerType, HomeOwnerOption, ProductType, EquipmentType, Occupation, EmploymentType
+- **Responsibility**: Core business logic, lead/loan processing, reference data
+
+#### 3. **Gateway** (`loanGateway`)
+- **Type**: Gateway with Frontend
+- **Port**: 8080
+- **Frontend**: NextJS (included)
+- **Entities**: All entities (for routing and orchestration)
+- **Responsibility**: User Management, API Gateway, Frontend, Service orchestration
+
+### Application Communication:
+- **Gateway** → **Loan Management Service**: REST API calls for business operations
+- **Gateway** → **Notification Service**: REST API calls for sending notifications
+- **Service Discovery**: Consul for service registration and discovery
+- **JWT Token Propagation**: Secure inter-service communication
+- **Database Separation**: Each application has its own database
+- **Independent Deployment**: Applications can be deployed separately
+
+### Benefits of 3-Application Architecture:
+- **Clear Separation**: Business logic vs. notification logic vs. gateway
+- **Scalability**: Each service can be scaled independently
+- **Technology Flexibility**: Different services can use different technologies
+- **Frontend Integration**: Gateway includes NextJS frontend for modern development
+- **API Gateway**: Single entry point for all services
+- **Service Discovery**: Consul enables dynamic service discovery and load balancing
 
 ## Mapping from Business Rules
 - Unique email as login: handled by `User`; `CustomerProfile` links 1–1 to `User`.

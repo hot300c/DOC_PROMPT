@@ -1,14 +1,5 @@
-# LOAN MANAGEMENT APP (LMA) - COST BREAKDOWN & REQUIREMENTS V2
-## Tài liệu cơ sở cho hợp đồng outsource - Phiên bản 2
-
----
-
-## 📊 TỔNG QUAN DỰ ÁN
-
-**Tên dự án:** Loan Management App (LMA)  
-**Loại dự án:** P2P Lending Platform  
-**Mục tiêu:** Phát triển ứng dụng quản lý khoản vay toàn diện  
-**Thời gian dự kiến:** 2-3 tháng  
+# LOAN MANAGEMENT APP (LMA) - COST BREAKDOWN V2
+## Tài liệu cơ sở cho hợp đồng outsource - Phiên bản 2 (Chỉ giữ phần chi phí)
 
 ---
 
@@ -27,99 +18,6 @@
 
 **Tổng chi phí infrastructure hàng tháng:** ~$480-490/tháng  
 **Tổng chi phí infrastructure năm đầu:** ~$5,760-5,880/năm
-
-### 2. YÊU CẦU TỪ ĐỐI TÁC (KHÔNG TÍNH VÀO CHI PHÍ VENDOR)
-
-| STT | Danh mục | Cung cấp bởi | Ghi chú | Yêu cầu | Tác động chi phí |
-|-----|----------|--------------|---------|---------|------------------|
-| 1 | **Domain & SSL** | Partner | Cung cấp subdomain (app.company.com) và cấu hình DNS trỏ đến backend server | Phải setup trước khi release app | Không tính vào chi phí vendor |
-| 2 | **Email Service (SMTP/API)** | Partner | Cung cấp API key từ email service (SendGrid, Mailgun, AWS SES) | Cần thiết cho gửi transactional emails | Không tính vào chi phí vendor |
-| 3 | **License API Key (Lend.com.au)** | Partner | Sandbox API key cho development/testing | Phải có sẵn để tích hợp và test loan workflows | Không tính vào chi phí vendor |
-
----
-
-## 🎯 YÊU CẦU KỸ THUẬT
-
-### 1. CAPACITY REQUIREMENTS
-
-| Danh mục | Số lượng người dùng | Ghi chú |
-|----------|-------------------|---------|
-| **Admin Backend** | ~20 admin users | Hệ thống quản lý nội bộ |
-| **App Users** | Unlimited | Không giới hạn người dùng ứng dụng |
-| **Concurrent Users** | 10,000+ | Hệ thống phải hỗ trợ đồng thời |
-| **Daily Applications** | 1,000+ | Xử lý đơn vay mỗi ngày |
-| **Hourly Payments** | 5,000+ | Xử lý thanh toán mỗi giờ |
-
-### 2. TECHNICAL SPECIFICATIONS
-
-#### 2.1 Performance Requirements
-- **App launch time:** < 3 giây
-- **Page load time:** < 2 giây  
-- **API response time:** < 1 giây
-- **Image upload:** < 30 giây cho file 10MB
-- **Payment processing:** < 10 giây
-
-#### 2.2 Scalability Requirements
-- **Database storage:** 1TB+ documents
-- **Uptime requirement:** 99.9%
-- **Concurrent connections:** 10,000+
-- **Data processing:** Real-time
-
-#### 2.3 Security Requirements
-- **Data encryption:** End-to-end
-- **Compliance:** PCI DSS, GDPR
-- **Authentication:** Multi-factor
-- **Audit logging:** Complete trail
-
----
-
-## 📱 PLATFORM REQUIREMENTS
-
-### 1. Mobile Platforms
-- **iOS:** 13.0+ (iPhone, iPad)
-- **Android:** 8.0+ (API level 26)
-- **Web:** Progressive Web App (PWA)
-- **Cross-platform:** Flutter framework
-
-### 2. Backend Requirements
-- **Database:** MySQL/PostgreSQL (RDS)
-- **API:** RESTful + GraphQL
-- **Authentication:** JWT + OAuth2
-- **Real-time:** WebSocket connections
-
----
-
-## 🔧 INTEGRATION REQUIREMENTS
-
-### 1. Third-Party Services
-- **Credit Bureau APIs:** Experian, Equifax, TransUnion
-- **Payment Gateways:** Stripe, PayPal, VNPay
-- **Banking APIs:** Account verification
-- **Document Services:** OCR, verification
-- **Communication:** SMS, Email services
-
-### 2. Development Tools
-- **Version Control:** Git
-- **CI/CD:** Automated deployment
-- **Testing:** Unit, Integration, E2E
-- **Monitoring:** Performance, Security
-
----
-
-
-## 🚀 DEPLOYMENT REQUIREMENTS
-
-### 1. Development Environment
-- **Staging:** Pre-production testing
-- **Production:** Live environment
-- **Backup:** Disaster recovery
-- **Monitoring:** 24/7 system health
-
-### 2. Maintenance
-- **Bug Fixes:** Immediate response
-- **Updates:** Regular releases
-- **Security Patches:** Critical updates
-- **Performance Optimization:** Continuous improvement
 
 ---
 
@@ -161,75 +59,57 @@
 
 ---
 
-## 📝 CONTRACT CONSIDERATIONS
+## 📑 PAYMENT MILESTONES (AUD)
 
-### 1. Payment Structure
-- **Development Phase:** Milestone-based payments
-- **Maintenance Phase:** Monthly retainer
-- **Additional Features:** Time & materials
-- **Emergency Support:** Priority response
-
-### 2. Deliverables
-- **Source Code:** Complete codebase
-- **Documentation:** Technical & user manuals
-- **Testing:** Comprehensive test suite
-- **Training:** Team knowledge transfer
-
-### 3. Timeline
-- **Phase 1:** Project setup (4 weeks)
-- **Phase 2:** Core development (12 weeks)
-- **Phase 3:** Testing & deployment (4 weeks)
-- **Phase 4:** Maintenance (ongoing)
+| Phase   | Payment % | Amount (AUD) | Condition / Deliverable                                            | Notes                         |
+|---------|-----------|--------------|---------------------------------------------------------------------|-------------------------------|
+| Phase 1 | 60%       | 2,400        | Agreement on scope & requirements; project kick-off                 | Initial development begins    |
+| Phase 2 | 20%       | 800          | 50% progress OR completion of User Management & Loan modules        | Core features in place        |
+| Phase 3 | 20%       | 800          | 80% progress and delivery of remaining functionalities              | Final handover, testing & closure |
 
 ---
 
-## ⚠️ RISK CONSIDERATIONS
+## Addendum (English, concise)
 
-### 1. Technical Risks
-- **Third-party Dependencies:** API changes, Service outages
-- **Scalability:** Performance under load
-- **Security:** Data breaches, Vulnerabilities
-- **Integration:** Complex system connections
-
-### 2. Business Risks
-- **Regulatory Changes:** Compliance updates
-- **Market Competition:** Feature differentiation
-- **User Adoption:** Market acceptance
-- **Economic Factors:** Budget constraints
-
-### 3. Mitigation Strategies
-- **Backup Plans:** Alternative solutions
-- **Regular Updates:** Security patches
-- **Performance Monitoring:** Proactive optimization
-- **User Feedback:** Continuous improvement
+- Clarify scope: Customer record and loan status are managed directly in the Dealer Admin Portal (source of truth), not via lend.com.au.
+- New capability: Brokers can update customer profiles and change loan status (e.g., Active → Paid‑off) within the portal.
+- Data export: Support exports by status (All/Active/Paid‑off) and by broker or all brokers.
+- Notifications: “Request for statement” notifies brokers; status updates trigger in‑app/push alerts to customers.
 
 ---
 
-## 📞 NEXT STEPS
+## 🔒 Scope Alignment with Requirements (Concise)
 
-### 1. Immediate Actions
-- [ ] Review and approve cost breakdown V2
-- [ ] Finalize technical requirements
-- [ ] Prepare contract documentation
-- [ ] Set up project timeline
+- Source of truth: Customer and loan data are mastered in the Dealer Admin Portal; mobile app integrates and reflects portal updates in real time.
+- MVP Core (Phase 1): Authentication, Dashboard (Home), Loan Application & Approval, Repayment Schedule, Repayment Reminder, Push Notifications, Broker Worklist & Filtering, Assignment, Customer Data Management, Loan Status Update, Data Export.
+- Phase 2 (Enhancements): Admin Panel, Wallet/Balance view, Advanced reporting, Enhanced notifications, Performance optimizations.
 
-### 2. Pre-Development
-- [ ] Secure third-party API access
-- [ ] Set up development environment
-- [ ] Establish communication protocols
-- [ ] Create project repository
+### Currency & Units
+- Infrastructure costs: priced in USD (approximate, monthly/annual as listed above).
+- Development: priced in AUD (see Budget & Phasing; milestones table also in AUD).
 
-### 3. Development Phase
-- [ ] Weekly progress reports
-- [ ] Regular milestone reviews
-- [ ] Quality assurance testing
-- [ ] User acceptance testing
+### Development Budget & Phasing (AUD)
 
----
+| Phase   | Scope (summary)                                                                 | Budget (AUD) |
+|---------|----------------------------------------------------------------------------------|--------------|
+| Phase 1 | MVP Core features listed above                                                   | 2,400        |
+| Phase 2 | Core completion checkpoints (workflows, integration hooks, 50% progress)        | 800          |
+| Phase 3 | Advanced & finalization (reminders, admin essentials, export, QA, deploy)       | 800          |
 
-## 🔄 VERSION HISTORY
+Total Development Budget (MVP): 4,000 AUD
 
-**V1 (Original):** $242/tháng - Basic infrastructure setup
-**V2 (Current):** $480-490/tháng - Enhanced infrastructure with dedicated database and improved performance
+### Key Non-Functional Requirements (from Requirements Document)
+- Performance: App launch < 3s, page load < 2s, API < 1s, exports < 30s; real-time updates < 5s.
+- Security: End-to-end encryption, secure APIs, RBAC, MFA for sensitive ops, full audit logs.
+- Scalability & Reliability: ≥1,000 concurrent users (MVP), 99.5% uptime target, robust sync with portal.
+- Integration: Real-time synchronization with Dealer Admin Portal; conflict resolution and retries.
 
-**Tài liệu này cung cấp cơ sở hoàn chỉnh để tạo hợp đồng outsource cho dự án Loan Management App V2, bao gồm tất cả chi phí cập nhật, yêu cầu kỹ thuật và rủi ro cần xem xét.**
+### Assumptions
+- Continuous access to Dealer Admin Portal APIs for real-time sync and updates.
+- Notification services (Firebase/Email/SMS) credentials provided and configured by partner where needed.
+- Data export requirements limited to CSV/Excel by status (All/Active/Paid-off) and by broker/all brokers.
+
+### Out of Scope (for current cost and MVP)
+- Document upload/management, advanced document workflows.
+- Wallet/payment processing and settlement flows.
+- Complex reporting beyond basic exports and listed Phase 2 enhancements.
