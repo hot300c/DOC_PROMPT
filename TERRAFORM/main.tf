@@ -109,12 +109,25 @@ resource "aws_security_group" "rds_sg" {
   description = "Security group for RDS"
   vpc_id      = data.aws_vpc.selected.id
 
+  # Allow access from EC2 security group
   ingress {
     description = "MySQL from EC2 SG"
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
     security_groups = [aws_security_group.admin_ec2_sg.id]
+  }
+
+  # Allow access from specific IPs (if RDS is public)
+  dynamic "ingress" {
+    for_each = var.rds_public_access ? [1] : []
+    content {
+      description = "MySQL from allowed IPs"
+      from_port   = 3306
+      to_port     = 3306
+      protocol    = "tcp"
+      cidr_blocks = var.rds_allowed_ips
+    }
   }
 
   egress {

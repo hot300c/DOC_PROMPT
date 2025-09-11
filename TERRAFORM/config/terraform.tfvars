@@ -24,4 +24,5 @@ rds_allocated_storage = 20
 rds_db_name        = "lma"
 rds_username       = "lma_root"
 rds_password       = "123457Abc"
-rds_public_access  = false
+rds_public_access  = true
+rds_allowed_ips    = ["0.0.0.0/0"]  # Change to your specific IPs

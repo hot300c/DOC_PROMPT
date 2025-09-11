@@ -127,7 +127,13 @@ variable "required_tags" {
 variable "rds_public_access" {
   description = "Whether the RDS instance is publicly accessible"
   type        = bool
-  default     = false
+  default     = true
+}
+
+variable "rds_allowed_ips" {
+  description = "List of IP addresses/CIDR blocks allowed to access RDS"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]  # Change to specific IPs for security
 }
 
 variable "rds_db_name" {
