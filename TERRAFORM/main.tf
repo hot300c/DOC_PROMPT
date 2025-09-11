@@ -54,6 +54,24 @@ resource "aws_security_group" "admin_ec2_sg" {
     }
   }
 
+  # Portainer Web UI
+  ingress {
+    description = "Portainer Web UI"
+    from_port   = 9443
+    to_port     = 9443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Consul Web UI
+  ingress {
+    description = "Consul Web UI"
+    from_port   = 8500
+    to_port     = 8500
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -76,8 +94,9 @@ resource "aws_instance" "admin_backend" {
   instance_type               = var.ec2_instance_type
   subnet_id                   = data.aws_subnets.selected.ids[0]
   vpc_security_group_ids      = [aws_security_group.admin_ec2_sg.id]
-  key_name                    = var.key_pair_name
+  key_name                    = aws_key_pair.github_actions_key.key_name
   associate_public_ip_address = true
+  # iam_instance_profile        = aws_iam_instance_profile.ec2_ssm_profile.name
   user_data                   = <<-EOF
     #!/bin/bash
     yum update -y
@@ -85,6 +104,20 @@ resource "aws_instance" "admin_backend" {
     systemctl enable docker
     systemctl start docker
     usermod -aG docker ec2-user
+    
+    # Enable password authentication
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    
+    # Set password for ec2-user (change this password!)
+    echo 'ec2-user:MySecurePassword123!' | chpasswd
+    
+    # Restart SSH service
+    systemctl restart sshd
+    
+    # Install Docker Compose
+    curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
   EOF
 
   root_block_device {

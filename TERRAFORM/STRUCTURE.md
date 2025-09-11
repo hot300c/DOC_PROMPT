@@ -13,15 +13,12 @@ TERRAFORM/
 ├── providers.tf                 # Provider configurations
 ├── versions.tf                  # Version constraints
 ├── terraform.tfstate           # Terraform state file (ignored)
-├── terraform.tfstate.backup    # State backup (ignored)
-├── tfplan                      # Terraform plan file (ignored)
 ├── .terraform.lock.hcl         # Provider lock file (ignored)
 ├── .terraform/                  # Terraform working directory (ignored)
+├── ssh-key.tf                  # SSH key generation
 ├── config/                      # Configuration files
 │   ├── terraform.tfvars        # Variable values
-│   ├── terraform-user_accessKeys.csv  # AWS credentials (ignored)
-│   ├── pnt-ec2-lma-key.pem     # EC2 private key (ignored)
-│   └── vnvc-ec2-key.pem        # Alternative EC2 key (ignored)
+│   └── github_actions_key.pub  # Public SSH key for GitHub Actions
 ├── docs/                        # Documentation
 │   ├── README.md               # Detailed setup instructions
 │   ├── CONFIG_SURVEY.md        # Configuration survey

@@ -18,4 +18,20 @@ output "rds_port" {
   value       = aws_db_instance.mysql.port
 }
 
+output "github_actions_private_key" {
+  description = "Private key for GitHub Actions SSH access"
+  value       = tls_private_key.github_actions_key.private_key_pem
+  sensitive   = true
+}
+
+output "github_actions_public_key" {
+  description = "Public key for GitHub Actions SSH access"
+  value       = tls_private_key.github_actions_key.public_key_openssh
+}
+
+output "ssh_key_file_path" {
+  description = "Path to the private key file"
+  value       = local_file.github_actions_private_key.filename
+}
+
 
