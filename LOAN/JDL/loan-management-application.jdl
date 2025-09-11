@@ -1,29 +1,29 @@
-// // =============================
-// // APPLICATION 1: NOTIFICATION SERVICE (Microservice)
-// // =============================
-// application {
-//   config {
-//     baseName notificationService
-//     applicationType microservice
-//     authenticationType jwt
-//     packageName com.pntsol.notification
-//     prodDatabaseType mysql
-//     devDatabaseType mysql
-//     databaseType sql
-//     buildTool maven
-//     serverPort 8083
-//     enableHibernateCache true
-//     dtoSuffix DTO
-//     jhiPrefix pnt
-//     languages [en]
-//     enableSwaggerCodegen true
-//     skipClient true
-//     skipServer false
-//     skipUserManagement true
-//     serviceDiscoveryType consul
-//   }
-//   entities NotificationCampaign, NotificationContent, NotificationBatch, NotificationDelivery, NotificationContentVariant, ReminderConfig, ReminderHistory, ApiAuditLog
-// }
+// =============================
+// APPLICATION 1: NOTIFICATION SERVICE (Microservice)
+// =============================
+application {
+  config {
+    baseName notificationService
+    applicationType microservice
+    authenticationType jwt
+    packageName com.pntsol.notification
+    prodDatabaseType mysql
+    devDatabaseType mysql
+    databaseType sql
+    buildTool maven
+    serverPort 8083
+    enableHibernateCache true
+    dtoSuffix DTO
+    jhiPrefix pnt
+    languages [en]
+    enableSwaggerCodegen true
+    skipClient true
+    skipServer false
+    skipUserManagement true
+    serviceDiscoveryType consul
+  }
+  entities NotificationCampaign, NotificationContent, NotificationBatch, NotificationDelivery, NotificationContentVariant, ReminderConfig, ReminderHistory, ApiAuditLog
+}
 
 // =============================
 // APPLICATION 2: LOAN MANAGEMENT SERVICE (Microservice)
@@ -52,33 +52,33 @@ application {
   entities CustomerProfile, DeviceToken, Broker, LeadApplication, LeadOwner, LeadOwnerEmployment, LeadOwnerIncome, LeadOwnerAddress, LeadAssetFinance, LeadMarketing, LeadNote, CommercialProfile, LeadStatusHistory, LeadRevision, LoanApplication, RepaymentSchedule, Payment, Industry, LoanPurpose, LoanTerm, OwnerType, HomeOwnerOption, ProductType, EquipmentType, Occupation, EmploymentType
 }
 
-// // =============================
-// // APPLICATION 3: GATEWAY (Monolith with NextJS Frontend)
-// // =============================
-// application {
-//   config {
-//     baseName loanGateway
-//     applicationType gateway
-//     authenticationType jwt
-//     packageName com.pntsol.gateway
-//     prodDatabaseType mysql
-//     devDatabaseType mysql
-//     databaseType sql
-//     buildTool maven
-//     serverPort 8080
-//     enableHibernateCache true
-//     dtoSuffix DTO
-//     jhiPrefix pnt
-//     languages [en]
-//     enableSwaggerCodegen true
-//     skipClient false
-//     skipServer false
-//     skipUserManagement false
-//     clientFramework react
-//     serviceDiscoveryType consul
-//   }
-//   entities *
-// }
+// =============================
+// APPLICATION 3: GATEWAY (Monolith with NextJS Frontend)
+// =============================
+application {
+  config {
+    baseName loanGateway
+    applicationType gateway
+    authenticationType jwt
+    packageName com.pntsol.gateway
+    prodDatabaseType mysql
+    devDatabaseType mysql
+    databaseType sql
+    buildTool maven
+    serverPort 8080
+    enableHibernateCache true
+    dtoSuffix DTO
+    jhiPrefix pnt
+    languages [en]
+    enableSwaggerCodegen true
+    skipClient false
+    skipServer false
+    skipUserManagement false
+    clientFramework react
+    serviceDiscoveryType consul
+  }
+  entities *
+}
 
 enum NotificationChannel { EMAIL, PUSH, IN_APP }
 
@@ -295,11 +295,6 @@ relationship ManyToOne {
   NotificationBatch to NotificationCampaign,
   NotificationBatch to NotificationContent,
   NotificationContentVariant to NotificationContent,
-  LoanApplication to CustomerProfile,
-  LoanApplication to Broker,
-  LoanApplication to LeadApplication,
-  RepaymentSchedule to LoanApplication,
-  Payment to LoanApplication,
   NotificationDelivery to NotificationBatch
 }
 
@@ -522,9 +517,7 @@ relationship OneToMany {
 
 // Note: One-to-many above already defines back-references; avoid duplicating ManyToOne to prevent property conflicts
 
-relationship ManyToOne {
-  LeadApplication to Broker
-}
+// Removed to avoid conflict with Broker{leadApplications} to LeadApplication{broker}
 
 paginate LeadApplication, LeadNote, LeadOwner, LeadOwnerEmployment, LeadOwnerIncome, LeadOwnerAddress, LeadAssetFinance, LeadMarketing, CommercialProfile with pagination
  

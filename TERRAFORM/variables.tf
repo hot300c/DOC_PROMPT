@@ -1,7 +1,7 @@
 variable "project_name" {
   description = "Project name prefix for resources"
   type        = string
-  default     = "lma"
+  default     = "LOAN_MANAGEMENT_APPLICATION"
 }
 
 variable "environment" {
@@ -85,19 +85,55 @@ variable "rds_allocated_storage" {
 variable "rds_username" {
   description = "Master username for RDS"
   type        = string
-  default     = "lma_admin"
+  default     = "lma_root"
 }
 
 variable "rds_password" {
   description = "Master password for RDS"
   type        = string
   sensitive   = true
+  default     = "12347@Abc"
 }
 
 variable "use_default_vpc" {
   description = "Whether to deploy into default VPC"
   type        = bool
   default     = true
+}
+
+variable "open_http_80" {
+  description = "Whether to open HTTP (80) on the EC2 security group"
+  type        = bool
+  default     = true
+}
+
+variable "open_https_443" {
+  description = "Whether to open HTTPS (443) on the EC2 security group"
+  type        = bool
+  default     = false
+}
+
+variable "required_tags" {
+  description = "Required tags to apply to resources"
+  type        = map(string)
+  default     = {
+    Owner      = ""
+    Project    = "LMA"
+    Env        = "dev"
+    CostCenter = ""
+  }
+}
+
+variable "rds_public_access" {
+  description = "Whether the RDS instance is publicly accessible"
+  type        = bool
+  default     = false
+}
+
+variable "rds_db_name" {
+  description = "Initial database name for RDS"
+  type        = string
+  default     = "lma"
 }
 
 

@@ -1,5 +1,8 @@
 locals {
-  name_prefix = "${var.project_name}-${var.environment}"
+  name_prefix       = "${var.project_name}-${var.environment}"
+  safe_project_name = replace(lower(var.project_name), "_", "-")
+  safe_environment  = replace(lower(var.environment), "_", "-")
+  id_prefix         = "${local.safe_project_name}-${local.safe_environment}"
 }
 
 data "aws_caller_identity" "current" {}
@@ -29,20 +32,26 @@ resource "aws_security_group" "admin_ec2_sg" {
     cidr_blocks = [var.allow_ssh_cidr]
   }
 
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [var.allow_http_cidr]
+  dynamic "ingress" {
+    for_each = var.open_http_80 ? [1] : []
+    content {
+      description = "HTTP"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = [var.allow_http_cidr]
+    }
   }
 
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [var.allow_https_cidr]
+  dynamic "ingress" {
+    for_each = var.open_https_443 ? [1] : []
+    content {
+      description = "HTTPS"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = [var.allow_https_cidr]
+    }
   }
 
   egress {
@@ -91,14 +100,8 @@ resource "aws_instance" "admin_backend" {
   }
 }
 
-resource "random_password" "rds_password" {
-  length  = 16
-  special = true
-  override_characters = "!@#%^*-_+="
-}
-
 locals {
-  effective_rds_password = coalesce(var.rds_password, random_password.rds_password.result)
+  effective_rds_password = var.rds_password
 }
 
 resource "aws_security_group" "rds_sg" {
@@ -123,12 +126,12 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_subnet_group" "rds_subnets" {
-  name       = "${local.name_prefix}-rds-subnet-group"
+  name       = "${local.id_prefix}-rds-subnet-group"
   subnet_ids = slice(data.aws_subnets.selected.ids, 0, 2)
 }
 
 resource "aws_db_instance" "mysql" {
-  identifier                 = "${local.name_prefix}-mysql"
+  identifier                 = "${local.id_prefix}-mysql"
   engine                     = var.rds_engine
   engine_version             = var.rds_engine_version
   instance_class             = var.rds_instance_class
@@ -137,7 +140,8 @@ resource "aws_db_instance" "mysql" {
   vpc_security_group_ids     = [aws_security_group.rds_sg.id]
   username                   = var.rds_username
   password                   = local.effective_rds_password
-  publicly_accessible        = false
+  db_name                    = var.rds_db_name
+  publicly_accessible        = var.rds_public_access
   skip_final_snapshot        = true
   backup_retention_period    = 0
   deletion_protection        = false
@@ -148,7 +152,7 @@ resource "aws_db_instance" "mysql" {
 
 resource "aws_eip" "admin_eip" {
   instance = aws_instance.admin_backend.id
-  vpc      = true
+  domain   = "vpc"
   tags = {
     Name        = "${local.name_prefix}-admin-eip"
     Environment = var.environment
