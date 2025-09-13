@@ -19,7 +19,7 @@ variable "aws_region" {
 variable "ec2_instance_type" {
   description = "EC2 instance type for Admin Backend"
   type        = string
-  default     = "t3.small"
+  default     = "t3.medium"
 }
 
 variable "ec2_ebs_size_gb" {
