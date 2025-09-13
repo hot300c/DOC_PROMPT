@@ -72,6 +72,24 @@ resource "aws_security_group" "admin_ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Loan Gateway Application
+  ingress {
+    description = "Loan Gateway Application"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Loan Management Service
+  ingress {
+    description = "Loan Management Service"
+    from_port   = 8082
+    to_port     = 8082
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -96,7 +114,7 @@ resource "aws_instance" "admin_backend" {
   vpc_security_group_ids      = [aws_security_group.admin_ec2_sg.id]
   key_name                    = aws_key_pair.github_actions_key.key_name
   associate_public_ip_address = true
-  # iam_instance_profile        = aws_iam_instance_profile.ec2_ssm_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.ec2_ssm_profile.name
   user_data                   = <<-EOF
     #!/bin/bash
     yum update -y
@@ -201,6 +219,108 @@ resource "aws_eip" "admin_eip" {
   domain   = "vpc"
   tags = {
     Name        = "${local.name_prefix}-admin-eip"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# AWS Systems Manager Parameter Store để lưu RDS endpoint
+resource "aws_ssm_parameter" "rds_endpoint" {
+  name  = "/${local.id_prefix}/rds/endpoint"
+  type  = "String"
+  value = aws_db_instance.mysql.address
+  
+  tags = {
+    Name        = "${local.name_prefix}-rds-endpoint"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+resource "aws_ssm_parameter" "rds_port" {
+  name  = "/${local.id_prefix}/rds/port"
+  type  = "String"
+  value = tostring(aws_db_instance.mysql.port)
+  
+  tags = {
+    Name        = "${local.name_prefix}-rds-port"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# IAM role cho EC2 instance
+resource "aws_iam_role" "ec2_ssm_role" {
+  name = "${local.id_prefix}-ec2-ssm-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${local.name_prefix}-ec2-ssm-role"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# IAM policy để truy cập Systems Manager Parameter Store
+resource "aws_iam_policy" "ec2_ssm_policy" {
+  name        = "${local.id_prefix}-ec2-ssm-policy"
+  description = "Policy for EC2 to access Systems Manager Parameter Store"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:GetParametersByPath"
+        ]
+        Resource = [
+          "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${local.id_prefix}/*"
+        ]
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${local.id_prefix}-ec2-ssm-policy"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Attach policy to role
+resource "aws_iam_role_policy_attachment" "ec2_ssm_policy_attachment" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = aws_iam_policy.ec2_ssm_policy.arn
+}
+
+# Attach AWS managed policy for Systems Manager
+resource "aws_iam_role_policy_attachment" "ec2_ssm_managed_policy" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+# IAM instance profile
+resource "aws_iam_instance_profile" "ec2_ssm_profile" {
+  name = "${local.id_prefix}-ec2-ssm-profile"
+  role = aws_iam_role.ec2_ssm_role.name
+
+  tags = {
+    Name        = "${local.id_prefix}-ec2-ssm-profile"
     Environment = var.environment
     Project     = var.project_name
   }

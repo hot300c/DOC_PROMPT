@@ -50,7 +50,11 @@ terraform apply "tfplan"
 
 ### Connect to EC2
 ```bash
-ssh -i config/pnt-ec2-lma-key.pem ec2-user@$(terraform output -raw admin_backend_public_ip)
+# Using Terraform output (now accurate)
+ssh -i config/github_actions_key.pem ec2-user@$(terraform output -raw admin_backend_public_ip)
+
+# Or directly with IP
+ssh -i config/github_actions_key.pem ec2-user@13.211.100.36
 ```
 
 ## 🔧 Configuration
@@ -78,17 +82,30 @@ See `docs/AWS_AUDIT_CHECKLIST.md` for detailed manual verification steps.
 
 ## 📊 Outputs
 
-- `admin_backend_public_ip` - EC2 public IP
-- `admin_backend_instance_id` - EC2 instance ID
+- `admin_backend_public_ip` - EC2 public IP (13.211.100.36)
+- `admin_backend_instance_id` - EC2 instance ID (i-01e34ea2551c53c55)
 - `rds_endpoint` - RDS MySQL endpoint
 - `rds_port` - RDS port (3306)
+- `github_actions_private_key` - SSH private key for GitHub Actions
+- `github_actions_public_key` - SSH public key for GitHub Actions
+- `ssh_key_file_path` - Path to private key file
+
+## 🌐 Application Access
+
+- **Loan Gateway**: http://13.211.100.36:8080
+- **Loan Management Service**: http://13.211.100.36:8082
+- **Consul UI**: http://13.211.100.36:8500
+- **Portainer**: https://13.211.100.36:9443
 
 ## 🔒 Security
 
-- RDS is private (accessible only from EC2)
-- SSH access via key pair only
-- Security groups restrict access
-- No public RDS access
+- **RDS**: Private access only (accessible from EC2 security group)
+- **SSH**: Key pair authentication only (`github_actions_key`)
+- **Security Groups**: 
+  - EC2 SG: Ports 22, 80, 8080, 8082, 8500, 9443
+  - RDS SG: Port 3306 (MySQL) from EC2 SG only
+- **Network**: Default VPC with public subnet
+- **IAM**: EC2 instance profile for Systems Manager access
 
 ## 💰 Cost Optimization
 

@@ -13,6 +13,11 @@ output "rds_endpoint" {
   value       = aws_db_instance.mysql.address
 }
 
+output "rds_private_endpoint" {
+  description = "RDS MySQL private endpoint (same as address but for clarity)"
+  value       = aws_db_instance.mysql.address
+}
+
 output "rds_port" {
   description = "RDS port"
   value       = aws_db_instance.mysql.port
@@ -32,6 +37,16 @@ output "github_actions_public_key" {
 output "ssh_key_file_path" {
   description = "Path to the private key file"
   value       = local_file.github_actions_private_key.filename
+}
+
+output "rds_parameter_name" {
+  description = "Systems Manager Parameter name for RDS endpoint"
+  value       = aws_ssm_parameter.rds_endpoint.name
+}
+
+output "rds_parameter_arn" {
+  description = "Systems Manager Parameter ARN for RDS endpoint"
+  value       = aws_ssm_parameter.rds_endpoint.arn
 }
 
 
